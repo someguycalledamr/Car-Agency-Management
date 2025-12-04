@@ -1,31 +1,42 @@
 ﻿@page
-@model Car_Agency_Management.Pages.LoginModel
+@model Car_Agency_Management.Pages.sign_upModel
 @{
 }
-<div class="login-wrapper">
-    <div class="login-left">
-        <h1>Enter Your <span style="color:#0ca39d;">Email</span> & <span style="color:#0ca39d;">Password</span></h1>
+<div class="signup-wrapper">
+    <div class="signup-left">
+        <h1>Create Your <span style="color:#0ca39d;">Account</span></h1>
         <form method="post">
-            <label>Email Address</label>
-            <input type="email" name="Username" placeholder="example@gmail.com" />
-            <label>Password</label>
-            <input type="password" name="Password" placeholder="************" />
-            <div class="options">
-                <div class="remember" style="display:flex; align-items:center; gap:8px; white-space:nowrap;">
-                    <input type="checkbox" id="rememberMe" style="margin:0; vertical-align:middle;" />
-                    <label for="rememberMe" style="margin:0; padding:0; vertical-align:middle;">Keep me logged in</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="FirstName" placeholder="Enter your first name" required />
                 </div>
-                <a href="#">Forgot Password?</a>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="LastName" placeholder="Enter your last name" required />
+                </div>
             </div>
-            <button type="submit" class="btn-login">Login</button>
+            <label>Email Address</label>
+            <input type="email" name="Email" placeholder="example@gmail.com" required />
+            <label>Phone Number</label>
+            <input type="tel" name="Phone" placeholder="+20" />
+            <label>Password</label>
+            <input type="password" name="Password" placeholder="************" required />
+            <label>Confirm Password</label>
+            <input type="password" name="ConfirmPassword" placeholder="************" required />
+            <div class="terms">
+                <input type="checkbox" id="terms" required />
+                <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
+            </div>
+            <button type="submit" class="btn-signup">Sign Up</button>
             @if (Model.ErrorMessage != null)
             {
                     <p class="error">@Model.ErrorMessage</p>
             }
-            <p class="signup-link">Don't have an account? <a href="/sign_up">Sign up here</a></p>
+            <p class="login-link">Already have an account? <a href="/Login">Login here</a></p>
         </form>
     </div>
-    <div class="login-right">
+    <div class="signup-right">
         <img src="~/images/login-car.jpg" class="car-image" />
     </div>
 </div>
@@ -70,15 +81,15 @@
     }
 
     /* Additional decorative elements */
-    .login-wrapper::before,
-    .login-wrapper::after {
+    .signup-wrapper::before,
+    .signup-wrapper::after {
         content: '';
         position: absolute;
         border-radius: 50%;
         z-index: 0;
     }
 
-    .login-wrapper::before {
+    .signup-wrapper::before {
         width: 150px;
         height: 150px;
         background: rgba(255, 255, 255, 0.2);
@@ -87,7 +98,7 @@
         animation: pulse 4s ease-in-out infinite;
     }
 
-    .login-wrapper::after {
+    .signup-wrapper::after {
         width: 100px;
         height: 100px;
         background: rgba(255, 255, 255, 0.15);
@@ -137,11 +148,11 @@
         }
     }
 
-    .login-wrapper {
-        width: 90%;
-        max-width: 1100px;
-        height: 550px;
-        margin: 40px auto;
+    .signup-wrapper {
+        width: 75%;
+        max-width: 750px;
+        min-height: 480px;
+        margin: 20px auto;
         border-radius: 20px;
         display: flex;
         overflow: hidden;
@@ -149,6 +160,84 @@
         position: relative;
         z-index: 1;
         animation: floatCard 6s ease-in-out infinite;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .signup-wrapper {
+            flex-direction: column;
+            min-height: auto;
+            margin: 20px auto;
+        }
+
+        .signup-left {
+            border-radius: 20px 20px 0 0;
+            padding: 30px 25px;
+        }
+
+        .signup-left h1 {
+            font-size: 28px;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .signup-right {
+            min-height: 300px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .signup-wrapper {
+            width: 95%;
+            margin: 10px auto;
+        }
+
+        .signup-left {
+            padding: 20px 15px;
+        }
+
+        .signup-left h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .btn-signup {
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .signup-right {
+            min-height: 200px;
+        }
+    }
+
+    @@media (min-width: 1400px) {
+        .signup-wrapper {
+            max-width: 950px;
+        }
+
+        .signup-left h1 {
+            font-size: 30px;
+        }
     }
 
     @@keyframes floatCard {
@@ -161,45 +250,56 @@
     }
 
     /* Left side – semi-transparent white card with hover effect */
-    .login-left {
+    .signup-left {
         flex: 1;
-        padding: 50px;
+        padding: 25px 30px;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 20px 0 0 20px;
         backdrop-filter: blur(10px);
         transition: transform 0.3s ease;
+        overflow-y: auto;
     }
 
-    .login-left:hover {
+    .signup-left:hover {
         transform: scale(1.02);
     }
 
-    .login-left h1 {
-        font-size: 35px;
+    .signup-left h1 {
+        font-size: 26px;
         font-weight: 700;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         color: #333;
     }
 
+    .form-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
     label {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
-        margin-top: 10px;
+        margin-top: 6px;
         display: block;
         color: #333;
     }
 
     input {
         width: 100%;
-        padding: 12px;
-        border-radius: 8px;
+        padding: 8px;
+        border-radius: 6px;
         outline: none;
         border: 1px solid #aaa;
-        margin-top: 5px;
-        margin-bottom: 10px;
-        font-size: 15px;
+        margin-top: 3px;
+        margin-bottom: 6px;
+        font-size: 13px;
         background: #fff;
         transition: all 0.3s ease;
+        box-sizing: border-box;
     }
 
     input:focus {
@@ -208,45 +308,53 @@
         transform: translateY(-2px);
     }
 
-    .options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-
-    .options a {
-        text-decoration: none;
-        color: #0ca39d;
-        font-weight: 600;
-    }
-
-    .remember {
+    .terms {
         display: flex;
         align-items: center;
-        gap: 5px;
-        font-size: 14px;
+        gap: 8px;
+        margin: 12px 0;
+        font-size: 12px;
         color: #333;
     }
 
-    .btn-login {
+    .terms input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .terms label {
+        margin: 0;
+        padding: 0;
+        font-weight: normal;
+        display: inline;
+        cursor: pointer;
+    }
+
+    .terms a {
+        color: #0ca39d;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .btn-signup {
         width: 100%;
-        padding: 14px;
+        padding: 10px;
         background: linear-gradient(to right, #0ca39d, #004f77);
         border: none;
         color: white;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: 6px;
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
     }
 
-    .btn-login::before {
+    .btn-signup::before {
         content: '';
         position: absolute;
         top: 50%;
@@ -259,17 +367,17 @@
         transition: width 0.6s, height 0.6s;
     }
 
-    .btn-login:hover::before {
+    .btn-signup:hover::before {
         width: 300px;
         height: 300px;
     }
 
-    .btn-login:hover {
+    .btn-signup:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 25px rgba(12, 163, 157, 0.4);
     }
 
-    .btn-login:active {
+    .btn-signup:active {
         transform: translateY(-1px);
     }
 
@@ -277,27 +385,24 @@
         color: #e74c3c;
         margin-top: 10px;
         font-weight: bold;
+        text-align: center;
     }
 
-    .signup-link {
+    .login-link {
         text-align: center;
-        margin-top: 15px;
-        font-size: 14px;
+        margin-top: 12px;
+        font-size: 12px;
         color: #333;
     }
 
-    .signup-link a {
+    .login-link a {
         color: #0ca39d;
         text-decoration: none;
         font-weight: 600;
     }
 
-    .signup-link a:hover {
-        text-decoration: underline;
-    }
-
     /* Right side – image without blue overlay */
-    .login-right {
+    .signup-right {
         flex: 1;
         display: flex;
         justify-content: center;
