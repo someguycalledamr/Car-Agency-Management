@@ -1,0 +1,349 @@
+﻿@page
+@model Car_Agency_Management.Pages.Payment_pageModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment / Booking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FFFFFF;
+            font-family: Arial, sans-serif;
+        }
+
+        .top-nav {
+            background-color: #2c2c2c;
+            padding: 10px 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .main-nav {
+            background: linear-gradient(135deg, #666, #999);
+            border-radius: 25px;
+            padding: 8px;
+            display: inline-flex;
+            margin: 20px auto;
+        }
+
+            .main-nav button {
+                background: transparent;
+                border: none;
+                color: #333;
+                padding: 8px 25px;
+                margin: 0 5px;
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+                .main-nav button:hover,
+                .main-nav button.active {
+                    background-color: #e0e0e0;
+                }
+
+        .search-icon {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+        }
+
+        .insurance-section {
+            background-color: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+            .section-title input[type="radio"] {
+                margin-right: 10px;
+                width: 18px;
+                height: 18px;
+            }
+
+        .plan-btn {
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .plan-btn:hover,
+            .plan-btn.active {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+
+        .cost-label {
+            display: inline-block;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+
+        .product-box {
+            border: 2px solid #ccc;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 60px;
+            background-color: #e0e0e0;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .discount-section {
+            margin: 20px 0;
+        }
+
+            .discount-section input {
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 8px;
+                width: 200px;
+            }
+
+            .discount-section button {
+                background-color: white;
+                border: 1px solid #333;
+                border-radius: 4px;
+                padding: 8px 20px;
+                margin-left: 10px;
+                cursor: pointer;
+            }
+
+        .subtotal-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+
+        .payment-section {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .security-text {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .payment-method {
+            background-color: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+            .payment-method input[type="radio"] {
+                margin-right: 10px;
+            }
+
+        .card-logos {
+            float: right;
+        }
+
+            .card-logos img {
+                height: 25px;
+                margin-left: 10px;
+            }
+
+        .form-control {
+            margin-bottom: 15px;
+        }
+
+        .cvv-info {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-top: 20px;">
+        <div class="page-title">Payment / Booking</div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="insurance-section">
+                    <div class="section-title">
+                        <input type="radio" name="insurance" id="insurance" checked>
+                        <label for="insurance">Insurance</label>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <button class="plan-btn active" data-plan="1-year" data-cost="$$$$">1-Year plan</button>
+                            <span class="cost-label">Cost $$$$</span>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="plan-btn" data-plan="5-year" data-cost="$$$$">5-Year plan</button>
+                            <span class="cost-label">Cost $$$$</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <button class="plan-btn" data-plan="3-year" data-cost="$$$$">3-Year plan</button>
+                            <span class="cost-label">Cost $$$$</span>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="plan-btn" data-plan="10-year" data-cost="$$$$">10-Year plan</button>
+                            <span class="cost-label">Cost $$$$</span>
+                        </div>
+                    </div>
+
+                    <div class="product-box">
+                        <div class="product-image">
+                            <i class="fas fa-image fa-2x"></i>
+                        </div>
+                        <div>
+                            <strong>Product Name</strong><br>
+                            <span>Product Price ^10EGP</span>
+                        </div>
+                    </div>
+
+                    <div class="discount-section">
+                        <input type="text" placeholder="Discount code" id="discountCode">
+                        <button onclick="applyDiscount()">Apply</button>
+                    </div>
+
+                    <div class="subtotal-section">
+                        <strong>Subtotal:</strong><br>
+                        <small>Remaining to be payed in the Shop:</small>
+                        <div id="remainingAmount" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="payment-section">
+                    <div class="security-text">
+                        <i class="fas fa-lock"></i> All transactions are secure and encrypted
+                    </div>
+
+                    <div class="payment-method">
+                        <input type="radio" name="payment" id="creditCard" checked>
+                        <label for="creditCard">Credit card</label>
+                        <span class="card-logos">
+                            <i class="fab fa-cc-mastercard fa-2x text-danger"></i>
+                            <i class="fab fa-cc-visa fa-2x text-primary"></i>
+                        </span>
+                    </div>
+
+                    <div class="mt-3">
+                        <input type="text" class="form-control" placeholder="Card number" id="cardNumber" maxlength="19">
+
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="text" class="form-control" placeholder="Expiration date (MM/YY)" id="expDate" maxlength="5">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" placeholder="Security code (CVV)" id="cvv" maxlength="3">
+                            </div>
+                        </div>
+
+                        <input type="text" class="form-control" placeholder="Card Name" id="cardName">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Plan selection
+        document.querySelectorAll('.plan-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                updateSubtotal();
+            });
+        });
+
+        // Card number formatting
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Expiration date formatting
+        document.getElementById('expDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // CVV - numbers only
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Apply discount
+        function applyDiscount() {
+            const code = document.getElementById('discountCode').value;
+            if (code) {
+                alert('Discount code "' + code + '" applied!');
+                updateSubtotal();
+            }
+        }
+
+        // Update subtotal
+        function updateSubtotal() {
+            const activePlan = document.querySelector('.plan-btn.active');
+            if (activePlan) {
+                const plan = activePlan.dataset.plan;
+                const cost = activePlan.dataset.cost;
+                document.getElementById('remainingAmount').innerHTML =
+                    `<strong>${plan}</strong> - ${cost}`;
+            }
+        }
+
+        // Initialize
+        updateSubtotal();
+    </script>
+</body>
+</html>

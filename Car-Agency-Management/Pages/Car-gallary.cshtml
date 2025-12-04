@@ -1,0 +1,1320 @@
+﻿@page
+@model Car_Agency_Management.Pages.Car_gallaryModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find New Cars for Sale in Egypt</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        footer {
+            display: none;
+        }
+
+        .breadcrumb-text {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .main-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #212529;
+            margin-bottom: 30px;
+        }
+
+        .sidebar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+        }
+
+            .filter-section:last-child {
+                border-bottom: none;
+            }
+
+        .filter-label {
+            font-weight: 500;
+            color: #212529;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .price-option {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .price-option::before {
+                content: '✓';
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 18px;
+                height: 18px;
+                background-color: #0066cc;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                opacity: 0;
+                transform: scale(0);
+                transition: all 0.3s;
+            }
+
+            .price-option.selected::before {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .price-option:hover {
+                background-color: #e7f3ff;
+                border-color: #0066cc;
+                transform: scale(1.05);
+            }
+
+            .price-option.selected {
+                background-color: #e7f3ff;
+                border-color: #0066cc;
+                border-width: 2px;
+            }
+
+        .price-label-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .price-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .brand-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .brand-filter-option {
+            background-color: white;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .brand-filter-option:hover,
+            .brand-filter-option.selected {
+                border-color: #0066cc;
+                background-color: #e7f3ff;
+            }
+
+        .brand-filter-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin: 0 auto;
+        }
+
+        .prices-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 30px;
+        }
+
+        .price-range-card {
+            text-align: center;
+            padding: 20px 10px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+            .price-range-card::before {
+                content: '✓';
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 20px;
+                height: 20px;
+                background-color: #0066cc;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                opacity: 0;
+                transform: scale(0);
+                transition: all 0.3s;
+            }
+
+            .price-range-card.selected::before {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .price-range-card:hover {
+                background-color: #e7f3ff;
+                border-color: #0066cc;
+                transform: translateY(-4px) scale(1.05);
+                box-shadow: 0 4px 12px rgba(0,102,204,0.2);
+            }
+
+            .price-range-card.selected {
+                background-color: #e7f3ff;
+                border-color: #0066cc;
+                border-width: 2px;
+            }
+
+        .price-range-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .price-range-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .price-link {
+            display: none;
+        }
+
+        .tabs-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+        }
+
+            .nav-tabs .nav-link {
+                color: #6c757d;
+                border: none;
+                padding: 20px 30px;
+                font-weight: 500;
+                border-bottom: 3px solid transparent;
+            }
+
+                .nav-tabs .nav-link.active {
+                    color: #212529;
+                    border-bottom: 3px solid #0066cc;
+                    background-color: transparent;
+                }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        @@media (max-width: 1400px) {
+            .brands-grid
+
+        {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        }
+
+        @@media (max-width: 1200px) {
+            .brands-grid
+
+        {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        }
+
+        @@media (max-width: 992px) {
+            .brands-grid
+
+        {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .brands-grid
+
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        }
+
+        .brands-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .brands-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .brands-grid::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+            .brands-grid::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+        .brand-card {
+            text-align: center;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background-color: white;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .brand-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            .brand-card:hover::before {
+                left: 100%;
+            }
+
+            .brand-card:hover {
+                background-color: #f8f9fa;
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+                border-color: #dee2e6;
+            }
+
+            .brand-card.selected {
+                background-color: #e7f3ff;
+                border: 3px solid #0066cc;
+            }
+
+                .brand-card.selected::after {
+                    content: '✓';
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    width: 20px;
+                    height: 20px;
+                    background-color: #0066cc;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 11px;
+                    font-weight: bold;
+                }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            transition: transform 0.3s;
+        }
+
+        .brand-card:hover .brand-logo {
+            transform: scale(1.1);
+        }
+
+        .brand-name {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .brand-count {
+            color: #6c757d;
+            font-size: 11px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-count {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sort-dropdown {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 8px 15px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .sort-dropdown:hover {
+                border-color: #0066cc;
+                box-shadow: 0 2px 8px rgba(0,102,204,0.1);
+            }
+
+            .sort-dropdown:focus {
+                outline: none;
+                border-color: #0066cc;
+                box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+            }
+
+        .car-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .car-card::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, #0066cc, #00aaff);
+                transform: scaleX(0);
+                transition: transform 0.3s;
+            }
+
+            .car-card:hover::after {
+                transform: scaleX(1);
+            }
+
+            .car-card:hover {
+                box-shadow: 0 12px 24px rgba(0,102,204,0.2);
+                transform: translateY(-8px);
+            }
+
+            .car-card:active {
+                transform: translateY(-4px);
+            }
+
+        .car-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 15px;
+        }
+
+        .car-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            transition: transform 0.4s ease;
+        }
+
+        .car-card:hover .car-image {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .price-section {
+            border-top: 1px solid #e9ecef;
+            padding-top: 15px;
+        }
+
+        .starting-price {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 15px;
+        }
+
+        .payment-details {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .payment-box {
+            flex: 1;
+        }
+
+        .payment-label {
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .payment-value {
+            font-weight: 600;
+            color: #212529;
+            font-size: 14px;
+        }
+
+        .scroll-arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+            .scroll-arrow:hover {
+                background-color: #0066cc;
+                color: white;
+                transform: translateY(-50%) scale(1.1);
+                box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+            }
+
+            .scroll-arrow:active {
+                transform: translateY(-50%) scale(0.95);
+            }
+
+        .scroll-arrow-left {
+            left: 10px;
+            right: auto;
+        }
+
+        .row.g-4 {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Browse all cars</h1>
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="sidebar-title">Modify Search</div>
+
+                    <div class="filter-section">
+                        <div class="filter-label" onclick="toggleFilter('brand')">
+                            Brand
+                            <i class="fas fa-chevron-down" id="brand-arrow"></i>
+                        </div>
+                        <div id="brand-filter" style="display: none; margin-top: 15px;">
+                            <div class="brand-filter-grid">
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/000000/FFFFFF?text=MB" alt="Mercedes" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/8B0000/FFFFFF?text=A" alt="Audi" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/DC143C/FFFFFF?text=MG" alt="MG" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/4A4A4A/FFFFFF?text=J" alt="Jetour" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/8B4513/FFFFFF?text=C" alt="Citroën" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/FFCC00/000000?text=R" alt="Renault" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/0066CC/FFFFFF?text=BMW" alt="BMW" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/004B87/FFFFFF?text=CH" alt="Chery" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/003087/FFFFFF?text=H" alt="Hyundai" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/BB162B/FFFFFF?text=K" alt="Kia" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/2C3E50/FFFFFF?text=N" alt="Nissan" class="brand-filter-logo">
+                                </div>
+                                <div class="brand-filter-option">
+                                    <img src="https://via.placeholder.com/40x40/C8102E/FFFFFF?text=T" alt="Toyota" class="brand-filter-logo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-label" onclick="toggleFilter('price')">
+                            Price
+                            <i class="fas fa-chevron-down" id="price-arrow"></i>
+                        </div>
+                        <div id="price-filter" style="display: none; margin-top: 15px;">
+                            <div class="price-grid">
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">400,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">600,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">800,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">1,200,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">1,800,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">2,500,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">500,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">700,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">1,000,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">1,400,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">2,000,000 EGP</div>
+                                </div>
+                                <div class="price-option">
+                                    <div class="price-label-text">Under</div>
+                                    <div class="price-value">3,000,000 EGP</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="price-link" onclick="showPriceGuide()">
+                        <span>New Car Prices 2024 - 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#brands">
+                                <i class="fas fa-th me-2"></i>Brands
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#prices">
+                                <i class="fas fa-tag me-2"></i>Prices
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="brands">
+                            <div class="brands-grid position-relative" id="brandsGrid">
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/200px-Mercedes-Logo.svg.png" alt="Mercedes" class="brand-logo">
+                                    <div class="brand-name">Mercedes</div>
+                                    <div class="brand-count">(45)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/200px-Audi-Logo_2016.svg.png" alt="Audi" class="brand-logo">
+                                    <div class="brand-name">Audi</div>
+                                    <div class="brand-count">(20)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/MG_Motor.svg/200px-MG_Motor.svg.png" alt="MG" class="brand-logo">
+                                    <div class="brand-name">MG</div>
+                                    <div class="brand-count">(20)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <div class="brand-logo mb-2">
+                                        <i class="fas fa-car fa-3x text-secondary"></i>
+                                    </div>
+                                    <div class="brand-name">Jetour</div>
+                                    <div class="brand-count">(14)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Citro%C3%ABn_logo.svg/200px-Citro%C3%ABn_logo.svg.png" alt="Citroën" class="brand-logo">
+                                    <div class="brand-name">Citroën</div>
+                                    <div class="brand-count">(10)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Renault_2021.svg/200px-Renault_2021.svg.png" alt="Renault" class="brand-logo">
+                                    <div class="brand-name">Renault</div>
+                                    <div class="brand-count">(10)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/200px-BMW.svg.png" alt="BMW" class="brand-logo">
+                                    <div class="brand-name">BMW</div>
+                                    <div class="brand-count">(24)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a1/Chery_Logo.svg/200px-Chery_Logo.svg.png" alt="Chery" class="brand-logo">
+                                    <div class="brand-name">Chery</div>
+                                    <div class="brand-count">(20)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Hyundai_Motor_Company_logo.svg/200px-Hyundai_Motor_Company_logo.svg.png" alt="Hyundai" class="brand-logo">
+                                    <div class="brand-name">Hyundai</div>
+                                    <div class="brand-count">(14)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Kia_logo.svg/200px-Kia_logo.svg.png" alt="Kia" class="brand-logo">
+                                    <div class="brand-name">Kia</div>
+                                    <div class="brand-count">(11)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/200px-Nissan_logo.svg.png" alt="Nissan" class="brand-logo">
+                                    <div class="brand-name">Nissan</div>
+                                    <div class="brand-count">(10)</div>
+                                </div>
+                                <div class="brand-card">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Toyota.svg/200px-Toyota.svg.png" alt="Toyota" class="brand-logo">
+                                    <div class="brand-name">Toyota</div>
+                                    <div class="brand-count">(10)</div>
+                                </div>
+                                <div class="scroll-arrow scroll-arrow-left" id="scrollLeft">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                                <div class="scroll-arrow" id="scrollRight">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="prices">
+                            <div class="prices-grid">
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">400,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">500,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">600,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">700,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">800,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">1,000,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">1,200,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">1,400,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">1,800,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">2,000,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">2,500,000 EGP</div>
+                                </div>
+                                <div class="price-range-card">
+                                    <div class="price-range-label">Under</div>
+                                    <div class="price-range-value">3,000,000 EGP</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Header -->
+                <div class="results-header">
+                    <div class="results-count"></div>
+                    <select class="sort-dropdown">
+                        <option>⬍ Price (Low to High)</option>
+                        <option>⬍ Price (High to Low)</option>
+                        <option>Newest First</option>
+                        <option>Most Popular</option>
+                    </select>
+                </div>
+
+                <!-- Car Cards -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Suzuki S Presso Automtic 2024</div>
+                            <img src="https://via.placeholder.com/300x200/FF6B35/FFFFFF?text=Suzuki+S+Presso" alt="Suzuki S Presso" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">549,900 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">82,485 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">15,386 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Nissan Sunny Manual / Baseline 2026</div>
+                            <img src="https://via.placeholder.com/300x200/2C3E50/FFFFFF?text=Nissan+Sunny" alt="Nissan Sunny" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">645,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">96,750 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">18,047 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Proton Saga A/T / Premium 2026</div>
+                            <img src="https://via.placeholder.com/300x200/5D6D7E/FFFFFF?text=Proton+Saga" alt="Proton Saga" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">649,900 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">97,485 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">18,184 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Mercedes-Benz C-Class 2025</div>
+                            <img src="https://via.placeholder.com/300x200/000000/FFFFFF?text=Mercedes+C-Class" alt="Mercedes C-Class" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">1,250,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">187,500 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">35,000 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">BMW X3 xDrive 2025</div>
+                            <img src="https://via.placeholder.com/300x200/0066CC/FFFFFF?text=BMW+X3" alt="BMW X3" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">1,450,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">217,500 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">40,600 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Audi A4 Sportback 2025</div>
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Audi+A4" alt="Audi A4" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">1,150,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">172,500 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">32,200 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">MG ZS Standard 2025</div>
+                            <img src="https://via.placeholder.com/300x200/DC143C/FFFFFF?text=MG+ZS" alt="MG ZS" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">485,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">72,750 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">13,580 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Toyota Corolla GLi 2025</div>
+                            <img src="https://via.placeholder.com/300x200/C8102E/FFFFFF?text=Toyota+Corolla" alt="Toyota Corolla" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">725,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">108,750 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">20,300 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Hyundai Tucson Smart 2025</div>
+                            <img src="https://via.placeholder.com/300x200/003087/FFFFFF?text=Hyundai+Tucson" alt="Hyundai Tucson" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">895,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">134,250 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">25,060 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Kia Sportage LX 2025</div>
+                            <img src="https://via.placeholder.com/300x200/BB162B/FFFFFF?text=Kia+Sportage" alt="Kia Sportage" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">920,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">138,000 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">25,760 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Chery Tiggo 7 Comfort 2025</div>
+                            <img src="https://via.placeholder.com/300x200/004B87/FFFFFF?text=Chery+Tiggo+7" alt="Chery Tiggo 7" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">615,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">92,250 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">17,220 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Renault Duster Expression 2025</div>
+                            <img src="https://via.placeholder.com/300x200/FFCC00/000000?text=Renault+Duster" alt="Renault Duster" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">565,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">84,750 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">15,820 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card">
+                            <div class="car-title">Citroën C3 Feel 2025</div>
+                            <img src="https://via.placeholder.com/300x200/A0006E/FFFFFF?text=Citroen+C3" alt="Citroën C3" class="car-image">
+                            <div class="price-section">
+                                <div class="starting-price">Starting From</div>
+                                <div class="price-amount">445,000 EGP</div>
+                                <div class="payment-details">
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Deposit</div>
+                                        <div class="payment-value">66,750 EGP</div>
+                                    </div>
+                                    <div class="payment-box">
+                                        <div class="payment-label">Min. Installment</div>
+                                        <div class="payment-value">12,460 EGP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p style="margin: 0;">&copy; 2024 Car Gallery. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedBrands = new Set();
+        let selectedPrices = new Set();
+
+        function toggleFilter(filterName) {
+            if (filterName === 'price') {
+                const priceFilter = document.getElementById('price-filter');
+                const arrow = document.getElementById('price-arrow');
+                if (priceFilter.style.display === 'none') {
+                    priceFilter.style.display = 'block';
+                    arrow.classList.remove('fa-chevron-down');
+                    arrow.classList.add('fa-chevron-up');
+                } else {
+                    priceFilter.style.display = 'none';
+                    arrow.classList.remove('fa-chevron-up');
+                    arrow.classList.add('fa-chevron-down');
+                }
+            } else if (filterName === 'brand') {
+                const brandFilter = document.getElementById('brand-filter');
+                const arrow = document.getElementById('brand-arrow');
+                if (brandFilter.style.display === 'none') {
+                    brandFilter.style.display = 'block';
+                    arrow.classList.remove('fa-chevron-down');
+                    arrow.classList.add('fa-chevron-up');
+                } else {
+                    brandFilter.style.display = 'none';
+                    arrow.classList.remove('fa-chevron-up');
+                    arrow.classList.add('fa-chevron-down');
+                }
+            }
+        }
+
+        // Add click effect to brand filter options with selection
+        document.querySelectorAll('.brand-filter-option').forEach(option => {
+            option.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // Add click effect to price options with selection
+        document.querySelectorAll('.price-option').forEach(option => {
+            option.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // Add hover effects to brand cards with single selection
+        document.querySelectorAll('.brand-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const brandName = this.querySelector('.brand-name').textContent;
+
+                // Remove selection from all other brand cards
+                document.querySelectorAll('.brand-card').forEach(c => c.classList.remove('selected'));
+
+                // Toggle this card
+                this.classList.toggle('selected');
+
+                // Clear previous selections and add current if selected
+                selectedBrands.clear();
+                if (this.classList.contains('selected')) {
+                    selectedBrands.add(brandName);
+                }
+
+                updateResults();
+            });
+        });
+
+        // Add click effect to price range cards with selection
+        document.querySelectorAll('.price-range-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selection from all other cards
+                document.querySelectorAll('.price-range-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const priceValue = this.querySelector('.price-range-value').textContent;
+                selectedPrices.clear();
+                selectedPrices.add(priceValue);
+
+                updateResults();
+            });
+        });
+
+        // Add click effect to car cards with animation
+        document.querySelectorAll('.car-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const carTitle = this.querySelector('.car-title').textContent;
+
+                // Add scale animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+
+                // Show details modal (simplified alert for now)
+                setTimeout(() => {
+                    alert('Viewing details for: ' + carTitle);
+                }, 200);
+            });
+        });
+
+        // Sort functionality with animation
+        document.querySelector('.sort-dropdown').addEventListener('change', function() {
+            const sortValue = this.value;
+
+            // Add loading animation
+            const carGrid = document.querySelector('.row.g-4');
+            carGrid.style.opacity = '0.5';
+            carGrid.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                carGrid.style.opacity = '1';
+                carGrid.style.transform = 'translateY(0)';
+                console.log('Sorted by: ' + sortValue);
+            }, 300);
+        });
+
+        // Update results count
+        function updateResults() {
+            console.log('Selected brands:', Array.from(selectedBrands));
+            console.log('Selected prices:', Array.from(selectedPrices));
+        }
+
+        // Scroll arrows for brand grid
+        const brandsGrid = document.getElementById('brandsGrid');
+        const scrollLeft = document.getElementById('scrollLeft');
+        const scrollRight = document.getElementById('scrollRight');
+
+        if (scrollRight) {
+            scrollRight.addEventListener('click', function() {
+                brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        }
+
+        if (scrollLeft) {
+            scrollLeft.addEventListener('click', function() {
+                brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+        }
+
+        // Show/hide scroll arrows based on scroll position
+        function updateScrollArrows() {
+            if (brandsGrid) {
+                const isAtStart = brandsGrid.scrollLeft <= 0;
+                const isAtEnd = brandsGrid.scrollLeft >= (brandsGrid.scrollWidth - brandsGrid.clientWidth - 10);
+
+                if (scrollLeft) {
+                    scrollLeft.style.opacity = isAtStart ? '0.3' : '1';
+                    scrollLeft.style.pointerEvents = isAtStart ? 'none' : 'auto';
+                }
+
+                if (scrollRight) {
+                    scrollRight.style.opacity = isAtEnd ? '0.3' : '1';
+                    scrollRight.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+                }
+            }
+        }
+
+        if (brandsGrid) {
+            brandsGrid.addEventListener('scroll', updateScrollArrows);
+            updateScrollArrows();
+        }
+
+        // Price guide function
+        function showPriceGuide() {
+            alert('Opening New Car Prices 2024-2025 Guide');
+        }
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        });
+    </script>
+</body>
+</html>
