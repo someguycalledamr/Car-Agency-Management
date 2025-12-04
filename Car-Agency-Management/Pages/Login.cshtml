@@ -1,0 +1,301 @@
+﻿@page
+@model Car_Agency_Management.Pages.LoginModel
+@{
+}
+<div class="login-wrapper">
+    <div class="login-left">
+        <h1>Enter Your <span style="color:#0ca39d;">Email</span> & <span style="color:#0ca39d;">Password</span></h1>
+        <form method="post">
+            <label>Email Address</label>
+            <input type="email" name="Username" placeholder="example@gmail.com" />
+            <label>Password</label>
+            <input type="password" name="Password" placeholder="************" />
+            <div class="options">
+                <div class="remember" style="display:flex; align-items:center; gap:8px; white-space:nowrap;">
+                    <input type="checkbox" id="rememberMe" style="margin:0; vertical-align:middle;" />
+                    <label for="rememberMe" style="margin:0; padding:0; vertical-align:middle;">Keep me logged in</label>
+                </div>
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn-login">Login</button>
+            @if (Model.ErrorMessage != null)
+            {
+                    <p class="error">@Model.ErrorMessage</p>
+            }
+        </form>
+    </div>
+    <div class="login-right">
+        <img src="~/images/login-car.jpg" class="car-image" />
+    </div>
+</div>
+
+<style>
+    /* Creative light blue background with animated elements */
+    body {
+        background: #ADD8E6;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated floating circles */
+    body::before,
+    body::after {
+        content: '';
+        position: fixed;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    body::before {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 70%);
+        top: -300px;
+        right: -300px;
+        animation: floatCircle1 20s ease-in-out infinite;
+    }
+
+    body::after {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(135, 206, 250, 0.3), transparent 70%);
+        bottom: -250px;
+        left: -250px;
+        animation: floatCircle2 18s ease-in-out infinite;
+    }
+
+    /* Additional decorative elements */
+    .login-wrapper::before,
+    .login-wrapper::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .login-wrapper::before {
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.2);
+        top: -75px;
+        left: 20%;
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    .login-wrapper::after {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.15);
+        bottom: -50px;
+        right: 15%;
+        animation: pulse 3s ease-in-out infinite 1s;
+    }
+
+    @@keyframes floatCircle1 {
+        0%, 100% {
+            transform: translate(0, 0) scale(1);
+        }
+        25% {
+            transform: translate(-100px, 150px) scale(1.1);
+        }
+        50% {
+            transform: translate(-50px, 300px) scale(0.9);
+        }
+        75% {
+            transform: translate(50px, 200px) scale(1.05);
+        }
+    }
+
+    @@keyframes floatCircle2 {
+        0%, 100% {
+            transform: translate(0, 0) scale(1);
+        }
+        25% {
+            transform: translate(150px, -100px) scale(1.15);
+        }
+        50% {
+            transform: translate(100px, -50px) scale(0.85);
+        }
+        75% {
+            transform: translate(50px, -150px) scale(1.1);
+        }
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+    }
+
+    .login-wrapper {
+        width: 90%;
+        max-width: 1100px;
+        height: 550px;
+        margin: 40px auto;
+        border-radius: 20px;
+        display: flex;
+        overflow: hidden;
+        box-shadow: 0px 20px 60px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 1;
+        animation: floatCard 6s ease-in-out infinite;
+    }
+
+    @@keyframes floatCard {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    /* Left side – semi-transparent white card with hover effect */
+    .login-left {
+        flex: 1;
+        padding: 50px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px 0 0 20px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease;
+    }
+
+    .login-left:hover {
+        transform: scale(1.02);
+    }
+
+    .login-left h1 {
+        font-size: 35px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    label {
+        font-size: 15px;
+        font-weight: 600;
+        margin-top: 10px;
+        display: block;
+        color: #333;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        outline: none;
+        border: 1px solid #aaa;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        font-size: 15px;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #0ca39d;
+        box-shadow: 0 0 0 3px rgba(12, 163, 157, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .options a {
+        text-decoration: none;
+        color: #0ca39d;
+        font-weight: 600;
+    }
+
+    .remember {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(to right, #0ca39d, #004f77);
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-login:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(12, 163, 157, 0.4);
+    }
+
+    .btn-login:active {
+        transform: translateY(-1px);
+    }
+
+    .error {
+        color: #e74c3c;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    /* Right side – image without blue overlay */
+    .login-right {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: #f5f5f5;
+    }
+
+    .car-image {
+        width: 95%;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        transition: transform 0.5s ease;
+    }
+
+    .car-image:hover {
+        transform: scale(1.05) rotate(1deg);
+    }
+</style>
