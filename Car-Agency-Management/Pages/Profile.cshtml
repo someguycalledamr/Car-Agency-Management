@@ -1,0 +1,489 @@
+﻿@page
+@model AutoLux.Drive.Pages.ProfileModel
+@{
+    ViewData["Title"] = "User Profile - AutoLux.Drive";
+    // We keep Layout = null; since all the necessary CSS is embedded.
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* ================================================= */
+        /* 1. COLOR PALETTE & GLOBAL STYLES (Copied from Index.cshtml) */
+        /* ================================================= */
+        :root {
+            --color-bg: #ffffff;
+            --color-primary: #f8fafc;
+            --color-accent: #06b6d4;
+            --color-secondary: #1e293b;
+            --color-text-dark: #334155;
+            --color-text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-dark);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ================================================= */
+        /* 2. PARALLAX BACKGROUND LAYERS (Copied from Index.cshtml) */
+        /* ================================================= */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--color-accent);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--color-secondary);
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--color-accent);
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-30px) translateX(20px) rotate(120deg);
+            }
+
+            66% {
+                transform: translateY(20px) translateX(-30px) rotate(240deg);
+            }
+        }
+
+        /* ================================================= */
+        /* 3. CORE LAYOUT STYLES */
+        /* ================================================= */
+        .content-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 4%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+
+        /* Section Header (Reused with in-view animation) */
+        .section-header {
+            text-align: center;
+            margin: 80px 0 40px;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-secondary);
+            perspective: 1000px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+            .section-header.in-view {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .section-header span {
+                display: inline-block;
+                background: linear-gradient(135deg, var(--color-accent), #0ea5e9);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: textFloat 3s ease-in-out infinite;
+            }
+
+        @@keyframes textFloat {
+            0%, 100% {
+                transform: translateY(0) rotateX(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotateX(5deg);
+            }
+        }
+
+        /* General Fade-In Animation */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ================================================= */
+        /* 4. PROFILE CARD STYLES */
+        /* ================================================= */
+        .profile-card {
+            background: var(--color-primary);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            border: 2px solid var(--color-accent);
+            animation: fadeIn 1s ease-out 0.2s backwards;
+        }
+
+        .profile-photo-wrapper {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--color-accent), #0ea5e9);
+            padding: 5px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+            .profile-photo-wrapper:hover {
+                transform: scale(1.05) rotate(-5deg);
+            }
+
+        .profile-icon {
+            font-size: 70px; /* Using a placeholder icon size */
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+            background-color: var(--color-secondary);
+        }
+
+            /* Font Awesome (or similar icon library) required for a real icon */
+            .profile-icon i {
+                font-size: 70px;
+            }
+
+        .profile-info h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--color-secondary);
+        }
+
+        .profile-info p {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--color-text-dark);
+        }
+
+        .profile-info span {
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        /* ================================================= */
+        /* 5. PAYMENT HISTORY TABLE STYLES */
+        /* ================================================= */
+        .payment-history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            animation: fadeIn 1s ease-out 0.5s backwards;
+        }
+
+            .payment-history-table th,
+            .payment-history-table td {
+                padding: 15px 20px;
+                text-align: left;
+            }
+
+            .payment-history-table th {
+                background-color: var(--color-secondary);
+                color: white;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                position: sticky;
+                top: 0; /* Sticky header for long tables */
+            }
+
+            .payment-history-table tr {
+                background-color: var(--color-bg);
+                border-bottom: 1px solid #e2e8f0;
+                transition: background-color 0.3s;
+            }
+
+                .payment-history-table tr:last-child {
+                    border-bottom: none;
+                }
+
+                .payment-history-table tr:hover {
+                    background-color: #f1f5f9;
+                }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background-color: #d1fae5;
+            color: #059669;
+            border: 1px solid #059669;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+            border: 1px solid #d97706;
+        }
+
+        /* ================================================= */
+        /* 6. FOOTER (Copied from Index.cshtml) */
+        /* ================================================= */
+        footer {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: var(--color-text-muted);
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* ================================================= */
+        /* 7. RESPONSIVE DESIGN */
+        /* ================================================= */
+        @@media (max-width: 800px) {
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                padding: 30px;
+            }
+
+            .profile-info {
+                width: 100%;
+            }
+
+            .profile-photo-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-info h2 {
+                font-size: 1.8rem;
+            }
+
+            .payment-history-table th,
+            .payment-history-table td {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            /* Hide less important columns on mobile */
+            .payment-history-table thead tr th:nth-child(4),
+            .payment-history-table tbody tr td:nth-child(4) {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDlT+4yT2sRjP60K5Fv8P9e8hTz8pX/jI/j1xG7vK706r5q9m5L5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="parallax-bg">
+        <div class="bg-layer"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+
+    <div class="content-container">
+        <header>
+            <div style="padding: 20px 0;">
+                <h1 class="logo">AutoLux.<span>Drive</span></h1>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <h2 class="section-header" id="profileHeader">User <span>Profile</span></h2>
+
+            <div class="profile-card">
+                <div class="profile-photo-wrapper">
+                    <div class="profile-icon">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <h2>Johnathan Doe</h2>
+                    <p>
+                        <i class="fa-solid fa-envelope" style="color: var(--color-accent);"></i>
+                        Email: <span>johnathan.doe@@autolux.drive</span>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-id-card" style="color: var(--color-accent);"></i>
+                        User ID: <span>ALX980123</span>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-phone" style="color: var(--color-accent);"></i>
+                        Contact: <span>+1 (555) 123-4567</span>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-car" style="color: var(--color-accent);"></i>
+                        Member Since: <span>2022-04-15</span>
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="section-header" id="historyHeader" style="margin-top: 100px;">Payment <span>History</span></h2>
+
+            <table class="payment-history-table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INV-1004</td>
+                        <td>Mercedes S-Class Rental (5 days)</td>
+                        <td><span class="price-tag">$2,500.00</span></td>
+                        <td>2024-05-20</td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>INV-1003</td>
+                        <td>Airport Transfer Service</td>
+                        <td><span class="price-tag">$180.00</span></td>
+                        <td>2024-04-12</td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>INV-1002</td>
+                        <td>Porsche 911 Rental (1 day)</td>
+                        <td><span class="price-tag">$950.00</span></td>
+                        <td>2024-03-01</td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>INV-1001</td>
+                        <td>BMW 7-Series Rental (7 days)</td>
+                        <td><span class="price-tag">$3,200.00</span></td>
+                        <td>2024-01-15</td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>INV-1000</td>
+                        <td>Deposit for Future Booking</td>
+                        <td><span class="price-tag">$500.00</span></td>
+                        <td>2023-12-01</td>
+                        <td><span class="status-badge status-pending">Pending Refund</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+
+    <footer>
+        <div class="content-container">
+            &copy; 2024 AutoLux.Drive. All Rights Reserved. Premium Mobility Solutions.
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        // Optional: Stop observing once in view
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe the headers
+            document.querySelectorAll('.section-header').forEach(header => {
+                observer.observe(header);
+            });
+        });
+    </script>
+</body>
+</html>

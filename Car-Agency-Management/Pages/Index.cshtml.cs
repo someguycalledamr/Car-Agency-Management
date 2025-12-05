@@ -5,16 +5,9 @@ namespace Car_Agency_Management.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
+        public IActionResult OnPostProfileRedirect()
         {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
+            return RedirectToPage("/Profile");
         }
     }
 }
