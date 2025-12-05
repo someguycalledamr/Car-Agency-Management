@@ -1,88 +1,508 @@
 ﻿@page
 @model Car_Agency_Management.Pages.rentModel
 @{
-      <section class=" rentals container" id=" rentals"></section>
-    <div class=" eco rentals">
-  <h2>our eco rentals</h2>
-            <p>Explore our most popular car rentals </p>
-    
-
-    </div>
-    <div class=" rental-box">
-    <div class=" rental-eco">
-    <h3>sedan</h3>
-    <i class=" bx bxs-heart "></i>
-    </div>
-            <img src="" />
-            <h2> hyundai elantra</h2>
-            <h4>automatic</h4>
-            <div class=" price-button"></div>
-            <p>$17--<span>/day</span></p>
-            <a href="#" class=" rental-button">rent</a>
-    </div>
-   
-        <div class=" rental-box">
-            <div class=" rental-eco">
-                <h3>sedan</h3>
-                <i class=" bx bxs-heart "></i>
-            </div>
-            <img src="" />
-            <h2> toyota corolla</h2>
-            <h4>manual</h4>
-            <div class=" price-button"></div>
-            <p>$1300<span>/day</span></p>
-            <a href="#" class=" rental-button">rent</a>
-        </div>
-        
-    <div class=" rental-box">
-    <div class=" rental-eco">
-    <h3>sedan</h3>
-    <i class=" bx bxs-heart "></i>
-    </div>
-            <img src="" />
-            <h2> chevorelot cruze</h2>
-            <h4>automatic</h4>
-            <div class=" price-button"></div>
-            <p>$1100<span>/day</span></p>
-            <a href="#" class=" rental-button">rent</a>
-    </div>
-        <div class=" rental-box">
-            <div class=" rental-eco">
-                <h3>sedan</h3>
-                <i class=" bx bxs-heart "></i>
-            </div>
-        <img path="" />
-            <h2> suzuki dzire</h2>
-            <h4>automatic</h4>
-            <div class=" price-button"></div>
-            <p>$700<span>/day</span></p>
-            <a href="#" class=" rental-button">rent</a>
-        </div>
-        <div class=" rental-box">
-            <div class=" rental-eco">
-                <h3>sedan</h3>
-                <i class=" bx bxs-heart "></i>
-            </div>
-            <img src="" />
-            <h2> renaault megane</h2>
-            <h4>automatic</h4>
-            <div class=" price-button"></div>
-            <p>$700<span>/day</span></p>
-            <a href="#" class=" rental-button">rent</a>
-            </div>
-
-    <div class=" rental-box">
-        <div class=" rental-eco">
-            <h3>sedan</h3>
-            <i class=" bx bxs-heart "></i>
-        </div>
-        <img src="" />
-        <h2>honda civic</h2>
-        <h4>automatic</h4>
-        <div class=" price-button"></div>
-        <p>$700<span>/day</span></p>
-        <a href="#" class=" rental-button">rent</a>
-
-        </div>
-       
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Your Rent - Car Agency</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            padding-top: 100px;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @@media (max-width: 992px) {
+            .content-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .calendar-header button {
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+                color: #6c757d;
+                padding: 5px 10px;
+                transition: color 0.3s;
+            }
+
+                .calendar-header button:hover {
+                    color: #212529;
+                }
+
+        .calendar-month {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            padding: 10px 5px;
+        }
+
+        .calendar-day {
+            padding: 12px 5px;
+            font-size: 14px;
+            color: #212529;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .calendar-day:hover {
+                background-color: #e7f3ff;
+                color: #0066cc;
+            }
+
+            .calendar-day.selected {
+                background-color: #0066cc;
+                color: white;
+                font-weight: 600;
+            }
+
+            .calendar-day.disabled {
+                color: #dee2e6;
+                cursor: not-allowed;
+            }
+
+                .calendar-day.disabled:hover {
+                    background-color: transparent;
+                    color: #dee2e6;
+                }
+
+            .calendar-day.in-range {
+                background-color: #e7f3ff;
+                color: #0066cc;
+            }
+
+        .info-box {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .info-highlight {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-top: 15px;
+        }
+
+        .next-button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-button {
+            background-color: #212529;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .next-button:hover {
+                background-color: #0066cc;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+            }
+
+            .next-button:active {
+                transform: translateY(0);
+            }
+
+        .date-inputs {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .date-input-group {
+            flex: 1;
+        }
+
+            .date-input-group label {
+                display: block;
+                font-size: 13px;
+                color: #6c757d;
+                margin-bottom: 5px;
+                font-weight: 500;
+            }
+
+            .date-input-group input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #dee2e6;
+                border-radius: 6px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+
+                .date-input-group input:focus {
+                    outline: none;
+                    border-color: #0066cc;
+                }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <h1 class="page-title">Schedule your Rent</h1>
+        <p class="page-subtitle">Check out our availability and book the start date and end date</p>
+
+        <div class="content-grid">
+            <!-- Date and Time Selection -->
+            <div>
+                <h3 class="section-title">Select a Date and Time</h3>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button onclick="previousMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="calendar-month" id="currentMonth">December 2025</div>
+                        <button onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                    </div>
+                    <div class="date-inputs">
+                        <div class="date-input-group">
+                            <label>Start Date</label>
+                            <input type="date" id="startDateInput" onchange="updateFromInput()">
+                        </div>
+                        <div class="date-input-group">
+                            <label>End Date</label>
+                            <input type="date" id="endDateInput" onchange="updateFromInput()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Availability -->
+            <div>
+                <h3 class="section-title">Car Availability</h3>
+                <div class="info-box">
+                    <div class="info-text">
+                        Car is available starting
+                    </div>
+                    <div class="info-highlight" id="availabilityDate">YY/MM/DD</div>
+                </div>
+            </div>
+
+            <!-- Service Details -->
+            <div>
+                <h3 class="section-title">Service Details</h3>
+                <div class="info-box">
+                    <div class="info-text">
+                        Rent
+                    </div>
+                    <div class="info-highlight" id="serviceDetails">xxxxxx for (period)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="next-button-container">
+            <button class="next-button" onclick="proceedToNext()">Next</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentMonth = 11; // December (0-indexed)
+        let currentYear = 2025;
+        let selectedStartDate = null;
+        let selectedEndDate = null;
+
+        function generateCalendar() {
+            const calendarDays = document.getElementById('calendarDays');
+            // Keep headers
+            const headers = calendarDays.querySelectorAll('.calendar-day-header');
+            calendarDays.innerHTML = '';
+            headers.forEach(h => calendarDays.appendChild(h));
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day disabled';
+                calendarDays.appendChild(emptyDay);
+            }
+
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.setAttribute('data-day', day);
+                dayElement.setAttribute('data-month', currentMonth);
+                dayElement.setAttribute('data-year', currentYear);
+                dayElement.onclick = function() { selectDate(this); };
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        function selectDate(element) {
+            const day = parseInt(element.getAttribute('data-day'));
+            const month = parseInt(element.getAttribute('data-month'));
+            const year = parseInt(element.getAttribute('data-year'));
+            const selectedDate = new Date(year, month, day);
+
+            if (!selectedStartDate) {
+                // Select start date
+                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected', 'in-range'));
+                element.classList.add('selected');
+                selectedStartDate = selectedDate;
+                document.getElementById('startDateInput').valueAsDate = selectedDate;
+                updateAvailability();
+            } else if (!selectedEndDate) {
+                // Select end date
+                if (selectedDate > selectedStartDate) {
+                    selectedEndDate = selectedDate;
+                    element.classList.add('selected');
+                    document.getElementById('endDateInput').valueAsDate = selectedDate;
+                    highlightRange();
+                    updateServiceDetails();
+                } else {
+                    alert('End date must be after start date');
+                }
+            } else {
+                // Reset and start over
+                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected', 'in-range'));
+                element.classList.add('selected');
+                selectedStartDate = selectedDate;
+                selectedEndDate = null;
+                document.getElementById('startDateInput').valueAsDate = selectedDate;
+                document.getElementById('endDateInput').value = '';
+                updateAvailability();
+                document.getElementById('serviceDetails').textContent = 'xxxxxx for (period)';
+            }
+        }
+
+        function highlightRange() {
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                if (day.classList.contains('disabled')) return;
+                const dayNum = parseInt(day.getAttribute('data-day'));
+                const monthNum = parseInt(day.getAttribute('data-month'));
+                const yearNum = parseInt(day.getAttribute('data-year'));
+                if (!dayNum) return;
+
+                const dayDate = new Date(yearNum, monthNum, dayNum);
+                if (dayDate > selectedStartDate && dayDate < selectedEndDate) {
+                    day.classList.add('in-range');
+                }
+            });
+        }
+
+        function updateAvailability() {
+            if (selectedStartDate) {
+                const year = selectedStartDate.getFullYear();
+                const month = String(selectedStartDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedStartDate.getDate()).padStart(2, '0');
+                document.getElementById('availabilityDate').textContent = `${year}/${month}/${day}`;
+            }
+        }
+
+        function updateServiceDetails() {
+            if (selectedStartDate && selectedEndDate) {
+                const days = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('serviceDetails').textContent = `Car Rental for ${days} day(s)`;
+            }
+        }
+
+        function updateFromInput() {
+            const startInput = document.getElementById('startDateInput').value;
+            const endInput = document.getElementById('endDateInput').value;
+
+            if (startInput) {
+                selectedStartDate = new Date(startInput);
+                updateAvailability();
+            }
+
+            if (endInput) {
+                selectedEndDate = new Date(endInput);
+                if (selectedStartDate && selectedEndDate > selectedStartDate) {
+                    updateServiceDetails();
+                    generateCalendar();
+                    highlightCalendarFromInputs();
+                } else if (selectedStartDate) {
+                    alert('End date must be after start date');
+                    document.getElementById('endDateInput').value = '';
+                    selectedEndDate = null;
+                }
+            }
+        }
+
+        function highlightCalendarFromInputs() {
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                day.classList.remove('selected', 'in-range');
+                if (day.classList.contains('disabled')) return;
+
+                const dayNum = parseInt(day.getAttribute('data-day'));
+                const monthNum = parseInt(day.getAttribute('data-month'));
+                const yearNum = parseInt(day.getAttribute('data-year'));
+                if (!dayNum) return;
+
+                const dayDate = new Date(yearNum, monthNum, dayNum);
+
+                if (selectedStartDate && dayDate.toDateString() === selectedStartDate.toDateString()) {
+                    day.classList.add('selected');
+                }
+                if (selectedEndDate && dayDate.toDateString() === selectedEndDate.toDateString()) {
+                    day.classList.add('selected');
+                }
+                if (selectedStartDate && selectedEndDate && dayDate > selectedStartDate && dayDate < selectedEndDate) {
+                    day.classList.add('in-range');
+                }
+            });
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateCalendarDisplay();
+            generateCalendar();
+            if (selectedStartDate && selectedEndDate) {
+                highlightCalendarFromInputs();
+            }
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateCalendarDisplay();
+            generateCalendar();
+            if (selectedStartDate && selectedEndDate) {
+                highlightCalendarFromInputs();
+            }
+        }
+
+        function updateCalendarDisplay() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = `${months[currentMonth]} ${currentYear}`;
+        }
+
+        function proceedToNext() {
+            if (!selectedStartDate || !selectedEndDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            // Proceed to next page or submit
+            alert(`Rental confirmed from ${selectedStartDate.toLocaleDateString()} to ${selectedEndDate.toLocaleDateString()}`);
+        }
+
+        // Initialize calendar
+        generateCalendar();
+    </script>
+</body>
+</html>

@@ -7,12 +7,77 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Car_Agency_Management.styles.css" asp-append-version="true" />
+    <style>
+        /* Frosted Glass Navbar Styles */
+        .navbar-glass {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(22, 22, 23, 0.7) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+            .navbar-glass.scrolled {
+                position:fixed;
+                background: rgba(22, 22, 23, 0.85) !important;
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            }
+
+            .navbar-glass .navbar-brand,
+            .navbar-glass .nav-link {
+                color: #ffffff !important;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+                .navbar-glass .nav-link:hover {
+                    color: #00aaff !important;
+                    transform: translateY(-2px);
+                }
+
+            .navbar-glass .navbar-toggler {
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .navbar-glass .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+
+        .navbar-brand img {
+            max-height: 50px;
+            transition: transform 0.3s ease;
+            filter: brightness(1.2);
+        }
+
+            .navbar-brand img:hover {
+                transform: scale(1.05);
+            }
+
+        /* Add padding to body to account for fixed navbar */
+        body {
+            padding-top: 80px;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-glass" id="mainNavbar">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Car_Agency_Management</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Redline Garage</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,25 +85,25 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Payment_page">Payment</a>
+                            <a class="nav-link" asp-area="" asp-page="/Payment_page">Payment</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Car-gallary">Car gallary</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Login">Login</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/sign_up">sign_up</a>
+                            <a class="nav-link" asp-area="" asp-page="/Car-gallary">Car Gallery</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-page="/Login">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/rent">rent</a>
+                            <a class="nav-link" asp-area="" asp-page="/sign_up">Sign Up</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/rent">Rent</a>
                         </li>
                     </ul>
                 </div>
@@ -60,6 +125,18 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Dynamic Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

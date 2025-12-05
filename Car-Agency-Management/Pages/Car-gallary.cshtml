@@ -11,10 +11,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* ADDED */
+        }
+
+
         body {
             background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-top: 80px; /* ADDED - Creates space for fixed navbar */
         }
+
+
 
         footer {
             display: none;
@@ -573,6 +590,10 @@
         .row.g-4 {
             transition: all 0.3s ease;
         }
+
+        .container {
+            padding-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -583,7 +604,6 @@
             <div class="col-lg-3">
                 <div class="sidebar">
                     <div class="sidebar-title">Modify Search</div>
-
                     <div class="filter-section">
                         <div class="filter-label" onclick="toggleFilter('brand')">
                             Brand
@@ -592,45 +612,44 @@
                         <div id="brand-filter" style="display: none; margin-top: 15px;">
                             <div class="brand-filter-grid">
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/000000/FFFFFF?text=MB" alt="Mercedes" class="brand-filter-logo">
+                                    <img src="~/images/Mercedes-Logo.svg.png" alt="Mercedes" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/8B0000/FFFFFF?text=A" alt="Audi" class="brand-filter-logo">
+                                    <img src="~/images/Emblem-Audi.png" alt="Audi" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/DC143C/FFFFFF?text=MG" alt="MG" class="brand-filter-logo">
+                                    <img src="~/images/MG_Motor_2021_logo.svg.png" alt="MG" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/4A4A4A/FFFFFF?text=J" alt="Jetour" class="brand-filter-logo">
+                                    <img src="~/images/jetour-logo.png" alt="Jetour" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/8B4513/FFFFFF?text=C" alt="Citroën" class="brand-filter-logo">
+                                    <img src="~/images/Citroen-logo-2009.png" alt="Citroën" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/FFCC00/000000?text=R" alt="Renault" class="brand-filter-logo">
+                                    <img src="~/images/hd-renault-logo-transparent-background-701751694707700rafepr2bno.png" alt="Renault" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/0066CC/FFFFFF?text=BMW" alt="BMW" class="brand-filter-logo">
+                                    <img src="~/images/BMW.svg.png" alt="BMW" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/004B87/FFFFFF?text=CH" alt="Chery" class="brand-filter-logo">
+                                    <img src="~/images/chery-logo-4k-hd-chery-11563527110ebyxrf9l1d.png" alt="Chery" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/003087/FFFFFF?text=H" alt="Hyundai" class="brand-filter-logo">
+                                    <img src="~/images/images.jpeg" alt="Hyundai" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/BB162B/FFFFFF?text=K" alt="Kia" class="brand-filter-logo">
+                                    <img src="~/images/KIA_logo2.svg.png" alt="Kia" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/2C3E50/FFFFFF?text=N" alt="Nissan" class="brand-filter-logo">
+                                    <img src="~/images/png-clipart-nissan-car-logo-nissan-emblem-trademark.png" alt="Nissan" class="brand-filter-logo">
                                 </div>
                                 <div class="brand-filter-option">
-                                    <img src="https://via.placeholder.com/40x40/C8102E/FFFFFF?text=T" alt="Toyota" class="brand-filter-logo">
+                                    <img src="~/images/Toyota-logo-icon-on-transparent--PNG.png" alt="Toyota" class="brand-filter-logo">
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="filter-section">
                         <div class="filter-label" onclick="toggleFilter('price')">
                             Price
@@ -689,13 +708,11 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="price-link" onclick="showPriceGuide()">
                         <span>New Car Prices 2024 - 2025</span>
                     </div>
                 </div>
             </div>
-
             <!-- Main Content -->
             <div class="col-lg-9">
                 <!-- Tabs -->
@@ -712,69 +729,66 @@
                             </a>
                         </li>
                     </ul>
-
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="brands">
                             <div class="brands-grid position-relative" id="brandsGrid">
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/200px-Mercedes-Logo.svg.png" alt="Mercedes" class="brand-logo">
+                                    <img src="~/images/Mercedes-Logo.svg.png" alt="Mercedes" class="brand-logo">
                                     <div class="brand-name">Mercedes</div>
                                     <div class="brand-count">(45)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/200px-Audi-Logo_2016.svg.png" alt="Audi" class="brand-logo">
+                                    <img src="~/images/Emblem-Audi.png" alt="Audi" class="brand-logo">
                                     <div class="brand-name">Audi</div>
                                     <div class="brand-count">(20)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/MG_Motor.svg/200px-MG_Motor.svg.png" alt="MG" class="brand-logo">
+                                    <img src="~/images/MG_Motor_2021_logo.svg.png" alt="MG" class="brand-logo">
                                     <div class="brand-name">MG</div>
                                     <div class="brand-count">(20)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <div class="brand-logo mb-2">
-                                        <i class="fas fa-car fa-3x text-secondary"></i>
-                                    </div>
+                                    <img src="~/images/jetour-logo.png" alt="Jetour" class="brand-logo">
                                     <div class="brand-name">Jetour</div>
                                     <div class="brand-count">(14)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Citro%C3%ABn_logo.svg/200px-Citro%C3%ABn_logo.svg.png" alt="Citroën" class="brand-logo">
+                                    <img src="~/images/Citroen-logo-2009.png" alt="Citroën" class="brand-logo">
                                     <div class="brand-name">Citroën</div>
                                     <div class="brand-count">(10)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Renault_2021.svg/200px-Renault_2021.svg.png" alt="Renault" class="brand-logo">
+                                    <img src="~/images/hd-renault-logo-transparent-background-701751694707700rafepr2bno.png" alt="Renault" class="brand-logo">
                                     <div class="brand-name">Renault</div>
                                     <div class="brand-count">(10)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/200px-BMW.svg.png" alt="BMW" class="brand-logo">
+                                    <img src="~/images/BMW.svg.png" alt="BMW" class="brand-logo">
                                     <div class="brand-name">BMW</div>
                                     <div class="brand-count">(24)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a1/Chery_Logo.svg/200px-Chery_Logo.svg.png" alt="Chery" class="brand-logo">
+                                    <img src="~/images/chery-logo-4k-hd-chery-11563527110ebyxrf9l1d.png" alt="Chery" class="brand-logo">
                                     <div class="brand-name">Chery</div>
                                     <div class="brand-count">(20)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Hyundai_Motor_Company_logo.svg/200px-Hyundai_Motor_Company_logo.svg.png" alt="Hyundai" class="brand-logo">
+                                    <img src="~/images/images.jpeg" alt="Hyundai" class="brand-logo">
                                     <div class="brand-name">Hyundai</div>
                                     <div class="brand-count">(14)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Kia_logo.svg/200px-Kia_logo.svg.png" alt="Kia" class="brand-logo">
+                                    <img src="~/images/KIA_logo2.svg.png" alt="Kia" class="brand-logo">
                                     <div class="brand-name">Kia</div>
                                     <div class="brand-count">(11)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/200px-Nissan_logo.svg.png" alt="Nissan" class="brand-logo">
+                                    <img src="~/images/png-clipart-nissan-car-logo-nissan-emblem-trademark.png" alt="Nissan" class="brand-logo">
                                     <div class="brand-name">Nissan</div>
                                     <div class="brand-count">(10)</div>
                                 </div>
                                 <div class="brand-card">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Toyota.svg/200px-Toyota.svg.png" alt="Toyota" class="brand-logo">
+                                    <img src="~/images/Toyota-logo-icon-on-transparent--PNG.png" alt="Toyota" class="brand-logo">
                                     <div class="brand-name">Toyota</div>
                                     <div class="brand-count">(10)</div>
                                 </div>
@@ -840,7 +854,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Results Header -->
                 <div class="results-header">
                     <div class="results-count"></div>
@@ -851,13 +864,12 @@
                         <option>Most Popular</option>
                     </select>
                 </div>
-
                 <!-- Car Cards -->
                 <div class="row g-4">
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Suzuki S Presso Automtic 2024</div>
-                            <img src="https://via.placeholder.com/300x200/FF6B35/FFFFFF?text=Suzuki+S+Presso" alt="Suzuki S Presso" class="car-image">
+                            <img src="~/images/Suzuki_S-Presso_Exterior_01.png" alt="Suzuki S Presso" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">549,900 EGP</div>
@@ -874,11 +886,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Nissan Sunny Manual / Baseline 2026</div>
-                            <img src="https://via.placeholder.com/300x200/2C3E50/FFFFFF?text=Nissan+Sunny" alt="Nissan Sunny" class="car-image">
+                            <img src="~/images/Nissan-sunny.png" alt="Nissan Sunny" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">645,000 EGP</div>
@@ -895,11 +906,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Proton Saga A/T / Premium 2026</div>
-                            <img src="https://via.placeholder.com/300x200/5D6D7E/FFFFFF?text=Proton+Saga" alt="Proton Saga" class="car-image">
+                            <img src="~/images/Proton-saga.png" alt="Proton Saga" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">649,900 EGP</div>
@@ -916,11 +926,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Mercedes-Benz C-Class 2025</div>
-                            <img src="https://via.placeholder.com/300x200/000000/FFFFFF?text=Mercedes+C-Class" alt="Mercedes C-Class" class="car-image">
+                            <img src="~/images/Mercedes-Benz.png" alt="Mercedes C-Class" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">1,250,000 EGP</div>
@@ -937,11 +946,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">BMW X3 xDrive 2025</div>
-                            <img src="https://via.placeholder.com/300x200/0066CC/FFFFFF?text=BMW+X3" alt="BMW X3" class="car-image">
+                            <img src="~/images/Angebotsbild-bmw-x3-20d-xdrive-q1-2025.png" alt="BMW X3" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">1,450,000 EGP</div>
@@ -958,74 +966,70 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Audi A4 Sportback 2025</div>
-                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Audi+A4" alt="Audi A4" class="car-image">
+                            <img src="~/images/Audi-A4.jpeg" alt="Audi A4" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">1,150,000 EGP</div>
+                                <div class="price-amount">1,350,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">172,500 EGP</div>
+                                        <div class="payment-value">202,500 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">32,200 EGP</div>
+                                        <div class="payment-value">37,800 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">MG ZS Standard 2025</div>
-                            <img src="https://via.placeholder.com/300x200/DC143C/FFFFFF?text=MG+ZS" alt="MG ZS" class="car-image">
+                            <img src="~/images/MG-ZS-BLACK.png" alt="MG ZS" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">485,000 EGP</div>
+                                <div class="price-amount">685,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">72,750 EGP</div>
+                                        <div class="payment-value">102,750 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">13,580 EGP</div>
+                                        <div class="payment-value">19,160 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Toyota Corolla GLi 2025</div>
-                            <img src="https://via.placeholder.com/300x200/C8102E/FFFFFF?text=Toyota+Corolla" alt="Toyota Corolla" class="car-image">
+                            <img src="~/images/corolla.png" alt="Toyota Corolla" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">725,000 EGP</div>
+                                <div class="price-amount">785,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">108,750 EGP</div>
+                                        <div class="payment-value">117,750 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">20,300 EGP</div>
+                                        <div class="payment-value">21,980 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Hyundai Tucson Smart 2025</div>
-                            <img src="https://via.placeholder.com/300x200/003087/FFFFFF?text=Hyundai+Tucson" alt="Hyundai Tucson" class="car-image">
+                            <img src="~/images/Tucson.png" alt="Hyundai Tucson" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">895,000 EGP</div>
@@ -1036,17 +1040,16 @@
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">25,060 EGP</div>
+                                        <div class="payment-value">25,050 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Kia Sportage LX 2025</div>
-                            <img src="https://via.placeholder.com/300x200/BB162B/FFFFFF?text=Kia+Sportage" alt="Kia Sportage" class="car-image">
+                            <img src="~/images/kia-sportage.jpg" alt="Kia Sportage" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
                                 <div class="price-amount">920,000 EGP</div>
@@ -1063,64 +1066,61 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Chery Tiggo 7 Comfort 2025</div>
-                            <img src="https://via.placeholder.com/300x200/004B87/FFFFFF?text=Chery+Tiggo+7" alt="Chery Tiggo 7" class="car-image">
+                            <img src="~/images/Chery.png" alt="Chery Tiggo 7" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">615,000 EGP</div>
+                                <div class="price-amount">740,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">92,250 EGP</div>
+                                        <div class="payment-value">111,000 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">17,220 EGP</div>
+                                        <div class="payment-value">20,720 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Renault Duster Expression 2025</div>
-                            <img src="https://via.placeholder.com/300x200/FFCC00/000000?text=Renault+Duster" alt="Renault Duster" class="car-image">
+                            <img src="~/images/Renault-duster.jpg" alt="Renault Duster" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">565,000 EGP</div>
+                                <div class="price-amount">670,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">84,750 EGP</div>
+                                        <div class="payment-value">100,500 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">15,820 EGP</div>
+                                        <div class="payment-value">18,760 EGP</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card">
                             <div class="car-title">Citroën C3 Feel 2025</div>
-                            <img src="https://via.placeholder.com/300x200/A0006E/FFFFFF?text=Citroen+C3" alt="Citroën C3" class="car-image">
+                            <img src="~/images/Cirtoen-c3.jpeg" alt="Citroën C3" class="car-image">
                             <div class="price-section">
                                 <div class="starting-price">Starting From</div>
-                                <div class="price-amount">445,000 EGP</div>
+                                <div class="price-amount">595,000 EGP</div>
                                 <div class="payment-details">
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Deposit</div>
-                                        <div class="payment-value">66,750 EGP</div>
+                                        <div class="payment-value">89,250 EGP</div>
                                     </div>
                                     <div class="payment-box">
                                         <div class="payment-label">Min. Installment</div>
-                                        <div class="payment-value">12,460 EGP</div>
+                                        <div class="payment-value">16,660 EGP</div>
                                     </div>
                                 </div>
                             </div>
@@ -1130,190 +1130,56 @@
             </div>
         </div>
     </div>
-
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <p style="margin: 0;">&copy; 2024 Car Gallery. All rights reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        let selectedBrands = new Set();
-        let selectedPrices = new Set();
-
         function toggleFilter(filterName) {
-            if (filterName === 'price') {
-                const priceFilter = document.getElementById('price-filter');
-                const arrow = document.getElementById('price-arrow');
-                if (priceFilter.style.display === 'none') {
-                    priceFilter.style.display = 'block';
-                    arrow.classList.remove('fa-chevron-down');
-                    arrow.classList.add('fa-chevron-up');
-                } else {
-                    priceFilter.style.display = 'none';
-                    arrow.classList.remove('fa-chevron-up');
-                    arrow.classList.add('fa-chevron-down');
-                }
-            } else if (filterName === 'brand') {
-                const brandFilter = document.getElementById('brand-filter');
-                const arrow = document.getElementById('brand-arrow');
-                if (brandFilter.style.display === 'none') {
-                    brandFilter.style.display = 'block';
-                    arrow.classList.remove('fa-chevron-down');
-                    arrow.classList.add('fa-chevron-up');
-                } else {
-                    brandFilter.style.display = 'none';
-                    arrow.classList.remove('fa-chevron-up');
-                    arrow.classList.add('fa-chevron-down');
-                }
+            const filter = document.getElementById(filterName + '-filter');
+            const arrow = document.getElementById(filterName + '-arrow');
+            if (filter.style.display === 'none') {
+                filter.style.display = 'block';
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
+            } else {
+                filter.style.display = 'none';
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
             }
         }
 
-        // Add click effect to brand filter options with selection
-        document.querySelectorAll('.brand-filter-option').forEach(option => {
-            option.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
-        });
-
-        // Add click effect to price options with selection
         document.querySelectorAll('.price-option').forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function () {
                 this.classList.toggle('selected');
             });
         });
 
-        // Add hover effects to brand cards with single selection
-        document.querySelectorAll('.brand-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const brandName = this.querySelector('.brand-name').textContent;
-
-                // Remove selection from all other brand cards
-                document.querySelectorAll('.brand-card').forEach(c => c.classList.remove('selected'));
-
-                // Toggle this card
-                this.classList.toggle('selected');
-
-                // Clear previous selections and add current if selected
-                selectedBrands.clear();
-                if (this.classList.contains('selected')) {
-                    selectedBrands.add(brandName);
-                }
-
-                updateResults();
-            });
-        });
-
-        // Add click effect to price range cards with selection
         document.querySelectorAll('.price-range-card').forEach(card => {
-            card.addEventListener('click', function() {
-                // Remove selection from all other cards
-                document.querySelectorAll('.price-range-card').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-
-                const priceValue = this.querySelector('.price-range-value').textContent;
-                selectedPrices.clear();
-                selectedPrices.add(priceValue);
-
-                updateResults();
+            card.addEventListener('click', function () {
+                this.classList.toggle('selected');
             });
         });
 
-        // Add click effect to car cards with animation
-        document.querySelectorAll('.car-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const carTitle = this.querySelector('.car-title').textContent;
-
-                // Add scale animation
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-
-                // Show details modal (simplified alert for now)
-                setTimeout(() => {
-                    alert('Viewing details for: ' + carTitle);
-                }, 200);
+        document.querySelectorAll('.brand-filter-option').forEach(option => {
+            option.addEventListener('click', function () {
+                this.classList.toggle('selected');
             });
         });
 
-        // Sort functionality with animation
-        document.querySelector('.sort-dropdown').addEventListener('change', function() {
-            const sortValue = this.value;
-
-            // Add loading animation
-            const carGrid = document.querySelector('.row.g-4');
-            carGrid.style.opacity = '0.5';
-            carGrid.style.transform = 'translateY(20px)';
-
-            setTimeout(() => {
-                carGrid.style.opacity = '1';
-                carGrid.style.transform = 'translateY(0)';
-                console.log('Sorted by: ' + sortValue);
-            }, 300);
+        document.querySelectorAll('.brand-card').forEach(card => {
+            card.addEventListener('click', function () {
+                this.classList.toggle('selected');
+            });
         });
 
-        // Update results count
-        function updateResults() {
-            console.log('Selected brands:', Array.from(selectedBrands));
-            console.log('Selected prices:', Array.from(selectedPrices));
-        }
-
-        // Scroll arrows for brand grid
         const brandsGrid = document.getElementById('brandsGrid');
         const scrollLeft = document.getElementById('scrollLeft');
         const scrollRight = document.getElementById('scrollRight');
 
-        if (scrollRight) {
-            scrollRight.addEventListener('click', function() {
-                brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
-            });
-        }
+        scrollRight.addEventListener('click', () => {
+            brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
+        });
 
-        if (scrollLeft) {
-            scrollLeft.addEventListener('click', function() {
-                brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
-            });
-        }
-
-        // Show/hide scroll arrows based on scroll position
-        function updateScrollArrows() {
-            if (brandsGrid) {
-                const isAtStart = brandsGrid.scrollLeft <= 0;
-                const isAtEnd = brandsGrid.scrollLeft >= (brandsGrid.scrollWidth - brandsGrid.clientWidth - 10);
-
-                if (scrollLeft) {
-                    scrollLeft.style.opacity = isAtStart ? '0.3' : '1';
-                    scrollLeft.style.pointerEvents = isAtStart ? 'none' : 'auto';
-                }
-
-                if (scrollRight) {
-                    scrollRight.style.opacity = isAtEnd ? '0.3' : '1';
-                    scrollRight.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-                }
-            }
-        }
-
-        if (brandsGrid) {
-            brandsGrid.addEventListener('scroll', updateScrollArrows);
-            updateScrollArrows();
-        }
-
-        // Price guide function
-        function showPriceGuide() {
-            alert('Opening New Car Prices 2024-2025 Guide');
-        }
-
-        // Add smooth scroll behavior
-        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function() {
-                this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            });
+        scrollLeft.addEventListener('click', () => {
+            brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
         });
     </script>
 </body>
