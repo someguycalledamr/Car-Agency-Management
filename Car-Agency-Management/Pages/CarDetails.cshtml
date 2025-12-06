@@ -86,8 +86,12 @@
         }
 
 
-        .content-grid {
+            .content-grid
+
+        {
             grid-template-columns: 1fr;
+        }
+
         }
 
         .image-section {
@@ -264,13 +268,44 @@
         }
 
         .action-buttons {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-top: 20px;
         }
 
+
+            .action-buttons
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        .btn-purchase {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-purchase:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
+
         .btn-rent {
-            flex: 1;
             padding: 15px 30px;
             background: linear-gradient(135deg, #0066cc, #0099ff);
             color: white;
@@ -280,6 +315,10 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
             .btn-rent:hover {
@@ -288,7 +327,6 @@
             }
 
         .btn-contact {
-            flex: 1;
             padding: 15px 30px;
             background: white;
             color: #0066cc;
@@ -326,7 +364,7 @@
                 <div class="thumbnail-grid">
                     @foreach (var img in Model.Images)
                     {
-                        <img src="@img" alt="@Model.CarName" class="thumbnail" onclick="changeMainImage('@img')">
+                            <img src="@img" alt="@Model.CarName" class="thumbnail" onclick="changeMainImage('@img')">
                     }
                 </div>
             </div>
@@ -424,10 +462,10 @@
             <div class="features-grid">
                 @foreach (var feature in Model.Features)
                 {
-                    <div class="feature-item">
-                        <i class="fas fa-check-circle feature-icon"></i>
-                        <span class="feature-text">@feature</span>
-                    </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            <span class="feature-text">@feature</span>
+                        </div>
                 }
             </div>
         </div>
@@ -451,11 +489,15 @@
             </div>
 
             <div class="action-buttons">
-                <a href="/rent" class="btn-rent" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                <button class="btn-purchase" onclick="alert('Purchase functionality coming soon!')">
+                    <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
+                    Purchase Now
+                </button>
+                <a href="/rent?carId=@Model.CarId" class="btn-rent">
                     <i class="fas fa-calendar-check" style="margin-right: 8px;"></i>
                     Schedule Rental
                 </a>
-                <button class="btn-contact">
+                <button class="btn-contact" onclick="alert('Contact functionality coming soon!')">
                     <i class="fas fa-phone" style="margin-right: 8px;"></i>
                     Contact Us
                 </button>

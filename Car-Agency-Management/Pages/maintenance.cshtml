@@ -1,179 +1,341 @@
 ﻿@page
 @model Car_Agency_Management.Pages.maintenanceModel
 @{
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Car Maintenance</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* PARALLAX BACKGROUND - Same as Sign Up */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated floating circles */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
+            top: -300px;
+            right: -300px;
+            animation: floatCircle1 20s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
+            bottom: -250px;
+            left: -250px;
+            animation: floatCircle2 18s ease-in-out infinite;
+        }
+
+        @@keyframes floatCircle1 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(-100px, 150px) scale(1.1);
+            }
+            50% {
+                transform: translate(-50px, 300px) scale(0.9);
+            }
+            75% {
+                transform: translate(50px, 200px) scale(1.05);
+            }
+        }
+
+        @@keyframes floatCircle2 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(150px, -100px) scale(1.15);
+            }
+            50% {
+                transform: translate(100px, -50px) scale(0.85);
+            }
+            75% {
+                transform: translate(50px, -150px) scale(1.1);
+            }
+        }
+
+        /* Floating shapes */
+        .floating-shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+            animation: float 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: #1e293b;
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: #06b6d4;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) translateX(20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(20px) translateX(-30px) rotate(240deg);
+            }
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .maintenance-wrapper {
+            display: flex;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            flex: 1;
+        }
+
+        .maintenance-left {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .maintenance-right {
+            flex: 1;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+            .maintenance-right img {
+                max-width: 100%;
+                height: auto;
             }
 
-            body {
-                font-family: Arial, sans-serif;
-                background: #89CFF0;
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
+        h1 {
+            color: #0ca39d;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="search"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+            input:focus,
+            textarea:focus,
+            select:focus {
+                outline: none;
+                border-color: #0ca39d;
             }
 
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0ca39d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            button:hover {
+                background: #0b8a85;
+            }
+
+        .parts-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .part-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+            .part-item:last-child {
+                border-bottom: none;
+            }
+
+            .part-item:hover {
+                background: #f9f9f9;
+            }
+
+        .part-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .part-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 5px;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            background: rgba(173, 216, 230, 0.3);
+            color: #1e293b;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto 0;
+            backdrop-filter: blur(10px);
+        }
+
+        footer a {
+            color: #0ca39d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @@media (max-width: 768px) {
             .maintenance-wrapper {
-                display: flex;
-                max-width: 1200px;
-                width: 100%;
-                background: white;
-                border-radius: 10px;
-                overflow: hidden;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                flex-direction: column;
             }
 
             .maintenance-left {
-                flex: 1;
-                padding: 40px;
+                padding: 30px 20px;
             }
 
             .maintenance-right {
-                flex: 1;
-                background: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 40px;
+                padding: 20px;
             }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
 
-                .maintenance-right img {
-                    max-width: 100%;
-                    height: auto;
-                }
-
-            h1 {
-                color: #0ca39d;
-                margin-bottom: 30px;
-                font-size: 28px;
-            }
-
-            .section {
-                margin-bottom: 30px;
-            }
-
-            h2 {
-                color: #333;
-                margin-bottom: 15px;
-                font-size: 20px;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 8px;
-                color: #666;
-                font-weight: 500;
-            }
-
-            input[type="text"],
-            input[type="search"],
-            textarea,
-            select {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                font-size: 14px;
-                margin-bottom: 15px;
-                transition: border-color 0.3s;
-            }
-
-                input:focus,
-                textarea:focus,
-                select:focus {
-                    outline: none;
-                    border-color: #0ca39d;
-                }
-
-            textarea {
-                resize: vertical;
-                min-height: 100px;
-            }
-
-            button {
-                width: 100%;
-                padding: 12px;
-                background: #0ca39d;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 16px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-
-                button:hover {
-                    background: #0b8a85;
-                }
-
-            .parts-list {
-                max-height: 300px;
-                overflow-y: auto;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                margin-top: 10px;
-            }
-
-            .part-item {
-                padding: 12px;
-                border-bottom: 1px solid #f0f0f0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                cursor: pointer;
-            }
-
-                .part-item:last-child {
-                    border-bottom: none;
-                }
-
-                .part-item:hover {
-                    background: #f9f9f9;
-                }
-
-            .part-name {
-                font-weight: 500;
-                color: #333;
-            }
-
-            .part-price {
-                color: #e74c3c;
-                font-weight: bold;
-            }
-
-            .error {
-                color: #e74c3c;
-                font-size: 14px;
-                margin-top: 5px;
-            }
-
-            .success {
-                color: #27ae60;
-                font-size: 14px;
-                margin-top: 5px;
-                padding: 10px;
-                background: #d4edda;
-                border-radius: 5px;
-            }
-                .maintenance-left {
-                    padding: 30px 20px;
-                }
-            }
-        </style>
-    </head>
-    <body>
+    <div class="content-wrapper">
         <div class="maintenance-wrapper">
             <div class="maintenance-left">
                 <h1>Car Maintenance System</h1>
@@ -208,75 +370,79 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            var parts = [
-                { id: 1, name: 'Oil Filter', price: '$550' },
-                { id: 2, name: 'Brake Pads', price: '$900' },
-                { id: 3, name: 'Air Filter', price: '$400' },
-                { id: 4, name: 'Spark Plugs', price: '$100' },
-                { id: 5, name: 'Battery', price: '$1100' },
-                { id: 6, name: 'Wiper Blades', price: '$250' },
-                { id: 8, name: 'Radiator', price: '$1700' }
-            ];
+    <footer>
+        <p>&copy; 2025 - Car_Agency_Management - <a href="/Privacy">Privacy</a></p>
+    </footer>
 
-            function displayParts(partsToShow) {
-                var partsList = document.getElementById('partsList');
-                if (partsToShow.length === 0) {
-                    partsList.innerHTML = '<div class="part-item">No parts found</div>';
-                    return;
-                }
+    <script>
+        var parts = [
+            { id: 1, name: 'Oil Filter', price: '$550' },
+            { id: 2, name: 'Brake Pads', price: '$900' },
+            { id: 3, name: 'Air Filter', price: '$400' },
+            { id: 4, name: 'Spark Plugs', price: '$100' },
+            { id: 5, name: 'Battery', price: '$1100' },
+            { id: 6, name: 'Wiper Blades', price: '$250' },
+            { id: 8, name: 'Radiator', price: '$1700' }
+        ];
 
-                var html = '';
-                for (var i = 0; i < partsToShow.length; i++) {
-                    var part = partsToShow[i];
-                    html += '<div class="part-item" onclick="selectPart(\'' + part.name + '\')">';
-                    html += '<span class="part-name">' + part.name + '</span>';
-                    html += '<span class="part-price">' + part.price + '</span>';
-                    html += '</div>';
-                }
-                partsList.innerHTML = html;
+        function displayParts(partsToShow) {
+            var partsList = document.getElementById('partsList');
+            if (partsToShow.length === 0) {
+                partsList.innerHTML = '<div class="part-item">No parts found</div>';
+                return;
             }
 
-            displayParts(parts);
+            var html = '';
+            for (var i = 0; i < partsToShow.length; i++) {
+                var part = partsToShow[i];
+                html += '<div class="part-item" onclick="selectPart(\'' + part.name + '\')">';
+                html += '<span class="part-name">' + part.name + '</span>';
+                html += '<span class="part-price">' + part.price + '</span>';
+                html += '</div>';
+            }
+            partsList.innerHTML = html;
+        }
 
-            function selectPart(partName) {
-                document.getElementById('searchParts').value = partName;
+        displayParts(parts);
+
+        function selectPart(partName) {
+            document.getElementById('searchParts').value = partName;
+        }
+
+        document.getElementById('searchParts').addEventListener('input', function(e) {
+            var query = e.target.value.toLowerCase();
+            var filtered = [];
+            for (var i = 0; i < parts.length; i++) {
+                if (parts[i].name.toLowerCase().indexOf(query) !== -1) {
+                    filtered.push(parts[i]);
+                }
+            }
+            displayParts(filtered);
+        });
+
+        function submitReport() {
+            var carModel = document.getElementById('carModel').value;
+            var issueType = document.getElementById('issueType').value;
+            var issueDescription = document.getElementById('issueDescription').value;
+            var messageDiv = document.getElementById('reportMessage');
+
+            if (!carModel || !issueType || !issueDescription) {
+                messageDiv.innerHTML = '<p class="error">Please fill in all fields</p>';
+                return;
             }
 
-            document.getElementById('searchParts').addEventListener('input', function(e) {
-                var query = e.target.value.toLowerCase();
-                var filtered = [];
-                for (var i = 0; i < parts.length; i++) {
-                    if (parts[i].name.toLowerCase().indexOf(query) !== -1) {
-                        filtered.push(parts[i]);
-                    }
-                }
-                displayParts(filtered);
-            });
+            document.getElementById('carModel').value = '';
+            document.getElementById('issueType').value = '';
+            document.getElementById('issueDescription').value = '';
 
-            function submitReport() {
-                var carModel = document.getElementById('carModel').value;
-                var issueType = document.getElementById('issueType').value;
-                var issueDescription = document.getElementById('issueDescription').value;
-                var messageDiv = document.getElementById('reportMessage');
+            messageDiv.innerHTML = '<p class="success">Report submitted successfully!</p>';
 
-                if (!carModel || !issueType || !issueDescription) {
-                    messageDiv.innerHTML = '<p class="error">Please fill in all fields</p>';
-                    return;
-                }
-
-                document.getElementById('carModel').value = '';
-                document.getElementById('issueType').value = '';
-                document.getElementById('issueDescription').value = '';
-
-                messageDiv.innerHTML = '<p class="success">Report submitted successfully!</p>';
-
-                setTimeout(function() {
-                    messageDiv.innerHTML = '';
-                }, 3000);
-            }
-        </script>
-    </body>
-    </html>
-}
+            setTimeout(function() {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
