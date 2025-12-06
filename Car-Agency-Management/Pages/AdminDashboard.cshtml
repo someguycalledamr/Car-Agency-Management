@@ -20,14 +20,125 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
             min-height: 100vh;
             padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated floating circles */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
+            top: -300px;
+            right: -300px;
+            animation: floatCircle1 20s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
+            bottom: -250px;
+            left: -250px;
+            animation: floatCircle2 18s ease-in-out infinite;
+        }
+
+        @@keyframes floatCircle1 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(-100px, 150px) scale(1.1);
+            }
+            50% {
+                transform: translate(-50px, 300px) scale(0.9);
+            }
+            75% {
+                transform: translate(50px, 200px) scale(1.05);
+            }
+        }
+
+        @@keyframes floatCircle2 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(150px, -100px) scale(1.15);
+            }
+            50% {
+                transform: translate(100px, -50px) scale(0.85);
+            }
+            75% {
+                transform: translate(50px, -150px) scale(1.1);
+            }
+        }
+
+        /* Floating shapes */
+        .floating-shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+            animation: float 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: #1e293b;
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: #06b6d4;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) translateX(20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(20px) translateX(-30px) rotate(240deg);
+            }
         }
 
         .dashboard-container {
             max-width: 1600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .dashboard-header {
@@ -324,38 +435,42 @@
             font-size: 1.1rem;
         }
 
-
-        .charts-section, .data-section {
-            grid-template-columns: 1fr;
+        @@media (max-width: 1024px) {
+            .charts-section, .data-section {
+                grid-template-columns: 1fr;
+            }
         }
 
+        @@media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
 
-
-        body {
-            padding: 1rem;
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
         }
 
-        .dashboard-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
+        @@media (max-width: 480px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
 
-
-        .dashboard-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+
     <div class="dashboard-container">
         <!-- Header -->
         <div class="dashboard-header">
@@ -460,24 +575,24 @@
                 <div class="activity-list">
                     @foreach (var activity in Model.RecentActivities)
                     {
-                        <div class="activity-item">
-                            <div class="activity-icon activity-@activity.Type">
+                            <div class="activity-item">
+                                <div class="activity-icon activity-@activity.Type">
                                 @if (activity.Type == "success")
                                 {
-                                    <span>✓</span>
+                                            <span>✓</span>
                                 }
                                 else
                                 {
 
-                                    <span>ℹ</span>
+                                            <span>ℹ</span>
                                 }
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-action">@activity.Action</div>
+                                    <div class="activity-description">@activity.Description</div>
+                                    <div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                </div>
                             </div>
-                            <div class="activity-content">
-                                <div class="activity-action">@activity.Action</div>
-                                <div class="activity-description">@activity.Description</div>
-                                <div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy hh:mm tt")</div>
-                            </div>
-                        </div>
                     }
                 </div>
             </div>
@@ -488,13 +603,13 @@
                 <div class="top-cars-list">
                     @foreach (var car in Model.TopSellingCars)
                     {
-                        <div class="top-car-item">
-                            <div class="top-car-info">
-                                <div class="top-car-name">@car.Name</div>
-                                <div class="top-car-sales">@car.Sales units sold</div>
+                            <div class="top-car-item">
+                                <div class="top-car-info">
+                                    <div class="top-car-name">@car.Name</div>
+                                    <div class="top-car-sales">@car.Sales units sold</div>
+                                </div>
+                                <div class="top-car-revenue">EGP @car.Revenue.ToString("N0")</div>
                             </div>
-                            <div class="top-car-revenue">EGP @car.Revenue.ToString("N0")</div>
-                        </div>
                     }
                 </div>
             </div>
@@ -517,18 +632,18 @@
                 <tbody>
                     @foreach (var transaction in Model.RecentTransactions)
                     {
-                        <tr>
-                            <td>@transaction.Id</td>
-                            <td>@transaction.Customer</td>
-                            <td>@transaction.Car</td>
-                            <td>EGP @transaction.Amount.ToString("N0")</td>
-                            <td>@transaction.Date.ToString("MMM dd, yyyy")</td>
-                            <td>
-                                <span class="status-badge status-@transaction.Status.ToLower()">
+                            <tr>
+                                <td>@transaction.Id</td>
+                                <td>@transaction.Customer</td>
+                                <td>@transaction.Car</td>
+                                <td>EGP @transaction.Amount.ToString("N0")</td>
+                                <td>@transaction.Date.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <span class="status-badge status-@transaction.Status.ToLower()">
                                     @transaction.Status
-                                </span>
-                            </td>
-                        </tr>
+                                    </span>
+                                </td>
+                            </tr>
                     }
                 </tbody>
             </table>
