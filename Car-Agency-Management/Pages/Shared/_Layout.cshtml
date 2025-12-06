@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Car_Agency_Management.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Frosted Glass Navbar Styles */
         .navbar-glass {
@@ -87,7 +88,7 @@
             animation: pulse 2s infinite;
         }
 
-        pulse {
+         pulse {
             0%, 100%
 
         {
@@ -112,7 +113,9 @@
 
         /* Mobile responsive for admin button */
 
-        .nav-link.admin-dashboard {
+            .nav-link.admin-dashboard
+
+        {
             margin-left: 0;
             margin-top: 8px;
             justify-content: center;
@@ -149,14 +152,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/sign_up">Sign Up</a>
-                            <li class="nav item ">
-                            <a class="nav-link" asp-area="" asp-page="/maintenance">Maintenance</a>
-                            </li>
                         </li>
                         <li class="nav-item">
-                            <form method="post" asp-page-handler="ProfileRedirect">
-                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0; border: none;">Profile</button>
-                            </form>
+                            <a class="nav-link" asp-area="" asp-page="/user_manage">user_manage</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
@@ -164,8 +162,16 @@
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
+                            <a class="nav-link admin-dashboard" asp-area="" asp-page="/AdminDashboard">
+                                <i class="fas fa-user-shield admin-icon"></i>
+                                Admin Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <form method="post" asp-page-handler="ProfileRedirect">
-                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0; border: none;">Profile</button>
+                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 8px 16px; border: none;">
+                                    <i class="fas fa-user"></i> Profile
+                                </button>
                             </form>
                         </li>
                     </ul>
