@@ -92,16 +92,13 @@
         }
 
         @@keyframes wheelSpin {
-            from
+            from {
+                transform: translate(0, 0) rotate(0deg);
+            }
 
-        {
-            transform: translate(0, 0) rotate(0deg);
-        }
-
-        to {
-            transform: translate(0, 0) rotate(360deg);
-        }
-
+            to {
+                transform: translate(0, 0) rotate(360deg);
+            }
         }
 
         /* Spoke Rotation */
@@ -111,16 +108,13 @@
         }
 
         @@keyframes spokeRotate {
-            from
+            from {
+                transform: rotate(0deg);
+            }
 
-        {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Car Body Bounce Effect */
@@ -130,16 +124,13 @@
         }
 
         @@keyframes bodyBounce {
-            0%, 100%
+            0%, 100% {
+                transform: translateY(0);
+            }
 
-        {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-2px);
-        }
-
+            50% {
+                transform: translateY(-2px);
+            }
         }
 
         /* Stop animations when parked */
@@ -156,131 +147,118 @@
         }
 
         @@keyframes carDriftIn {
-            0%
+            0% {
+                top: -300px;
+                right: -700px;
+                opacity: 0;
+                transform: rotate(-25deg) scale(0.6);
+            }
 
-        {
-            top: -300px;
-            right: -700px;
-            opacity: 0;
-            transform: rotate(-25deg) scale(0.6);
-        }
+            10% {
+                opacity: 1;
+            }
 
-        10% {
-            opacity: 1;
-        }
+            35% {
+                top: 180px;
+                right: 60%;
+                transform: rotate(12deg) scale(1.2);
+            }
 
-        35% {
-            top: 180px;
-            right: 60%;
-            transform: rotate(12deg) scale(1.2);
-        }
+            55% {
+                top: 150px;
+                right: 50%;
+                transform: rotate(-8deg) scale(1.15);
+            }
 
-        55% {
-            top: 150px;
-            right: 50%;
-            transform: rotate(-8deg) scale(1.15);
-        }
+            75% {
+                top: 130px;
+                right: 40%;
+                transform: rotate(4deg) scale(1.08);
+            }
 
-        75% {
-            top: 130px;
-            right: 40%;
-            transform: rotate(4deg) scale(1.08);
-        }
+            90% {
+                top: 150px;
+                right: 70px;
+                transform: rotate(-2deg) scale(1.03);
+            }
 
-        90% {
-            top: 150px;
-            right: 70px;
-            transform: rotate(-2deg) scale(1.03);
-        }
-
-        100% {
-            top: 200px;
-            right: 50px;
-            opacity: 1;
-            transform: rotate(0deg) scale(0.8);
-        }
-
+            100% {
+                top: 200px;
+                right: 0px;
+                opacity: 1;
+                transform: rotate(0deg) scale(0.8);
+            }
         }
 
         @@media (max-width: 1200px) {
-            .drifting-car
+            .drifting-car {
+                width: 320px;
+            }
 
-        {
-            width: 320px;
-        }
+            @@keyframes carDriftIn {
+                0% {
+                    top: -250px;
+                    right: -600px;
+                    opacity: 0;
+                    transform: rotate(-25deg) scale(0.6);
+                }
 
-        @@keyframes carDriftIn {
-            0%
+                10% {
+                    opacity: 1;
+                }
 
-        {
-            top: -250px;
-            right: -600px;
-            opacity: 0;
-            transform: rotate(-25deg) scale(0.6);
-        }
+                40% {
+                    top: 140px;
+                    right: 55%;
+                    transform: rotate(10deg) scale(1.1);
+                }
 
-        10% {
-            opacity: 1;
-        }
+                60% {
+                    top: 120px;
+                    right: 48%;
+                    transform: rotate(-6deg) scale(1.05);
+                }
 
-        40% {
-            top: 140px;
-            right: 55%;
-            transform: rotate(10deg) scale(1.1);
-        }
-
-        60% {
-            top: 120px;
-            right: 48%;
-            transform: rotate(-6deg) scale(1.05);
-        }
-
-        100% {
-            top: 150px;
-            right: 50px;
-            opacity: 1;
-            transform: rotate(0deg) scale(0.75);
-        }
-
-        }
+                100% {
+                    top: 150px;
+                    right: 0px;
+                    opacity: 1;
+                    transform: rotate(0deg) scale(0.75);
+                }
+            }
         }
 
         @@media (max-width: 768px) {
-            .drifting-car
+            .drifting-car {
+                width: 220px;
+                animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            }
 
-        {
-            width: 220px;
-            animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-        }
+            @@keyframes carDriftInMobile {
+                0% {
+                    top: -200px;
+                    right: -400px;
+                    opacity: 0;
+                    transform: rotate(-22deg) scale(0.5);
+                }
 
-        @@keyframes carDriftInMobile {
-            0%
+                15% {
+                    opacity: 1;
+                }
 
-        {
-            top: -200px;
-            right: -400px;
-            opacity: 0;
-            transform: rotate(-22deg) scale(0.5);
-        }
+                50% {
+                    top: 90px;
+                    right: 50%;
+                    transform: rotate(8deg) scale(0.85);
+                }
 
-        15% {
-            opacity: 1;
-        }
-
-        50% {
-            top: 90px;
-            right: 50%;
-            transform: rotate(8deg) scale(0.85);
-        }
-
-        100% {
-            top: 120px;
-            right: 20px;
-            opacity: 1;
-            transform: rotate(0deg) scale(0.6);
-        }
-
-        }
+                100% {
+                    top: 120px;
+                    right: 20px;
+                    opacity: 1;
+                    transform: rotate(0deg) scale(0.6);
+                }
+            }
         }
 
         /* Smoke/Drift Effect */
@@ -298,32 +276,29 @@
         }
 
         @@keyframes smokeEffect {
-            0%
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(0deg);
+            }
 
-        {
-            opacity: 0;
-            transform: scale(0.3) rotate(0deg);
-        }
+            20% {
+                opacity: 0.8;
+                transform: scale(0.6) rotate(5deg);
+            }
 
-        20% {
-            opacity: 0.8;
-            transform: scale(0.6) rotate(5deg);
-        }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.2) rotate(-5deg);
+                right: 35%;
+                top: 24%;
+            }
 
-        50% {
-            opacity: 0.6;
-            transform: scale(1.2) rotate(-5deg);
-            right: 35%;
-            top: 24%;
-        }
-
-        100% {
-            opacity: 0;
-            transform: scale(2.5) rotate(10deg);
-            right: 50%;
-            top: 20%;
-        }
-
+            100% {
+                opacity: 0;
+                transform: scale(2.5) rotate(10deg);
+                right: 50%;
+                top: 20%;
+            }
         }
 
         /* Tire Marks Effect */
@@ -341,23 +316,20 @@
         }
 
         @@keyframes tireMarks {
-            0%
+            0% {
+                opacity: 0;
+                width: 100px;
+            }
 
-        {
-            opacity: 0;
-            width: 100px;
-        }
+            30% {
+                opacity: 0.4;
+            }
 
-        30% {
-            opacity: 0.4;
-        }
-
-        100% {
-            opacity: 0;
-            width: 600px;
-            right: 40%;
-        }
-
+            100% {
+                opacity: 0;
+                width: 600px;
+                right: 40%;
+            }
         }
 
         /* ================================================= */
@@ -415,20 +387,17 @@
         }
 
         @@keyframes float {
-            0%, 100%
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
 
-        {
-            transform: translateY(0) translateX(0) rotate(0deg);
-        }
+            33% {
+                transform: translateY(-30px) translateX(20px) rotate(120deg);
+            }
 
-        33% {
-            transform: translateY(-30px) translateX(20px) rotate(120deg);
-        }
-
-        66% {
-            transform: translateY(20px) translateX(-30px) rotate(240deg);
-        }
-
+            66% {
+                transform: translateY(20px) translateX(-30px) rotate(240deg);
+            }
         }
 
         @@keyframes slideDown {
@@ -484,7 +453,7 @@
             margin: 0 auto;
             padding: 0 4%;
             position: relative;
-            z-index: 1;
+            z-index: 200; /* EDITED: Set higher than the car (100) */
         }
 
         .hero {
@@ -826,6 +795,10 @@
             }
         }
 
+        /* ================================================= */
+        /* 9. PARTNERS SECTION (Enhanced Carousel) */
+        /* ================================================= */
+        . /* ================================================= */
         /* ================================================= */
         /* 9. PARTNERS SECTION (Enhanced Carousel) */
         /* ================================================= */
@@ -1179,7 +1152,7 @@
 
             <div class="hero-image-wrapper">
                 <!-- A transparent bg img should be put here -->
-                
+
             </div>
         </section>
 
@@ -1272,13 +1245,13 @@
             <div class="partner-track">
                 <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
                 <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-                
+
                 <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
                 <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
                 <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
                 <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
                 <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-               
+
                 <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
                 <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
                 <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
@@ -1299,6 +1272,12 @@
         </div>
     </section>
 
+    <!-- Footer -->
+    <footer id="">
+        <div class="content-container">
+            &copy; @DateTime.Now.Year AutoLux.Drive - Modern Mobility Solutions | Privacy Policy
+        </div>
+    </footer>
 
     <script>
         // Scroll Progress Bar
