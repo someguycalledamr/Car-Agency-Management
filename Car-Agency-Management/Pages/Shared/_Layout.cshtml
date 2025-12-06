@@ -161,10 +161,9 @@
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link admin-dashboard" asp-area="" asp-page="/AdminDashboard">
-                                <span class="admin-icon">📊</span>
-                                Admin Dashboard
-                            </a>
+                            <form method="post" asp-page-handler="ProfileRedirect">
+                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0; border: none;">Profile</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
