@@ -1,7 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+<<<<<<< HEAD
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11205.157
+=======
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8
+>>>>>>> 82797c1cace7fa6223c2e7a6f6c328a65f4c2ec4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car-Agency-Management", "Car-Agency-Management\Car-Agency-Management.csproj", "{4AE0E50B-0CE5-40B7-8009-35647029BE7D}"
 EndProject

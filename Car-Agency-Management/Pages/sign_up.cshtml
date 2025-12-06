@@ -31,7 +31,7 @@
             <button type="submit" class="btn-signup">Sign Up</button>
             @if (Model.ErrorMessage != null)
             {
-                    <p class="error">@Model.ErrorMessage</p>
+                        <p class="error">@Model.ErrorMessage</p>
             }
             <p class="login-link">Already have an account? <a href="/Login">Login here</a></p>
         </form>
@@ -41,10 +41,14 @@
     </div>
 </div>
 
+<div class="floating-shape shape-1"></div>
+<div class="floating-shape shape-2"></div>
+<div class="floating-shape shape-3"></div>
+
 <style>
-    /* Creative light blue background with animated elements */
+    /* PARALLAX BACKGROUND - Same as User Management */
     body {
-        background: #ADD8E6;
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
         font-family: 'Segoe UI', sans-serif;
         margin: 0;
         min-height: 100vh;
@@ -65,7 +69,7 @@
     body::before {
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 70%);
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
         top: -300px;
         right: -300px;
         animation: floatCircle1 20s ease-in-out infinite;
@@ -74,10 +78,59 @@
     body::after {
         width: 500px;
         height: 500px;
-        background: radial-gradient(circle, rgba(173, 216, 230, 0.3), transparent 70%);
+        background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
         bottom: -250px;
         left: -250px;
         animation: floatCircle2 18s ease-in-out infinite;
+    }
+
+    /* Floating shapes - Same as User Management */
+    .floating-shape {
+        position: fixed;
+        border-radius: 50%;
+        opacity: 0.1;
+        pointer-events: none;
+        animation: float 20s infinite ease-in-out;
+        z-index: 0;
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: #06b6d4;
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: #1e293b;
+        top: 60%;
+        right: 10%;
+        animation-delay: 3s;
+    }
+
+    .shape-3 {
+        width: 150px;
+        height: 150px;
+        background: #06b6d4;
+        bottom: 20%;
+        left: 15%;
+        animation-delay: 6s;
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
+        33% {
+            transform: translateY(-30px) translateX(20px) rotate(120deg);
+        }
+        66% {
+            transform: translateY(20px) translateX(-30px) rotate(240deg);
+        }
     }
 
     /* Additional decorative elements */
@@ -92,7 +145,7 @@
     .signup-wrapper::before {
         width: 150px;
         height: 150px;
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(6, 182, 212, 0.1);
         top: -75px;
         left: 20%;
         animation: pulse 4s ease-in-out infinite;
@@ -101,7 +154,7 @@
     .signup-wrapper::after {
         width: 100px;
         height: 100px;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(6, 182, 212, 0.08);
         bottom: -50px;
         right: 15%;
         animation: pulse 3s ease-in-out infinite 1s;
