@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Car_Agency_Management.Pages 
-{ 
+namespace Car_Agency_Management.Pages
+{
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
@@ -14,13 +14,13 @@ namespace Car_Agency_Management.Pages
 
         public void OnGet()
         {
-           
+
         }
 
         public IActionResult OnPost()
         {
-           
-            return RedirectToPage("sign_up");
+
+            return RedirectToPage("profile");
         }
     }
 }
