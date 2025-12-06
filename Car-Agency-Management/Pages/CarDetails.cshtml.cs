@@ -38,6 +38,13 @@ namespace Car_Agency_Management.Pages
             LoadCarDetails(carId);
         }
 
+        public IActionResult OnPostDelete(string carId)
+        {
+            // Delete car logic - for now, redirect to gallery
+            // In a real application, this would delete from database
+            return RedirectToPage("/Car-gallary");
+        }
+
         private void LoadCarDetails(string carId)
         {
             // This is a sample data structure. Replace with actual database calls
@@ -173,7 +180,7 @@ namespace Car_Agency_Management.Pages
                     "Adaptive Cruise Control",
                     "LED Headlights",
                     "Wireless Charging",
-                    "360° Camera",
+                    "360ï¿½ Camera",
                     "Heated Seats",
                     "Parking Assist"
                 },
@@ -362,7 +369,7 @@ namespace Car_Agency_Management.Pages
                     "Leather Seats",
                     "Digital Instrument Cluster",
                     "Wireless Charging",
-                    "360° Camera",
+                    "360ï¿½ Camera",
                     "Adaptive Cruise Control",
                     "Lane Keep Assist",
                     "Blind Spot Monitoring",

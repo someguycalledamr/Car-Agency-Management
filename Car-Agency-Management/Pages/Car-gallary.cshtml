@@ -26,8 +26,79 @@
         }
 
         body {
-            background-color: #f8f9fa;
-            padding-top: 80px;
+            background-color: #ffffff;
+            padding-top: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Account for fixed navbar from layout */
+        .container {
+            padding-top: 100px;
+        }
+
+        /* Parallax Background - Same as Home Page */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: #1e293b;
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: #06b6d4;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) translateX(20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(20px) translateX(-30px) rotate(240deg);
+            }
         }
 
 
@@ -244,11 +315,11 @@
         }
 
         .tabs-container {
-            background-color: white;
+            background-color: transparent;
             border-radius: 8px;
             padding: 0;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: none;
         }
 
         .nav-tabs {
@@ -274,33 +345,31 @@
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             padding: 20px;
-            max-height: 300px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-behavior: smooth;
             position: relative;
         }
 
-
-        .brands-grid {
-            grid-template-columns: repeat(5, 1fr);
+        @@media (max-width: 1200px) {
+            .brands-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
         }
 
-
-
-        .brands-grid {
-            grid-template-columns: repeat(4, 1fr);
+        @@media (max-width: 992px) {
+            .brands-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
-
-        .brands-grid {
-            grid-template-columns: repeat(3, 1fr);
+        @@media (max-width: 768px) {
+            .brands-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
-
-
-        .brands-grid {
-            grid-template-columns: repeat(2, 1fr);
+        @@media (max-width: 576px) {
+            .brands-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
 
@@ -539,24 +608,27 @@
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             cursor: pointer;
             transition: all 0.3s;
-            z-index: 10;
+            z-index: 100;
+            color: #0066cc;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
         }
 
             .scroll-arrow:hover {
                 background-color: #0066cc;
                 color: white;
                 transform: translateY(-50%) scale(1.1);
-                box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+                box-shadow: 0 4px 12px rgba(0,102,204,0.4);
             }
 
             .scroll-arrow:active {
@@ -575,10 +647,40 @@
         .container {
             padding-top: 20px;
         }
+
+        .btn-add-car {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+        }
+
+            .btn-add-car:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Parallax Background -->
+    <div class="parallax-bg">
+        <div class="bg-layer"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 1;">
         <h1 class="main-title">Browse all cars</h1>
         <div class="row">
             <!-- Sidebar -->
@@ -696,6 +798,13 @@
             </div>
             <!-- Main Content -->
             <div class="col-lg-9">
+                <!-- Add Car Button -->
+                <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+                    <a href="/AddCar" class="btn-add-car" style="text-decoration: none;">
+                        <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                        Add New Car
+                    </a>
+                </div>
                 <!-- Tabs -->
                 <div class="tabs-container">
                     <ul class="nav nav-tabs" role="tablist">
@@ -1159,13 +1268,34 @@
             const scrollLeftBtn = document.getElementById('scrollLeft');
             const scrollRightBtn = document.getElementById('scrollRight');
 
-            scrollRightBtn.addEventListener('click', () => {
-                brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
-            });
+            if (brandsGrid && scrollLeftBtn && scrollRightBtn) {
+                scrollRightBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
+                });
 
-            scrollLeftBtn.addEventListener('click', () => {
-                brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
-            });
+                scrollLeftBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
+                });
+
+                // Show/hide arrows based on scroll position
+                function updateArrowVisibility() {
+                    const isAtStart = brandsGrid.scrollLeft <= 0;
+                    const isAtEnd = brandsGrid.scrollLeft >= brandsGrid.scrollWidth - brandsGrid.clientWidth - 10;
+                    
+                    scrollLeftBtn.style.opacity = isAtStart ? '0.5' : '1';
+                    scrollLeftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+                    
+                    scrollRightBtn.style.opacity = isAtEnd ? '0.5' : '1';
+                    scrollRightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+                }
+
+                brandsGrid.addEventListener('scroll', updateArrowVisibility);
+                updateArrowVisibility();
+            }
 
             // ========================================
             // MAKE CAR CARDS CLICKABLE

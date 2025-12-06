@@ -1,26 +1,16 @@
 ﻿@page
 @model Car_Agency_Management.Pages.maintenanceModel
 @{
-    Layout = null;
+    ViewData["Title"] = "Car Maintenance";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Maintenance</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
+@section Styles {
+    <style>
         /* PARALLAX BACKGROUND - Same as Sign Up */
-        body {
+        .maintenance-content {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
-            min-height: 100vh;
+            min-height: calc(100vh - 200px);
             display: flex;
             flex-direction: column;
             padding: 20px;
@@ -29,8 +19,8 @@
         }
 
         /* Animated floating circles */
-        body::before,
-        body::after {
+        .maintenance-content::before,
+        .maintenance-content::after {
             content: '';
             position: fixed;
             border-radius: 50%;
@@ -38,7 +28,7 @@
             z-index: 0;
         }
 
-        body::before {
+        .maintenance-content::before {
             width: 600px;
             height: 600px;
             background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
@@ -47,7 +37,7 @@
             animation: floatCircle1 20s ease-in-out infinite;
         }
 
-        body::after {
+        .maintenance-content::after {
             width: 500px;
             height: 500px;
             background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
@@ -175,7 +165,7 @@
                 height: auto;
             }
 
-        h1 {
+        .maintenance-content h1 {
             color: #0ca39d;
             margin-bottom: 30px;
             font-size: 28px;
@@ -185,23 +175,23 @@
             margin-bottom: 30px;
         }
 
-        h2 {
+        .maintenance-content h2 {
             color: #333;
             margin-bottom: 15px;
             font-size: 20px;
         }
 
-        label {
+        .maintenance-content label {
             display: block;
             margin-bottom: 8px;
             color: #666;
             font-weight: 500;
         }
 
-        input[type="text"],
-        input[type="search"],
-        textarea,
-        select {
+        .maintenance-content input[type="text"],
+        .maintenance-content input[type="search"],
+        .maintenance-content textarea,
+        .maintenance-content select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -211,19 +201,19 @@
             transition: border-color 0.3s;
         }
 
-            input:focus,
-            textarea:focus,
-            select:focus {
+            .maintenance-content input:focus,
+            .maintenance-content textarea:focus,
+            .maintenance-content select:focus {
                 outline: none;
                 border-color: #0ca39d;
             }
 
-        textarea {
+        .maintenance-content textarea {
             resize: vertical;
             min-height: 100px;
         }
 
-        button {
+        .maintenance-content button {
             width: 100%;
             padding: 12px;
             background: #0ca39d;
@@ -236,7 +226,7 @@
             transition: background 0.3s;
         }
 
-            button:hover {
+            .maintenance-content button:hover {
                 background: #0b8a85;
             }
 
@@ -290,31 +280,6 @@
             border-radius: 5px;
         }
 
-        /* Footer */
-        footer {
-            position: relative;
-            z-index: 1;
-            background: rgba(173, 216, 230, 0.3);
-            color: #1e293b;
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 20px auto 0;
-            backdrop-filter: blur(10px);
-        }
-
-        footer a {
-            color: #0ca39d;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
         @@media (max-width: 768px) {
             .maintenance-wrapper {
                 flex-direction: column;
@@ -329,8 +294,9 @@
             }
         }
     </style>
-</head>
-<body>
+}
+
+<div class="maintenance-content">
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
     <div class="floating-shape shape-3"></div>
@@ -371,11 +337,9 @@
             </div>
         </div>
     </div>
+</div>
 
-    <footer>
-        <p>&copy; 2025 - Car_Agency_Management - <a href="/Privacy">Privacy</a></p>
-    </footer>
-
+@section Scripts {
     <script>
         var parts = [
             { id: 1, name: 'Oil Filter', price: '$550' },
@@ -444,5 +408,4 @@
             }, 3000);
         }
     </script>
-</body>
-</html>
+}
