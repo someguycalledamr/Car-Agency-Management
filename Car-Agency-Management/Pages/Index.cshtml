@@ -51,22 +51,32 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 100; /* Changed from 9999 to 100 */
             overflow: hidden;
         }
 
+
         .drifting-car {
-            position: absolute;
-            width: 600px;
+            position: fixed;
+            width: 400px;
             height: auto;
             top: -300px;
-            left: -700px;
+            right: -700px;
             opacity: 0;
             transform: rotate(-20deg);
             animation: carDriftIn 5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            z-index: 10;
+            z-index: 100; /* Changed from 10 to 100 */
             pointer-events: none;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), top 0.3s ease-out;
         }
+
+            .drifting-car.scrolling-down {
+                transform: rotate(90deg) scale(0.8) !important;
+            }
+
+            .drifting-car.scrolling-up {
+                transform: rotate(-90deg) scale(0.8) !important;
+            }
 
         .car-svg {
             width: 100%;
@@ -82,13 +92,16 @@
         }
 
         @@keyframes wheelSpin {
-            from {
-                transform: translate(0, 0) rotate(0deg);
-            }
+            from
 
-            to {
-                transform: translate(0, 0) rotate(360deg);
-            }
+        {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        to {
+            transform: translate(0, 0) rotate(360deg);
+        }
+
         }
 
         /* Spoke Rotation */
@@ -98,13 +111,16 @@
         }
 
         @@keyframes spokeRotate {
-            from {
-                transform: rotate(0deg);
-            }
+            from
 
-            to {
-                transform: rotate(360deg);
-            }
+        {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+
         }
 
         /* Car Body Bounce Effect */
@@ -114,13 +130,16 @@
         }
 
         @@keyframes bodyBounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
+            0%, 100%
 
-            50% {
-                transform: translateY(-2px);
-            }
+        {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-2px);
+        }
+
         }
 
         /* Stop animations when parked */
@@ -137,121 +156,131 @@
         }
 
         @@keyframes carDriftIn {
-            0% {
-                top: -300px;
-                left: -700px;
-                opacity: 0;
-                transform: rotate(-25deg) scale(0.6);
-            }
+            0%
 
-            10% {
-                opacity: 1;
-            }
+        {
+            top: -300px;
+            right: -700px;
+            opacity: 0;
+            transform: rotate(-25deg) scale(0.6);
+        }
 
-            35% {
-                top: 180px;
-                left: 40%;
-                transform: rotate(12deg) scale(1.2);
-            }
+        10% {
+            opacity: 1;
+        }
 
-            55% {
-                top: 150px;
-                left: 50%;
-                transform: rotate(-8deg) scale(1.15);
-            }
+        35% {
+            top: 180px;
+            right: 60%;
+            transform: rotate(12deg) scale(1.2);
+        }
 
-            75% {
-                top: 130px;
-                left: 60%;
-                transform: rotate(4deg) scale(1.08);
-            }
+        55% {
+            top: 150px;
+            right: 50%;
+            transform: rotate(-8deg) scale(1.15);
+        }
 
-            90% {
-                top: 120px;
-                left: 70%;
-                transform: rotate(-2deg) scale(1.03);
-            }
+        75% {
+            top: 130px;
+            right: 40%;
+            transform: rotate(4deg) scale(1.08);
+        }
 
-            100% {
-                top: 110px;
-                right: 50px;
-                left: auto;
-                opacity: 1;
-                transform: rotate(0deg) scale(1);
-            }
+        90% {
+            top: 150px;
+            right: 70px;
+            transform: rotate(-2deg) scale(1.03);
+        }
+
+        100% {
+            top: 200px;
+            right: 50px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.8);
+        }
+
         }
 
         @@media (max-width: 1200px) {
-            .drifting-car {
-                width: 450px;
-            }
+            .drifting-car
 
-            @@keyframes carDriftIn {
-                0% {
-                    top: -250px;
-                    left: -600px;
-                    opacity: 0;
-                    transform: rotate(-25deg) scale(0.6);
-                }
+        {
+            width: 320px;
+        }
 
-                10% {
-                    opacity: 1;
-                }
+        @@keyframes carDriftIn {
+            0%
 
-                40% {
-                    top: 140px;
-                    left: 45%;
-                    transform: rotate(10deg) scale(1.1);
-                }
+        {
+            top: -250px;
+            right: -600px;
+            opacity: 0;
+            transform: rotate(-25deg) scale(0.6);
+        }
 
-                60% {
-                    top: 120px;
-                    left: 52%;
-                    transform: rotate(-6deg) scale(1.05);
-                }
+        10% {
+            opacity: 1;
+        }
 
-                100% {
-                    top: 100px;
-                    right: 30px;
-                    left: auto;
-                    opacity: 1;
-                    transform: rotate(0deg) scale(0.95);
-                }
-            }
+        40% {
+            top: 140px;
+            right: 55%;
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        60% {
+            top: 120px;
+            right: 48%;
+            transform: rotate(-6deg) scale(1.05);
+        }
+
+        100% {
+            top: 150px;
+            right: 50px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.75);
+        }
+
+        }
         }
 
         @@media (max-width: 768px) {
-            .drifting-car {
-                width: 320px;
-                animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            }
+            .drifting-car
 
-            @@keyframes carDriftInMobile {
-                0% {
-                    top: -200px;
-                    left: -400px;
-                    opacity: 0;
-                    transform: rotate(-22deg) scale(0.5);
-                }
+        {
+            width: 220px;
+            animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
 
-                15% {
-                    opacity: 1;
-                }
+        @@keyframes carDriftInMobile {
+            0%
 
-                50% {
-                    top: 90px;
-                    left: 50%;
-                    transform: rotate(8deg) scale(0.85);
-                }
+        {
+            top: -200px;
+            right: -400px;
+            opacity: 0;
+            transform: rotate(-22deg) scale(0.5);
+        }
 
-                100% {
-                    top: 70px;
-                    right: 20px;
-                    left: auto;
-                    opacity: 1;
-                    transform: rotate(0deg) scale(0.8);
-                }
-            }
+        15% {
+            opacity: 1;
+        }
+
+        50% {
+            top: 90px;
+            right: 50%;
+            transform: rotate(8deg) scale(0.85);
+        }
+
+        100% {
+            top: 120px;
+            right: 20px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.6);
+        }
+
+        }
         }
 
         /* Smoke/Drift Effect */
@@ -264,34 +293,37 @@
             filter: blur(25px);
             animation: smokeEffect 2.5s ease-out forwards;
             opacity: 0;
-            left: 15%;
+            right: 15%;
             top: 28%;
         }
 
         @@keyframes smokeEffect {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(0deg);
-            }
+            0%
 
-            20% {
-                opacity: 0.8;
-                transform: scale(0.6) rotate(5deg);
-            }
+        {
+            opacity: 0;
+            transform: scale(0.3) rotate(0deg);
+        }
 
-            50% {
-                opacity: 0.6;
-                transform: scale(1.2) rotate(-5deg);
-                left: 35%;
-                top: 24%;
-            }
+        20% {
+            opacity: 0.8;
+            transform: scale(0.6) rotate(5deg);
+        }
 
-            100% {
-                opacity: 0;
-                transform: scale(2.5) rotate(10deg);
-                left: 50%;
-                top: 20%;
-            }
+        50% {
+            opacity: 0.6;
+            transform: scale(1.2) rotate(-5deg);
+            right: 35%;
+            top: 24%;
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(2.5) rotate(10deg);
+            right: 50%;
+            top: 20%;
+        }
+
         }
 
         /* Tire Marks Effect */
@@ -299,30 +331,33 @@
             position: absolute;
             width: 600px;
             height: 80px;
-            background: repeating-linear-gradient( 90deg, rgba(40, 40, 40, 0.15) 0px, rgba(40, 40, 40, 0.15) 8px, transparent 8px, transparent 12px );
+            background: repeating-linear-gradient(90deg, rgba(40, 40, 40, 0.15) 0px, rgba(40, 40, 40, 0.15) 8px, transparent 8px, transparent 12px);
             opacity: 0;
-            transform: rotate(-15deg);
+            transform: rotate(15deg);
             animation: tireMarks 2s ease-out forwards;
             filter: blur(1px);
-            left: 5%;
+            right: 5%;
             top: 30%;
         }
 
         @@keyframes tireMarks {
-            0% {
-                opacity: 0;
-                width: 100px;
-            }
+            0%
 
-            30% {
-                opacity: 0.4;
-            }
+        {
+            opacity: 0;
+            width: 100px;
+        }
 
-            100% {
-                opacity: 0;
-                width: 600px;
-                left: 40%;
-            }
+        30% {
+            opacity: 0.4;
+        }
+
+        100% {
+            opacity: 0;
+            width: 600px;
+            right: 40%;
+        }
+
         }
 
         /* ================================================= */
@@ -380,19 +415,21 @@
         }
 
         @@keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-            }
+            0%, 100%
 
-            33% {
-                transform: translateY(-30px) translateX(20px) rotate(120deg);
-            }
-
-            66% {
-                transform: translateY(20px) translateX(-30px) rotate(240deg);
-            }
+        {
+            transform: translateY(0) translateX(0) rotate(0deg);
         }
 
+        33% {
+            transform: translateY(-30px) translateX(20px) rotate(120deg);
+        }
+
+        66% {
+            transform: translateY(20px) translateX(-30px) rotate(240deg);
+        }
+
+        }
         /* ================================================= */
         /* 4. NAVIGATION BAR (Advanced Animations) */
         /* ================================================= */
@@ -1045,7 +1082,7 @@
             left: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--color-accent), #0ea5e9);
-            z-index: 10000;
+            z-index: 10000; /* Keep this high so it's above the car */
             transform-origin: left;
             transition: transform 0.1s ease-out;
         }
@@ -1257,9 +1294,15 @@
         <section class="hero" id="home">
             <div class="hero-text">
                 <div class="hero-content">
-                    <h1>The Future of <span>Premium</span> Mobility Starts Here.</h1>
-                    <p>Discover our meticulously curated collection of high-end vehicles, offering unparalleled performance and sophistication for every journey.</p>
-                    <a href="#booking" class="cta-button">Rent NOW!</a>
+                    <h1>Experience the Future of Premium <span>Mobility</span></h1>
+                    <p>Your journey begins now. Rent the car of your dreams with AutoLux.Drive's seamless and luxurious service.</p>
+
+                    <form method="post">
+                        <button type="submit" class="cta-button">
+                            Rent Now
+                        </button>
+                    </form>
+
                 </div>
             </div>
 
@@ -1446,7 +1489,50 @@
             if (car) {
                 car.classList.add('parked');
             }
-        }, 5000); // Stop after 5 seconds (when animation completes)
+        }, 5000);
+
+        // ============================================
+        // CAR SCROLL DIRECTION ANIMATION
+        // ============================================
+        let lastScrollTop = 0;
+        let scrollTimeout;
+        const car = document.querySelector('.drifting-car');
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            // Calculate car position based on scroll (keep it in viewport)
+            const scrollProgress = scrollTop / (documentHeight - windowHeight);
+            const maxCarTravel = documentHeight - windowHeight - 400;
+            const carTopPosition = 200 + (scrollProgress * maxCarTravel * 0.7);
+
+            if (car) {
+                car.style.top = `${Math.min(carTopPosition, documentHeight - 600)}px`;
+
+                // Clear previous timeout
+                clearTimeout(scrollTimeout);
+
+                // Determine scroll direction
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    // Scrolling down - car points down
+                    car.classList.add('scrolling-down');
+                    car.classList.remove('scrolling-up');
+                } else if (scrollTop < lastScrollTop) {
+                    // Scrolling up - car points up
+                    car.classList.add('scrolling-up');
+                    car.classList.remove('scrolling-down');
+                }
+
+                // Reset to horizontal after scrolling stops
+                scrollTimeout = setTimeout(() => {
+                    car.classList.remove('scrolling-down', 'scrolling-up');
+                }, 150);
+
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            }
+        }, false);
     </script>
 </body>
 </html>

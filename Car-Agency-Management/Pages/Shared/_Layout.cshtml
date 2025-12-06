@@ -25,7 +25,7 @@
         }
 
             .navbar-glass.scrolled {
-                position:fixed;
+                position: fixed;
                 background: rgba(22, 22, 23, 0.85) !important;
                 backdrop-filter: blur(25px);
                 -webkit-backdrop-filter: blur(25px);
@@ -62,6 +62,44 @@
                 transform: scale(1.05);
             }
 
+        /* Admin Dashboard Special Link */
+        .nav-link.admin-dashboard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+            .nav-link.admin-dashboard:hover {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                transform: translateY(-3px) !important;
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+
+        .admin-icon {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        pulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        }
+
         /* Add padding to body to account for fixed navbar */
         body {
             padding-top: 80px;
@@ -70,6 +108,16 @@
         /* Smooth scroll */
         html {
             scroll-behavior: smooth;
+        }
+
+        /* Mobile responsive for admin button */
+
+        .nav-link.admin-dashboard {
+            margin-left: 0;
+            margin-top: 8px;
+            justify-content: center;
+        }
+
         }
     </style>
 </head>
@@ -94,6 +142,9 @@
                             <a class="nav-link" asp-area="" asp-page="/Car-gallary">Car Gallery</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/rent">Rent</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Login">Login</a>
                         </li>
                         <li class="nav-item">
@@ -103,23 +154,20 @@
                             </li>
                         </li>
                         <li class="nav-item">
+                            <form method="post" asp-page-handler="ProfileRedirect">
+                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0; border: none;">Profile</button>
+                            </form>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/rent">Rent</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/user_manage">user_manage</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Profile">Profile</a>
-                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <form method="post" asp-page-handler="ProfileRedirect">
                                 <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0; border: none;">Profile</button>
                             </form>
                         </li>
-
                     </ul>
                 </div>
             </div>
@@ -150,6 +198,22 @@
             } else {
                 navbar.classList.remove('scrolled');
             }
+        });
+
+        // Highlight active page
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href')) {
+                    const linkPath = new URL(link.href, window.location.origin).pathname;
+                    if (currentPath === linkPath) {
+                        link.style.color = '#00aaff';
+                        link.style.fontWeight = '700';
+                    }
+                }
+            });
         });
     </script>
 
