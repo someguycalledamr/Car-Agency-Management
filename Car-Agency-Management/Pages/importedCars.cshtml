@@ -1,0 +1,568 @@
+﻿@page
+@model Car_Agency_Management.Pages.importedCarsModel
+@{
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Import Cars - Not Available in Egypt</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+                height: 100%;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            }
+
+            body {
+                background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
+                min-height: 100vh;
+                padding-top: 100px;
+                position: relative;
+                overflow-x: hidden;
+            }
+
+                body::before,
+                body::after {
+                    content: '';
+                    position: fixed;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 0;
+                }
+
+                body::before {
+                    width: 600px;
+                    height: 600px;
+                    background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
+                    top: -300px;
+                    right: -300px;
+                    animation: floatCircle1 20s ease-in-out infinite;
+                }
+
+                body::after {
+                    width: 500px;
+                    height: 500px;
+                    background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
+                    bottom: -250px;
+                    left: -250px;
+                    animation: floatCircle2 18s ease-in-out infinite;
+                }
+
+            floatCircle1 {
+                0%, 100% {
+                    transform: translate(0, 0) scale(1);
+                }
+
+                25% {
+                    transform: translate(-100px, 150px) scale(1.1);
+                }
+
+                50% {
+                    transform: translate(-50px, 300px) scale(0.9);
+                }
+
+                75% {
+                    transform: translate(50px, 200px) scale(1.05);
+                }
+            }
+
+            floatCircle2 {
+                0%, 100% {
+                    transform: translate(0, 0) scale(1);
+                }
+
+                25% {
+                    transform: translate(150px, -100px) scale(1.15);
+                }
+
+                50% {
+                    transform: translate(100px, -50px) scale(0.85);
+                }
+
+                75% {
+                    transform: translate(50px, -150px) scale(1.1);
+                }
+            }
+
+            .floating-shape {
+                position: fixed;
+                border-radius: 50%;
+                opacity: 0.1;
+                pointer-events: none;
+                animation: float 20s infinite ease-in-out;
+                z-index: 0;
+            }
+
+            .shape-1 {
+                width: 300px;
+                height: 300px;
+                background: #06b6d4;
+                top: 10%;
+                left: 5%;
+            }
+
+            .shape-2 {
+                width: 200px;
+                height: 200px;
+                background: #1e293b;
+                top: 60%;
+                right: 10%;
+                animation-delay: 3s;
+            }
+
+            .shape-3 {
+                width: 150px;
+                height: 150px;
+                background: #06b6d4;
+                bottom: 20%;
+                left: 15%;
+                animation-delay: 6s;
+            }
+
+            float {
+                0%, 100% {
+                    transform: translateY(0) translateX(0) rotate(0deg);
+                }
+
+                33% {
+                    transform: translateY(-30px) translateX(20px) rotate(120deg);
+                }
+
+                66% {
+                    transform: translateY(20px) translateX(-30px) rotate(240deg);
+                }
+            }
+
+            .page-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 40px 20px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .page-title {
+                font-size: 32px;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 10px;
+            }
+
+            .page-subtitle {
+                font-size: 16px;
+                color: #6c757d;
+                margin-bottom: 40px;
+            }
+
+            .cars-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+
+            .car-card {
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+            }
+
+                .car-card:hover {
+                    transform: translateY(-5px);
+                }
+
+            .car-image-container {
+                width: 100%;
+                height: 200px;
+                background: #f8f9fa;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+                .car-image-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+            .car-info {
+                padding: 20px;
+            }
+
+            .car-name {
+                font-size: 18px;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 8px;
+            }
+
+            .car-details {
+                font-size: 14px;
+                color: #6c757d;
+                margin-bottom: 15px;
+            }
+
+            .not-available-badge {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+                background-color: #f8d7da;
+                color: #721c24;
+                margin-bottom: 15px;
+            }
+
+            .btn-request {
+                background-color: #ff9800;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                width: 100%;
+            }
+
+                .btn-request:hover {
+                    background-color: #f57c00;
+                }
+
+            .request-form {
+                margin-top: 15px;
+                padding: 15px;
+                background-color: #fff3e0;
+                border-radius: 8px;
+                border: 1px solid #ffe0b2;
+                display: none;
+            }
+
+                .request-form h4 {
+                    color: #e65100;
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                }
+
+                .request-form input,
+                .request-form textarea {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ffcc80;
+                    border-radius: 6px;
+                    font-size: 13px;
+                    margin-bottom: 10px;
+                }
+
+                .request-form textarea {
+                    resize: vertical;
+                    min-height: 60px;
+                }
+
+            .request-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+                .request-actions button {
+                    flex: 1;
+                    padding: 8px;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 13px;
+                    cursor: pointer;
+                }
+
+            .btn-submit-request {
+                background-color: #ff9800;
+                color: white;
+            }
+
+                .btn-submit-request:hover {
+                    background-color: #f57c00;
+                }
+
+            .btn-cancel-request {
+                background-color: #e0e0e0;
+                color: #424242;
+            }
+
+                .btn-cancel-request:hover {
+                    background-color: #bdbdbd;
+                }
+
+            .requests-section {
+                margin-top: 50px;
+                background: white;
+                border-radius: 12px;
+                padding: 30px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+            .requests-title {
+                font-size: 24px;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 20px;
+            }
+
+            .request-item {
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                border-left: 4px solid #ff9800;
+            }
+
+            .request-car-info {
+                font-size: 16px;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 10px;
+            }
+
+            .request-details {
+                font-size: 14px;
+                color: #6c757d;
+                margin-top: 8px;
+            }
+
+            .request-date {
+                font-size: 12px;
+                color: #9e9e9e;
+                margin-top: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="page-container">
+            <h1 class="page-title">Import Cars - Not Available in Egypt</h1>
+            <p class="page-subtitle">Request to import these exclusive cars to Egypt</p>
+
+            <div class="cars-grid" id="carsGrid">
+                <!-- Cars will be dynamically added here -->
+            </div>
+
+            <div class="requests-section" id="requestsSection" style="display: none;">
+                <h2 class="requests-title">Import Requests</h2>
+                <div id="requestsList">
+                    <!-- Requests will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const cars = [
+                {
+                    id: 1,
+                    make: 'Xiaomi',
+                    model: 'SU7 ultra',
+                    year: 2025,
+                    price: 3500000,
+                    image: ''
+                },
+                {
+                    id: 2,
+                    make: 'Mercedes',
+                    model: 'amg gt 63',
+                    year: 2025,
+                    price: 1200000,
+                    image: ''
+                },
+                {
+                    id: 3,
+                    make: 'gmc',
+                    model: 'hummer EV ',
+                    year: 2025,
+                    price: 1100000,
+                    image: ''
+                },
+                {
+                    id: 4,
+                    make: 'xiaomi',
+                    model: 'yu7',
+                    year: 2026,
+                    price: 1800000,
+                    image: ''
+                },
+                {
+                    id: 5,
+                    make: 'cadillic',
+                    model: 'Escalade IQ',
+                    year: 2026,
+                    price: 2500000,
+                    image: ''
+                },
+                {
+                    id: 6,
+                    make: 'deepal',
+                    model: 'G318',
+                    year: 2025,
+                    price: 3500000,
+                    image: ''
+                },
+                {
+                    id: 7,
+                    make: 'BMW',
+                    model: 'M5 CS',
+                    year: 2025,
+                    price: 950000,
+                    image: ''
+                },
+                {
+                    id: 8,
+                    make: 'BYD',
+                    model: 'leopard5',
+                    year: 2025,
+                    price: 2200000,
+                    image: ''
+                }
+            ];
+
+            let importRequests = [];
+
+            function renderCars() {
+                const grid = document.getElementById('carsGrid');
+                grid.innerHTML = '';
+
+                cars.forEach(car => {
+                    const card = document.createElement('div');
+                    card.className = 'car-card';
+                    card.innerHTML = `
+                        <div class="car-image-container">
+                            <img src="${car.image}" alt="${car.make} ${car.model}">
+                        </div>
+                        <div class="car-info">
+                            <div class="car-name">${car.make} ${car.model}</div>
+                            <div class="car-details">
+                                ${car.year} • ${car.price.toLocaleString()} EGP
+                            </div>
+                            <span class="not-available-badge">
+                                ✗ Not Available in Egypt
+                            </span>
+                            <button class="btn-request" onclick="toggleRequestForm(${car.id})">
+                                <i class="fas fa-file-import"></i> Request Import
+                            </button>
+                            <div id="requestForm${car.id}" class="request-form">
+                                <h4>Submit Import Request</h4>
+                                <input type="text" id="name${car.id}" placeholder="Your Name *" required>
+                                <input type="email" id="email${car.id}" placeholder="Your Email *" required>
+                                <input type="tel" id="phone${car.id}" placeholder="Phone Number *" required>
+                                <textarea id="message${car.id}" placeholder="Additional notes (optional)"></textarea>
+                                <div class="request-actions">
+                                    <button class="btn-cancel-request" onclick="toggleRequestForm(${car.id})">Cancel</button>
+                                    <button class="btn-submit-request" onclick="submitRequest(${car.id})">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            function toggleRequestForm(carId) {
+                const form = document.getElementById(`requestForm${carId}`);
+                const allForms = document.querySelectorAll('.request-form');
+
+                allForms.forEach(f => {
+                    if (f.id !== `requestForm${carId}`) {
+                        f.style.display = 'none';
+                    }
+                });
+
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+
+            function submitRequest(carId) {
+                const car = cars.find(c => c.id === carId);
+                const name = document.getElementById(`name${carId}`).value.trim();
+                const email = document.getElementById(`email${carId}`).value.trim();
+                const phone = document.getElementById(`phone${carId}`).value.trim();
+                const message = document.getElementById(`message${carId}`).value.trim();
+
+                if (!name || !email || !phone) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                const request = {
+                    id: Date.now(),
+                    carName: `${car.make} ${car.model}`,
+                    carYear: car.year,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    message: message,
+                    date: new Date().toLocaleDateString()
+                };
+
+                importRequests.push(request);
+
+                document.getElementById(`name${carId}`).value = '';
+                document.getElementById(`email${carId}`).value = '';
+                document.getElementById(`phone${carId}`).value = '';
+                document.getElementById(`message${carId}`).value = '';
+
+                toggleRequestForm(carId);
+                renderRequests();
+
+                alert(`Import request submitted successfully!\nWe'll contact you at ${email} soon.`);
+            }
+
+            function renderRequests() {
+                const requestsSection = document.getElementById('requestsSection');
+                const requestsList = document.getElementById('requestsList');
+
+                if (importRequests.length === 0) {
+                    requestsSection.style.display = 'none';
+                    return;
+                }
+
+                requestsSection.style.display = 'block';
+                requestsList.innerHTML = '';
+
+                importRequests.reverse().forEach(request => {
+                    const requestItem = document.createElement('div');
+                    requestItem.className = 'request-item';
+                    requestItem.innerHTML = `
+                        <div class="request-car-info">
+                            <i class="fas fa-car"></i> ${request.carName} (${request.carYear})
+                        </div>
+                        <div class="request-details">
+                            <strong>Customer:</strong> ${request.name}<br>
+                            <strong>Email:</strong> ${request.email}<br>
+                            <strong>Phone:</strong> ${request.phone}
+                            ${request.message ? `<br><strong>Notes:</strong> ${request.message}` : ''}
+                        </div>
+                        <div class="request-date">
+                            <i class="fas fa-calendar"></i> ${request.date}
+                        </div>
+                    `;
+                    requestsList.appendChild(requestItem);
+                });
+            }
+
+            renderCars();
+        </script>
+    </body>
+    </html>
+}
