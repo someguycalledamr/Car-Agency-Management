@@ -2,7 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "AutoLux.Drive - Premium Mobility";
-    //Layout = null; // Remove default layout to use custom design
+    
 }
 
 <!DOCTYPE html>
@@ -14,9 +14,8 @@
     <style>
         @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        /* ================================================= */
         /* 1. COLOR PALETTE & GLOBAL STYLES */
-        /* ================================================= */
+        
         :root {
             --color-bg: #ffffff;
             --color-primary: #f8fafc;
@@ -41,9 +40,9 @@
             position: relative;
         }
 
-        /* ================================================= */
+       
         /* 2. DRIFTING CAR VIDEO OVERLAY */
-        /* ================================================= */
+        
         .car-video-overlay {
             position: fixed;
             top: 0;
@@ -51,7 +50,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 100; /* Changed from 9999 to 100 */
+            z-index: 100; 
             overflow: hidden;
         }
 
@@ -65,7 +64,7 @@
             opacity: 0;
             transform: rotate(-20deg);
             animation: carDriftIn 5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            z-index: 100; /* Changed from 10 to 100 */
+            z-index: 100; 
             pointer-events: none;
             transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), top 0.3s ease-out;
         }
@@ -332,9 +331,9 @@
             }
         }
 
-        /* ================================================= */
+        
         /* 3. PARALLAX BACKGROUND LAYERS */
-        /* ================================================= */
+        
         .parallax-bg {
             position: fixed;
             top: 0;
@@ -583,9 +582,9 @@
             transform: scale(1.1) rotate(2deg);
         }
 
-        /* ================================================= */
+        
         /* 6. CTA BUTTON (Micro-interactions) */
-        /* ================================================= */
+       
         .cta-button {
             display: inline-block;
             padding: 16px 35px;
@@ -632,9 +631,9 @@
                 transform: translateY(-2px) scale(1.02);
             }
 
-        /* ================================================= */
+        
         /* 7. SECTION HEADERS (3D Effect) */
-        /* ================================================= */
+        
         .section-header {
             text-align: center;
             margin: 80px 0 40px;
@@ -671,9 +670,9 @@
             }
         }
 
-        /* ================================================= */
+        /
         /* 8. CAR CARDS (Advanced Hover Effects) */
-        /* ================================================= */
+        
         .car-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -798,10 +797,7 @@
         /* ================================================= */
         /* 9. PARTNERS SECTION (Enhanced Carousel) */
         /* ================================================= */
-        . /* ================================================= */
-        /* ================================================= */
-        /* 9. PARTNERS SECTION (Enhanced Carousel) */
-        /* ================================================= */
+       
         .partners-section {
             background: linear-gradient(135deg, var(--color-primary) 0%, #e0f2fe 100%);
             padding: 30px 0 40px 0;
@@ -932,10 +928,9 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        /* ================================================= */
+/* ================================================= */
         /* 12. SCROLL PROGRESS BAR */
-        /* ================================================= */
+        
         .scroll-progress {
             position: fixed;
             top: 0;
@@ -1143,7 +1138,7 @@
 
                     <form method="post" asp-page-handler="ViewGallery">
                         <button type="submit" class="cta-button">
-                            Buy Now
+                            Buy Now !
                         </button>
                     </form>
 
