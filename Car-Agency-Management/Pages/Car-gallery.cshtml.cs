@@ -1,168 +1,125 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Car_Agency_Management.Data;
+using System.Collections.Generic;
 
 namespace Car_Agency_Management.Pages
 {
     public class Car_galleryModel : PageModel
     {
+        private readonly DB _db;
+
         public List<CarSummary> Cars { get; set; } = new List<CarSummary>();
+        public Dictionary<string, int> BrandsWithCount { get; set; } = new Dictionary<string, int>();
+        public int TotalResults { get; set; }
+
+        // Filter properties
+        [BindProperty(SupportsGet = true)]
+        public string SelectedBrand { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public decimal? MaxPrice { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string SortBy { get; set; } = "default";
+
+        public Car_galleryModel()
+        {
+            _db = new DB();
+        }
 
         public void OnGet()
         {
             LoadCars();
+            LoadBrands();
         }
 
         private void LoadCars()
         {
-            
-            Cars = new List<CarSummary>
+            // Apply filters and sorting based on query parameters
+            if (!string.IsNullOrEmpty(SelectedBrand) || MaxPrice.HasValue)
             {
-                new CarSummary
-                {
-                    CarId = "suzuki-spresso",
-                    Name = "Suzuki S Presso Automatic 2024",
-                    Brand = "Suzuki",
-                    Year = "2024",
-                    Price = "549,900",
-                    Image = "/images/Suzuki_S-Presso_Exterior_01.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "nissan-sunny",
-                    Name = "Nissan Sunny Manual / Baseline 2026",
-                    Brand = "Nissan",
-                    Year = "2026",
-                    Price = "645,000",
-                    Image = "/images/Nissan-sunny.png",
-                    Transmission = "Manual",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "mercedes-c-class",
-                    Name = "Mercedes-Benz C-Class 2025",
-                    Brand = "Mercedes-Benz",
-                    Year = "2025",
-                    Price = "1,250,000",
-                    Image = "/images/Mercedes-Benz.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "bmw-x3",
-                    Name = "BMW X3 xDrive 2025",
-                    Brand = "BMW",
-                    Year = "2025",
-                    Price = "1,450,000",
-                    Image = "/images/Angebotsbild-bmw-x3-20d-xdrive-q1-2025.png",
-                    Transmission = "Automatic",
-                    FuelType = "Diesel"
-                },
-                new CarSummary
-                {
-                    CarId = "proton-saga",
-                    Name = "Proton-Saga A/T Premium 2026",
-                    Brand = "Proton",
-                    Year = "2026",
-                    Price = "649,900",
-                    Image = "/images/Proton-saga.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "mg-zs",
-                    Name = "MG ZS Standard 2025",
-                    Brand = "MG",
-                    Year = "2025",
-                    Price = "685,000",
-                    Image = "/images/MG-ZS-BLACK.png",
-                    Transmission = "Automatic",
-                    FuelType = "Hybrid"
-                },
-                new CarSummary
-                {
-                    CarId = "toyota-corolla",
-                    Name = "Toyota Corolla GLi 2025",
-                    Brand = "Toyota",
-                    Year = "2025",
-                    Price = "785,000",
-                    Image = "/images/corolla.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "hyundai-tucson",
-                    Name = "Hyundai Tucson 2025",
-                    Brand = "Hyundai",
-                    Year = "2025",
-                    Price = "895,000",
-                    Image = "/images/Tucson.png",
-                    Transmission = "Automatic",
-                    FuelType = "Diesel"
-                },
-                new CarSummary
-                {
-                    CarId = "kia-sportage",
-                    Name = "Kia Sportage LX 2025",
-                    Brand = "Kia",
-                    Year = "2025",
-                    Price = "920,000",
-                    Image = "/images/Tucson.png",
-                    Transmission = "Automatic",
-                    FuelType = "Hybrid"
-                },
-                new CarSummary
-                {
-                    CarId = "chery-tiggo7",
-                    Name = "Chery Tiggo 7 Comfort 2025",
-                    Brand = "Chery",
-                    Year = "2025",
-                    Price = "740,000",
-                    Image = "/images/Chery.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "renault-duster",
-                    Name = "Renault Duster 2025",
-                    Brand = "Renault",
-                    Year = "2025",
-                    Price = "670,000",
-                    Image = "/images/Renault-duster.png",
-                    Transmission = "Automatic",
-                    FuelType = "Petrol"
-                },
-                new CarSummary
-                {
-                    CarId = "citroen-c3",
-                    Name = "Citroen C3 2025",
-                    Brand = "Citroen",
-                    Year = "2025",
-                    Price = "830,000",
-                    Image = "/images/Citroen-c3.jpg",
-                    Transmission = "Automatic",
-                    FuelType = "Hybrid"
-                }
-            };
-        }
-    }
+                // Apply filters
+                Cars = _db.GetCarsFiltered(SelectedBrand, null, MaxPrice);
+            }
+            else if (SortBy == "price-low")
+            {
+                Cars = _db.GetCarsSortedByPrice(ascending: true);
+            }
+            else if (SortBy == "price-high")
+            {
+                Cars = _db.GetCarsSortedByPrice(ascending: false);
+            }
+            else if (SortBy == "newest")
+            {
+                Cars = _db.GetCarsNewestFirst();
+            }
+            else if (SortBy == "popular")
+            {
+                Cars = _db.GetMostPopularCars();
+            }
+            else
+            {
+                // Default: Get all cars
+                Cars = _db.GetAllCars();
+            }
 
-    // Helper class
-    public class CarSummary
-    {
-        public string CarId { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string Brand { get; set; } = "";
-        public string Year { get; set; } = "";
-        public string Price { get; set; } = "";
-        public string Image { get; set; } = "";
-        public string Transmission { get; set; } = "";
-        public string FuelType { get; set; } = "";
+            // Get total results count
+            TotalResults = Cars.Count;
+        }
+
+        private void LoadBrands()
+        {
+            BrandsWithCount = _db.GetBrandsWithCount();
+        }
+
+        // Handler for brand filter
+        public IActionResult OnGetFilterBrand(string brand)
+        {
+            SelectedBrand = brand;
+            LoadCars();
+            LoadBrands();
+            return Page();
+        }
+
+        // Handler for price filter
+        public IActionResult OnGetFilterPrice(decimal maxPrice)
+        {
+            MaxPrice = maxPrice;
+            LoadCars();
+            LoadBrands();
+            return Page();
+        }
+
+        // Handler for combined filters
+        public IActionResult OnGetFilter(string brand, decimal? maxPrice, string sortBy)
+        {
+            SelectedBrand = brand;
+            MaxPrice = maxPrice;
+            SortBy = sortBy ?? "default";
+            LoadCars();
+            LoadBrands();
+            return Page();
+        }
+
+        // Handler for sorting
+        public IActionResult OnGetSort(string sortBy)
+        {
+            SortBy = sortBy;
+            LoadCars();
+            LoadBrands();
+            return Page();
+        }
+
+        // Handler for clearing filters
+        public IActionResult OnGetClearFilters()
+        {
+            SelectedBrand = null;
+            MaxPrice = null;
+            SortBy = "default";
+            LoadCars();
+            LoadBrands();
+            return Page();
+        }
     }
 }

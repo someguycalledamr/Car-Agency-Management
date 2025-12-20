@@ -32,12 +32,16 @@
             overflow-x: hidden;
         }
 
-        /* Account for fixed navbar from layout */
-        .container {
-            padding-top: 100px;
+        /* Fixed padding for navbar */
+        .main-content-wrapper {
+            padding-top: 80px;
+            min-height: 100vh;
         }
 
-        /* Parallax Background - Same as Home Page */
+        .container {
+            padding-top: 20px;
+        }
+
         .parallax-bg {
             position: fixed;
             top: 0;
@@ -101,14 +105,6 @@
             }
         }
 
-
-        .breadcrumb-text {
-            color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 10px;
-            margin-top: 20px;
-        }
-
         .main-title {
             font-size: 24px;
             font-weight: 400;
@@ -134,9 +130,9 @@
             padding: 15px 0;
         }
 
-            .filter-section:last-child {
-                border-bottom: none;
-            }
+        .filter-section:last-child {
+            border-bottom: none;
+        }
 
         .filter-label {
             font-weight: 500;
@@ -145,72 +141,6 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-        }
-
-        .price-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 10px 0;
-        }
-
-        .price-option {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-            .price-option::before {
-                content: '✓';
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                width: 18px;
-                height: 18px;
-                background-color: #0066cc;
-                color: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 10px;
-                opacity: 0;
-                transform: scale(0);
-                transition: all 0.3s;
-            }
-
-            .price-option.selected::before {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            .price-option:hover {
-                background-color: #e7f3ff;
-                border-color: #0066cc;
-                transform: scale(1.05);
-            }
-
-            .price-option.selected {
-                background-color: #e7f3ff;
-                border-color: #0066cc;
-                border-width: 2px;
-            }
-
-        .price-label-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 5px;
-        }
-
-        .price-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #212529;
         }
 
         .brand-filter-grid {
@@ -230,88 +160,17 @@
             transition: all 0.3s;
         }
 
-            .brand-filter-option:hover,
-            .brand-filter-option.selected {
-                border-color: #0066cc;
-                background-color: #e7f3ff;
-            }
+        .brand-filter-option:hover,
+        .brand-filter-option.selected {
+            border-color: #0066cc;
+            background-color: #e7f3ff;
+        }
 
         .brand-filter-logo {
             width: 40px;
             height: 40px;
             object-fit: contain;
             margin: 0 auto;
-        }
-
-        .prices-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            padding: 30px;
-        }
-
-        .price-range-card {
-            text-align: center;
-            padding: 20px 10px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-
-            .price-range-card::before {
-                content: '✓';
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                width: 20px;
-                height: 20px;
-                background-color: #0066cc;
-                color: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 12px;
-                opacity: 0;
-                transform: scale(0);
-                transition: all 0.3s;
-            }
-
-            .price-range-card.selected::before {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            .price-range-card:hover {
-                background-color: #e7f3ff;
-                border-color: #0066cc;
-                transform: translateY(-4px) scale(1.05);
-                box-shadow: 0 4px 12px rgba(0,102,204,0.2);
-            }
-
-            .price-range-card.selected {
-                background-color: #e7f3ff;
-                border-color: #0066cc;
-                border-width: 2px;
-            }
-
-        .price-range-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 8px;
-        }
-
-        .price-range-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #212529;
-        }
-
-        .price-link {
-            display: none;
         }
 
         .tabs-container {
@@ -326,19 +185,19 @@
             border-bottom: 2px solid #e9ecef;
         }
 
-            .nav-tabs .nav-link {
-                color: #6c757d;
-                border: none;
-                padding: 20px 30px;
-                font-weight: 500;
-                border-bottom: 3px solid transparent;
-            }
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            border: none;
+            padding: 20px 30px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
 
-                .nav-tabs .nav-link.active {
-                    color: #212529;
-                    border-bottom: 3px solid #0066cc;
-                    background-color: transparent;
-                }
+        .nav-tabs .nav-link.active {
+            color: #212529;
+            border-bottom: 3px solid #0066cc;
+            background-color: transparent;
+        }
 
         .brands-grid {
             display: grid;
@@ -366,31 +225,6 @@
             }
         }
 
-        @@media (max-width: 576px) {
-            .brands-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-
-            .brands-grid::-webkit-scrollbar {
-                height: 8px;
-            }
-
-            .brands-grid::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 4px;
-            }
-
-            .brands-grid::-webkit-scrollbar-thumb {
-                background: #888;
-                border-radius: 4px;
-            }
-
-                .brands-grid::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
-
         .brand-card {
             text-align: center;
             padding: 12px;
@@ -408,49 +242,17 @@
             justify-content: center;
         }
 
-            .brand-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition: left 0.5s;
-            }
+        .brand-card:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-color: #dee2e6;
+        }
 
-            .brand-card:hover::before {
-                left: 100%;
-            }
-
-            .brand-card:hover {
-                background-color: #f8f9fa;
-                transform: translateY(-5px) scale(1.05);
-                box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-                border-color: #dee2e6;
-            }
-
-            .brand-card.selected {
-                background-color: #e7f3ff;
-                border: 3px solid #0066cc;
-            }
-
-                .brand-card.selected::after {
-                    content: '✓';
-                    position: absolute;
-                    top: 5px;
-                    right: 5px;
-                    width: 20px;
-                    height: 20px;
-                    background-color: #0066cc;
-                    color: white;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 11px;
-                    font-weight: bold;
-                }
+        .brand-card.selected {
+            background-color: #e7f3ff;
+            border: 3px solid #0066cc;
+        }
 
         .brand-logo {
             width: 50px;
@@ -458,10 +260,6 @@
             object-fit: contain;
             margin-bottom: 8px;
             transition: transform 0.3s;
-        }
-
-        .brand-card:hover .brand-logo {
-            transform: scale(1.1);
         }
 
         .brand-name {
@@ -497,17 +295,6 @@
             transition: all 0.3s;
         }
 
-            .sort-dropdown:hover {
-                border-color: #0066cc;
-                box-shadow: 0 2px 8px rgba(0,102,204,0.1);
-            }
-
-            .sort-dropdown:focus {
-                outline: none;
-                border-color: #0066cc;
-                box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
-            }
-
         .car-card {
             background-color: white;
             border-radius: 8px;
@@ -519,30 +306,10 @@
             overflow: hidden;
         }
 
-            .car-card::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 4px;
-                background: linear-gradient(90deg, #0066cc, #00aaff);
-                transform: scaleX(0);
-                transition: transform 0.3s;
-            }
-
-            .car-card:hover::after {
-                transform: scaleX(1);
-            }
-
-            .car-card:hover {
-                box-shadow: 0 12px 24px rgba(0,102,204,0.2);
-                transform: translateY(-8px);
-            }
-
-            .car-card:active {
-                transform: translateY(-4px);
-            }
+        .car-card:hover {
+            box-shadow: 0 12px 24px rgba(0,102,204,0.2);
+            transform: translateY(-8px);
+        }
 
         .car-title {
             font-size: 18px;
@@ -603,51 +370,6 @@
             font-size: 14px;
         }
 
-        .scroll-arrow {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 100;
-            color: #0066cc;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-        }
-
-            .scroll-arrow:hover {
-                background-color: #0066cc;
-                color: white;
-                transform: translateY(-50%) scale(1.1);
-                box-shadow: 0 4px 12px rgba(0,102,204,0.4);
-            }
-
-            .scroll-arrow:active {
-                transform: translateY(-50%) scale(0.95);
-            }
-
-        .scroll-arrow-left {
-            left: 10px;
-            right: auto;
-        }
-
-        .row.g-4 {
-            transition: all 0.3s ease;
-        }
-
-        .container {
-            padding-top: 20px;
-        }
-
         .btn-add-car {
             padding: 15px 30px;
             background: linear-gradient(135deg, #28a745, #20c997);
@@ -664,15 +386,31 @@
             box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
         }
 
-            .btn-add-car:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
-                color: white;
-            }
+        .btn-add-car:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .btn-clear-filters {
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-clear-filters:hover {
+            background: #5a6268;
+        }
     </style>
 </head>
 <body>
-    <!-- Parallax Background -->
     <div class="parallax-bg">
         <div class="bg-layer"></div>
         <div class="floating-shape shape-1"></div>
@@ -680,449 +418,234 @@
         <div class="floating-shape shape-3"></div>
     </div>
 
-    <div class="container" style="position: relative; z-index: 1;">
-        <h1 class="main-title">Browse all cars</h1>
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-3">
-                <div class="sidebar">
-                    <div class="sidebar-title">Modify Search</div>
-                    <div class="filter-section">
-                        <div class="filter-label" onclick="toggleFilter('brand')">
-                            Brand
-                            <i class="fas fa-chevron-down" id="brand-arrow"></i>
-                        </div>
-                        <div id="brand-filter" style="display: none; margin-top: 15px;">
-                            <div class="brand-filter-grid">
-                                <div class="brand-filter-option">
-                                    <img src="~/images/Mercedes-Logo.svg.png" alt="Mercedes" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/Emblem-Audi.png" alt="Audi" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/MG_Motor_2021_logo.svg.png" alt="MG" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/jetour-logo.png" alt="Jetour" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/Citroen-logo-2009.png" alt="Citroën" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/hd-renault-logo-transparent-background-701751694707700rafepr2bno.png" alt="Renault" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/BMW.svg.png" alt="BMW" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/chery-logo-4k-hd-chery-11563527110ebyxrf9l1d.png" alt="Chery" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/images.jpeg" alt="Hyundai" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/KIA_logo2.svg.png" alt="Kia" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/png-clipart-nissan-car-logo-nissan-emblem-trademark.png" alt="Nissan" class="brand-filter-logo">
-                                </div>
-                                <div class="brand-filter-option">
-                                    <img src="~/images/Toyota-logo-icon-on-transparent--PNG.png" alt="Toyota" class="brand-filter-logo">
+    <div class="main-content-wrapper">
+        <div class="container" style="position: relative; z-index: 1;">
+            <h1 class="main-title">Browse all cars (@Model.TotalResults results)</h1>
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3">
+                    <div class="sidebar">
+                        <div class="sidebar-title">Modify Search</div>
+                        
+                        <!-- Brand Filter Section -->
+                        <div class="filter-section">
+                            <div class="filter-label" onclick="toggleFilter('brand')">
+                                Brand
+                                <i class="fas fa-chevron-down" id="brand-arrow"></i>
+                            </div>
+                            <div id="brand-filter" style="display: none; margin-top: 15px;">
+                                <div class="brand-filter-grid">
+                                    @foreach (var brand in Model.BrandsWithCount)
+                                    {
+                                        <div class="brand-filter-option @(Model.SelectedBrand == brand.Key ? "selected" : "")" 
+                                             onclick="filterByBrand('@brand.Key')">
+                                            <div style="font-weight: 600; font-size: 12px;">@brand.Key</div>
+                                            <div style="font-size: 10px; color: #6c757d;">(@brand.Value)</div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
+
+                        @if (!string.IsNullOrEmpty(Model.SelectedBrand) || !string.IsNullOrEmpty(Model.SortBy) && Model.SortBy != "default")
+                        {
+                            <button class="btn-clear-filters" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Clear All Filters
+                            </button>
+                        }
                     </div>
-                    <div class="filter-section">
-                        <div class="filter-label" onclick="toggleFilter('price')">
-                            Price
-                            <i class="fas fa-chevron-down" id="price-arrow"></i>
-                        </div>
-                        <div id="price-filter" style="display: none; margin-top: 15px;">
-                            <div class="price-grid">
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">400,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">600,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">800,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">1,200,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">1,800,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">2,500,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">500,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">700,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">1,000,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">1,400,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">2,000,000 EGP</div>
-                                </div>
-                                <div class="price-option">
-                                    <div class="price-label-text">Under</div>
-                                    <div class="price-value">3,000,000 EGP</div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- Add Car Button -->
+                    <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+                        <a href="/AddCar" class="btn-add-car" style="text-decoration: none;">
+                            <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                            Add New Car
+                        </a>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#brands">
+                                    <i class="fas fa-th me-2"></i>Brands
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="brands">
+                                <!-- Dynamic Brand Cards from Database -->
+                                <div class="brands-grid position-relative" id="brandsGrid">
+                                    @foreach (var brand in Model.BrandsWithCount)
+                                    {
+                                        <div class="brand-card @(Model.SelectedBrand == brand.Key ? "selected" : "")" 
+                                             onclick="filterByBrand('@brand.Key')">
+                                            <div class="brand-name">@brand.Key</div>
+                                            <div class="brand-count">(@brand.Value cars)</div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="price-link" onclick="showPriceGuide()">
-                        <span>New Car Prices 2024 - 2025</span>
+
+                        <!-- Results Header -->
+                        <div class="results-header">
+                            <div class="results-count">
+                                @Model.TotalResults Cars Found
+                                @if (!string.IsNullOrEmpty(Model.SelectedBrand))
+                                {
+                                    <span style="font-size: 14px; color: #6c757d;"> - Filtered by: @Model.SelectedBrand</span>
+                                }
+                            </div>
+                            <select class="sort-dropdown" id="sortDropdown" onchange="handleSort()">
+                                <option value="default" @@(Model.SortBy == "default" || string.IsNullOrEmpty(Model.SortBy) ? "selected" : "")>Default</option>
+                                <option value="price-low" @@(Model.SortBy == "price-low" ? "selected" : "")>⬍ Price (Low to High)</option>
+                                <option value="price-high" @@(Model.SortBy == "price-high" ? "selected" : "")>⬍ Price (High to Low)</option>
+                                <option value="newest" @@(Model.SortBy == "newest" ? "selected" : "")>Newest First</option>
+                                <option value="popular" @@(Model.SortBy == "popular" ? "selected" : "")>Most Popular</option>
+                            </select>
+                        </div>
+
+                        <!-- Car Cards from Database -->
+                        <div class="row g-4">
+                            @if (Model.Cars != null && Model.Cars.Any())
+                            {
+                                @foreach (var car in Model.Cars)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="car-card" data-car-id="@car.CarId">
+                                            <div class="car-title">@car.Name</div>
+
+                                            <img src="@car.Image"
+                                                 alt="@car.Name"
+                                                 class="car-image"
+                                                 onerror="this.src='/images/placeholder-car.png'" />
+
+                                            <div class="price-section">
+                                                <div class="starting-price">Starting From</div>
+                                                <div class="price-amount">@car.Price EGP</div>
+
+                                                <div class="payment-details">
+                                                    <div class="payment-box">
+                                                        <div class="payment-label">Min Deposit</div>
+                                                        <div class="payment-value">@car.MinDeposit EGP</div>
+                                                    </div>
+
+                                                    <div class="payment-box">
+                                                        <div class="payment-label">Monthly</div>
+                                                        <div class="payment-value">@car.MonthlyInstallment EGP</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="car-meta mt-2 text-muted" style="font-size: 12px;">
+                                                    @car.Brand • @car.Year
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        <i class="fas fa-info-circle"></i> No cars found matching your criteria.
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <!-- Add Car Button -->
-                <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
-                    <a href="/AddCar" class="btn-add-car" style="text-decoration: none;">
-                        <i class="fas fa-plus" style="margin-right: 8px;"></i>
-                        Add New Car
-                    </a>
-                </div>
-                <!-- Tabs -->
-                <div class="tabs-container">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#brands">
-                                <i class="fas fa-th me-2"></i>Brands
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#prices">
-                                <i class="fas fa-tag me-2"></i>Prices
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="brands">
-                            <div class="brands-grid position-relative" id="brandsGrid">
-                                <div class="brand-card">
-                                    <img src="~/images/Mercedes-Logo.svg.png" alt="Mercedes" class="brand-logo">
-                                    <div class="brand-name">Mercedes</div>
-                                    <div class="brand-count">(45)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/Emblem-Audi.png" alt="Audi" class="brand-logo">
-                                    <div class="brand-name">Audi</div>
-                                    <div class="brand-count">(20)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/MG_Motor_2021_logo.svg.png" alt="MG" class="brand-logo">
-                                    <div class="brand-name">MG</div>
-                                    <div class="brand-count">(20)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/jetour-logo.png" alt="Jetour" class="brand-logo">
-                                    <div class="brand-name">Jetour</div>
-                                    <div class="brand-count">(14)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/Citroen-logo-2009.png" alt="Citroën" class="brand-logo">
-                                    <div class="brand-name">Citroën</div>
-                                    <div class="brand-count">(10)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/hd-renault-logo-transparent-background-701751694707700rafepr2bno.png" alt="Renault" class="brand-logo">
-                                    <div class="brand-name">Renault</div>
-                                    <div class="brand-count">(10)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/BMW.svg.png" alt="BMW" class="brand-logo">
-                                    <div class="brand-name">BMW</div>
-                                    <div class="brand-count">(24)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/chery-logo-4k-hd-chery-11563527110ebyxrf9l1d.png" alt="Chery" class="brand-logo">
-                                    <div class="brand-name">Chery</div>
-                                    <div class="brand-count">(20)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/images.jpeg" alt="Hyundai" class="brand-logo">
-                                    <div class="brand-name">Hyundai</div>
-                                    <div class="brand-count">(14)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/KIA_logo2.svg.png" alt="Kia" class="brand-logo">
-                                    <div class="brand-name">Kia</div>
-                                    <div class="brand-count">(11)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/png-clipart-nissan-car-logo-nissan-emblem-trademark.png" alt="Nissan" class="brand-logo">
-                                    <div class="brand-name">Nissan</div>
-                                    <div class="brand-count">(10)</div>
-                                </div>
-                                <div class="brand-card">
-                                    <img src="~/images/Toyota-logo-icon-on-transparent--PNG.png" alt="Toyota" class="brand-logo">
-                                    <div class="brand-name">Toyota</div>
-                                    <div class="brand-count">(10)</div>
-                                </div>
-                                <div class="scroll-arrow scroll-arrow-left" id="scrollLeft">
-                                    <i class="fas fa-chevron-left"></i>
-                                </div>
-                                <div class="scroll-arrow" id="scrollRight">
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="prices">
-                            <div class="prices-grid">
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">400,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">500,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">600,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">700,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">800,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">1,000,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">1,200,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">1,400,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">1,800,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">2,000,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">2,500,000 EGP</div>
-                                </div>
-                                <div class="price-range-card">
-                                    <div class="price-range-label">Under</div>
-                                    <div class="price-range-value">3,000,000 EGP</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Results Header -->
-                    <div class="results-header">
-                        <div class="results-count"></div>
-                        <select class="sort-dropdown">
-                            <option>⬍ Price (Low to High)</option>
-                            <option>⬍ Price (High to Low)</option>
-                            <option>Newest First</option>
-                            <option>Most Popular</option>
-                        </select>
-                    </div>
-                    <!-- Car Cards -->
-                    <div class="row g-4">
-                        @foreach (var car in Model.Cars)
-                        {
-                            <div class="col-md-6 col-lg-4">
-                                <div class="car-card" data-car-id="@car.CarId">
+        </div>
+    </div>
 
-                                    <div class="car-title">@car.Name</div>
-
-                                    <img src="@car.Image"
-                                         alt="@car.Name"
-                                         class="car-image" />
-
-                                    <div class="price-section">
-                                        <div class="starting-price">Starting From</div>
-                                        <div class="price-amount">@car.Price EGP</div>
-
-                                        <div class="payment-details">
-                                            <div class="payment-box">
-                                                <div class="payment-label">Transmission</div>
-                                                <div class="payment-value">@car.Transmission</div>
-                                            </div>
-
-                                            <div class="payment-box">
-                                                <div class="payment-label">Fuel Type</div>
-                                                <div class="payment-value">@car.FuelType</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="car-meta mt-2 text-muted">
-                                            @car.Brand • @car.Year
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-        <script>
-            // Toggle filter sections
-            function toggleFilter(filterName) {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle filter sections
+        function toggleFilter(filterName) {
             const filter = document.getElementById(filterName + '-filter');
             const arrow = document.getElementById(filterName + '-arrow');
             if (filter.style.display === 'none') {
-            filter.style.display = 'block';
-            arrow.classList.remove('fa-chevron-down');
-            arrow.classList.add('fa-chevron-up');
+                filter.style.display = 'block';
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
             } else {
-            filter.style.display = 'none';
-            arrow.classList.remove('fa-chevron-up');
-            arrow.classList.add('fa-chevron-down');
+                filter.style.display = 'none';
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
             }
+        }
+
+        // Filter by brand - preserve current sort
+        function filterByBrand(brand) {
+            const currentSort = document.getElementById('sortDropdown').value;
+            const params = new URLSearchParams();
+            params.append('handler', 'FilterBrand');
+            params.append('brand', brand);
+            if (currentSort && currentSort !== 'default') {
+                params.append('sortBy', currentSort);
             }
-                     // Price filter selection
-            document.querySelectorAll('.price-option').forEach(option => {
-                option.addEventListener('click', function () {
-                    this.classList.toggle('selected');
-                });
-            });
+            window.location.href = `?${params.toString()}`;
+        }
 
-            // Price range card selection
-            document.querySelectorAll('.price-range-card').forEach(card => {
-                card.addEventListener('click', function () {
-                    this.classList.toggle('selected');
-                });
-            });
-
-            // Brand filter selection
-            document.querySelectorAll('.brand-filter-option').forEach(option => {
-                option.addEventListener('click', function () {
-                    this.classList.toggle('selected');
-                });
-            });
-
-            // Brand card selection
-            document.querySelectorAll('.brand-card').forEach(card => {
-                card.addEventListener('click', function () {
-                    this.classList.toggle('selected');
-                });
-            });
-
-            // Brand grid scrolling
-            const brandsGrid = document.getElementById('brandsGrid');
-            const scrollLeftBtn = document.getElementById('scrollLeft');
-            const scrollRightBtn = document.getElementById('scrollRight');
-
-            if (brandsGrid && scrollLeftBtn && scrollRightBtn) {
-                scrollRightBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    brandsGrid.scrollBy({ left: 300, behavior: 'smooth' });
-                });
-
-                scrollLeftBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    brandsGrid.scrollBy({ left: -300, behavior: 'smooth' });
-                });
-
-                // Show/hide arrows based on scroll position
-                function updateArrowVisibility() {
-                    const isAtStart = brandsGrid.scrollLeft <= 0;
-                    const isAtEnd = brandsGrid.scrollLeft >= brandsGrid.scrollWidth - brandsGrid.clientWidth - 10;
-                    
-                    scrollLeftBtn.style.opacity = isAtStart ? '0.5' : '1';
-                    scrollLeftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
-                    
-                    scrollRightBtn.style.opacity = isAtEnd ? '0.5' : '1';
-                    scrollRightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-                }
-
-                brandsGrid.addEventListener('scroll', updateArrowVisibility);
-                updateArrowVisibility();
+        // Handle sort dropdown - preserve current brand filter
+        function handleSort() {
+            const sortBy = document.getElementById('sortDropdown').value;
+            const currentBrand = '@Model.SelectedBrand';
+            const params = new URLSearchParams();
+            
+            if (sortBy && sortBy !== 'default') {
+                params.append('handler', 'Sort');
+                params.append('sortBy', sortBy);
             }
+            
+            if (currentBrand) {
+                params.append('brand', currentBrand);
+            }
+            
+            window.location.href = params.toString() ? `?${params.toString()}` : window.location.pathname;
+        }
 
-            // ========================================
-            // MAKE CAR CARDS CLICKABLE
-            // ========================================
-            document.querySelectorAll('.car-card').forEach(card => {
-                // Add cursor pointer style
-                card.style.cursor = 'pointer';
+        // Clear all filters
+        function clearFilters() {
+            window.location.href = window.location.pathname;
+        }
 
-                // Add click event listener
-                card.addEventListener('click', function(e) {
-                    // Get the car ID from data attribute
-                    const carId = this.getAttribute('data-car-id');
+        // Make car cards clickable
+        document.querySelectorAll('.car-card').forEach(card => {
+            card.style.cursor = 'pointer';
 
-                    if (carId) {
-                        // Navigate to car details page
-                        window.location.href = `/CarDetails/${carId}`;
-                    } else {
-                        // Fallback: create slug from car title
-                        const carTitle = this.querySelector('.car-title').textContent.trim();
-                        const slug = carTitle.toLowerCase()
-                            .replace(/[^a-z0-9]+/g, '-')
-                            .replace(/^-+|-+$/g, '');
-                        window.location.href = `/CarDetails/${slug}`;
-                    }
-                });
-
-                // Add hover effect for better UX
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-10px)';
-                });
-
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
+            card.addEventListener('click', function(e) {
+                const carId = this.getAttribute('data-car-id');
+                if (carId) {
+                    window.location.href = `/CarDetails/${carId}`;
+                }
             });
 
-            // Add additional visual feedback styles
-            const style = document.createElement('style');
-            style.textContent = `
-                .car-card {
-                    cursor: pointer !important;
-                    transition: all 0.3s ease !important;
-                }
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
 
-                .car-card:hover {
-                    box-shadow: 0 15px 35px rgba(0,102,204,0.25) !important;
-                }
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
 
-                .car-card:active {
-                    transform: translateY(-6px) !important;
-                }
-            `;
-            document.head.appendChild(style);
-        </script>
-    </div>
+        // Set the dropdown value on page load based on URL parameter or Model
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sortParam = urlParams.get('sortBy') || '@Model.SortBy';
+            const dropdown = document.getElementById('sortDropdown');
+            
+            if (sortParam && dropdown) {
+                dropdown.value = sortParam;
+            }
+        });
+    </script>
 </body>
 </html>

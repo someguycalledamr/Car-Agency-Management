@@ -32,10 +32,10 @@ namespace AutoLux.Drive.Pages
         {
 
         }
-    }
+    
 
    
-    {
+    
         public string InvoiceId { get; set; }
         public string Service { get; set; }
         public decimal Amount { get; set; }
