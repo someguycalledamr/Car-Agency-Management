@@ -127,7 +127,7 @@ namespace Car_Agency_Management.Pages
                     Car = "Mercedes C-Class",
                     Amount = 1250000,
                     Date = DateTime.Now.AddDays(-1),
-                    Status = "Completed"
+                    Status = "pending"
                 },
                 new Transaction
                 {

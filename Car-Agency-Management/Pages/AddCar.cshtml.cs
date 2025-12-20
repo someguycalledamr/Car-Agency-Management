@@ -109,8 +109,6 @@ namespace Car_Agency_Management.Pages
                 CarId = GenerateCarId(CarName);
             }
 
-            // In a real application, you would save to database here
-            // For now, we'll just redirect to the car details page
             return RedirectToPage("/CarDetails", new { carId = CarId });
         }
 

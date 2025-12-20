@@ -22,5 +22,12 @@ namespace Car_Agency_Management.Pages
 
             return RedirectToPage("profile");
         }
+        public IActionResult OnPostViewGallery()
+        {
+
+            return RedirectToPage("/Car-gallary");
+
+
+        }
     }
 }

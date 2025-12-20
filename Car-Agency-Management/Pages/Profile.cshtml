@@ -14,9 +14,9 @@
     <style>
         @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        /* ================================================= */
-        /* 1. COLOR PALETTE & GLOBAL STYLES (Copied from Index.cshtml) */
-        /* ================================================= */
+
+        /* 1. COLOR PALETTE & GLOBAL STYLES  */
+
         :root {
             --color-bg: #ffffff;
             --color-primary: #f8fafc;
@@ -109,9 +109,9 @@
             }
         }
 
-        /* ================================================= */
+
         /* 3. CORE LAYOUT STYLES */
-        /* ================================================= */
+
         .content-container {
             max-width: 1300px;
             margin: 0 auto;
@@ -175,9 +175,9 @@
             }
         }
 
-        /* ================================================= */
+
         /* 4. PROFILE CARD STYLES */
-        /* ================================================= */
+
         .profile-card {
             background: var(--color-primary);
             border-radius: 15px;
@@ -239,9 +239,9 @@
             color: var(--color-accent);
         }
 
-        /* ================================================= */
+
         /* 5. PAYMENT HISTORY TABLE STYLES */
-        /* ================================================= */
+
         .payment-history-table {
             width: 100%;
             border-collapse: separate;
@@ -368,14 +368,14 @@
                 </div>
 
                 <div class="profile-info">
-                    <h2>Johnathan Doe</h2>
+                    <h2>@Model.UserName</h2>
                     <p>
                         <i class="fa-solid fa-envelope" style="color: var(--color-accent);"></i>
-                        Email: <span>johnathan.doe@@autolux.drive</span>
+                        Email: <span>@Model.Email</span>
                     </p>
                     <p>
                         <i class="fa-solid fa-id-card" style="color: var(--color-accent);"></i>
-                        User ID: <span>ALX980123</span>
+                        User ID: <span>@Model.UserId</span>
                     </p>
                     <p>
                         <i class="fa-solid fa-phone" style="color: var(--color-accent);"></i>
@@ -401,41 +401,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>INV-1004</td>
-                        <td>Mercedes S-Class Rental (5 days)</td>
-                        <td><span class="price-tag">$2,500.00</span></td>
-                        <td>2024-05-20</td>
-                        <td><span class="status-badge status-paid">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>INV-1003</td>
-                        <td>Airport Transfer Service</td>
-                        <td><span class="price-tag">$180.00</span></td>
-                        <td>2024-04-12</td>
-                        <td><span class="status-badge status-paid">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>INV-1002</td>
-                        <td>Porsche 911 Rental (1 day)</td>
-                        <td><span class="price-tag">$950.00</span></td>
-                        <td>2024-03-01</td>
-                        <td><span class="status-badge status-paid">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>INV-1001</td>
-                        <td>BMW 7-Series Rental (7 days)</td>
-                        <td><span class="price-tag">$3,200.00</span></td>
-                        <td>2024-01-15</td>
-                        <td><span class="status-badge status-paid">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>INV-1000</td>
-                        <td>Deposit for Future Booking</td>
-                        <td><span class="price-tag">$500.00</span></td>
-                        <td>2023-12-01</td>
-                        <td><span class="status-badge status-pending">Pending Refund</span></td>
-                    </tr>
+                    @foreach (var record in Model.PaymentHistory)
+                    {
+                        <tr>
+                            <td>@record.InvoiceId</td>
+                            <td>@record.Service</td>
+                            <td>
+                                <span class="price-tag">$@record.Amount.ToString("N2")</span>
+                            </td>
+                            <td>@record.Date</td>
+                            <td>
+                                @{
+                                    // Determine the correct CSS class based on the Status string from the model
+                                    string statusClass = record.Status.ToLower().Contains("paid") ? "status-paid" : "status-pending";
+                                }
+                                <span class="status-badge @statusClass">@record.Status</span>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 

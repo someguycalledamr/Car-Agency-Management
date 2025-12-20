@@ -955,270 +955,43 @@
                     </div>
                     <!-- Car Cards -->
                     <div class="row g-4">
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="suzuki-spresso">
-                                <div class="car-title">Suzuki S Presso Automtic 2024</div>
-                                <img src="~/images/Suzuki_S-Presso_Exterior_01.png" alt="Suzuki S Presso" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">549,900 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">82,485 EGP</div>
+                        @foreach (var car in Model.Cars)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="car-card" data-car-id="@car.CarId">
+
+                                    <div class="car-title">@car.Name</div>
+
+                                    <img src="@car.Image"
+                                         alt="@car.Name"
+                                         class="car-image" />
+
+                                    <div class="price-section">
+                                        <div class="starting-price">Starting From</div>
+                                        <div class="price-amount">@car.Price EGP</div>
+
+                                        <div class="payment-details">
+                                            <div class="payment-box">
+                                                <div class="payment-label">Transmission</div>
+                                                <div class="payment-value">@car.Transmission</div>
+                                            </div>
+
+                                            <div class="payment-box">
+                                                <div class="payment-label">Fuel Type</div>
+                                                <div class="payment-value">@car.FuelType</div>
+                                            </div>
                                         </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">15,386 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="nissan-sunny">
-                                <div class="car-title">Nissan Sunny Manual / Baseline 2026</div>
-                                <img src="~/images/Nissan-sunny.png" alt="Nissan Sunny" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">645,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">96,750 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">18,047 EGP</div>
+
+                                        <div class="car-meta mt-2 text-muted">
+                                            @car.Brand • @car.Year
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="proton-saga">
-                                <div class="car-title">Proton Saga A/T / Premium 2026</div>
-                                <img src="~/images/Proton-saga.png" alt="Proton Saga" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">649,900 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">97,485 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">18,184 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="mercedes-c-class">
-                                <div class="car-title">Mercedes-Benz C-Class 2025</div>
-                                <img src="~/images/Mercedes-Benz.png" alt="Mercedes C-Class" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">1,250,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">187,500 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">35,000 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="bmw-x3">
-                                <div class="car-title">BMW X3 xDrive 2025</div>
-                                <img src="~/images/Angebotsbild-bmw-x3-20d-xdrive-q1-2025.png" alt="BMW X3" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">1,450,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">217,500 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">40,600 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="audi-a4">
-                                <div class="car-title">Audi A4 Sportback 2025</div>
-                                <img src="~/images/Audi-A4.jpeg" alt="Audi A4" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">1,350,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">202,500 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">37,800 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="mg-zs">
-                                <div class="car-title">MG ZS Standard 2025</div>
-                                <img src="~/images/MG-ZS-BLACK.png" alt="MG ZS" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">685,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">102,750 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">19,160 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="toyota-corolla">
-                                <div class="car-title">Toyota Corolla GLi 2025</div>
-                                <img src="~/images/corolla.png" alt="Toyota Corolla" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">785,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">117,750 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">21,980 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="hyundai-tucson">
-                                <div class="car-title">Hyundai Tucson Smart 2025</div>
-                                <img src="~/images/Tucson.png" alt="Hyundai Tucson" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">895,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">134,250 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">25,050 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="kia-sportage">
-                                <div class="car-title">Kia Sportage LX 2025</div>
-                                <img src="~/images/kia-sportage.jpg" alt="Kia Sportage" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">920,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">138,000 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">25,760 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="chery-tiggo7">
-                                <div class="car-title">Chery Tiggo 7 Comfort 2025</div>
-                                <img src="~/images/Chery.png" alt="Chery Tiggo 7" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">740,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">111,000 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">20,720 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="renault-duster">
-                                <div class="car-title">Renault Duster Expression 2025</div>
-                                <img src="~/images/Renault-duster.jpg" alt="Renault Duster" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">670,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">100,500 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">18,760 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="car-card" data-car-id="citroen-c3">
-                                <div class="car-title">Citroën C3 Feel 2025</div>
-                                <img src="~/images/Cirtoen-c3.jpeg" alt="Citroën C3" class="car-image">
-                                <div class="price-section">
-                                    <div class="starting-price">Starting From</div>
-                                    <div class="price-amount">595,000 EGP</div>
-                                    <div class="payment-details">
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Deposit</div>
-                                            <div class="payment-value">89,250 EGP</div>
-                                        </div>
-                                        <div class="payment-box">
-                                            <div class="payment-label">Min. Installment</div>
-                                            <div class="payment-value">16,660 EGP</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
-                </div>
-            </div>
-        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
         <script>
             // Toggle filter sections

@@ -14,7 +14,7 @@ namespace Car_Agency_Management.Pages
 
         private void LoadCars()
         {
-            // Load all available cars for the gallery
+            
             Cars = new List<CarSummary>
             {
                 new CarSummary
@@ -112,7 +112,7 @@ namespace Car_Agency_Management.Pages
                     Brand = "Kia",
                     Year = "2025",
                     Price = "920,000",
-                    Image = "/images/kia-sportage.png",
+                    Image = "/images/Tucson.png",
                     Transmission = "Automatic",
                     FuelType = "Hybrid"
                 },
@@ -153,7 +153,7 @@ namespace Car_Agency_Management.Pages
         }
     }
 
-    // Helper class for car summary in gallery
+    // Helper class
     public class CarSummary
     {
         public string CarId { get; set; } = "";
