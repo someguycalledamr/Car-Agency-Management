@@ -1,5 +1,6 @@
 // Profile.cshtml.cs
 
+using Car_Agency_Management.Data;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AutoLux.Drive.Pages
@@ -28,8 +29,18 @@ namespace AutoLux.Drive.Pages
             new PaymentRecord { InvoiceId = "INV-1000", Service = "Deposit for Future Booking", Amount = 500.00M, Date = "2023-12-01", Status = "Pending Refund" }
         };
 
-        public void OnGet() { }
-        
+        public CustomerModel Customer { get; set; }
+        public List<TransactionSummary> Transactions { get; set; }
+
+        public void OnGet()
+        {
+            // Assuming you have the ID from a session or login
+            int loggedInId = 1;
+            var db = new DB();
+            Customer = db.GetCustomerProfile(loggedInId);
+            Transactions = db.GetCustomerTransactions(loggedInId);
+        }
+
 
 
         public string InvoiceId { get; set; }

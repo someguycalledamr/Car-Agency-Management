@@ -2,7 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "AutoLux.Drive - Premium Mobility";
-    
+
 }
 
 <!DOCTYPE html>
@@ -15,7 +15,7 @@
         @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
         /* 1. COLOR PALETTE & GLOBAL STYLES */
-        
+
         :root {
             --color-bg: #ffffff;
             --color-primary: #f8fafc;
@@ -40,9 +40,9 @@
             position: relative;
         }
 
-       
+
         /* 2. DRIFTING CAR VIDEO OVERLAY */
-        
+
         .car-video-overlay {
             position: fixed;
             top: 0;
@@ -50,7 +50,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 100; 
+            z-index: 100;
             overflow: hidden;
         }
 
@@ -64,7 +64,7 @@
             opacity: 0;
             transform: rotate(-20deg);
             animation: carDriftIn 5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            z-index: 100; 
+            z-index: 100;
             pointer-events: none;
             transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), top 0.3s ease-out;
         }
@@ -331,9 +331,9 @@
             }
         }
 
-        
+
         /* 3. PARALLAX BACKGROUND LAYERS */
-        
+
         .parallax-bg {
             position: fixed;
             top: 0;
@@ -582,9 +582,9 @@
             transform: scale(1.1) rotate(2deg);
         }
 
-        
+
         /* 6. CTA BUTTON (Micro-interactions) */
-       
+
         .cta-button {
             display: inline-block;
             padding: 16px 35px;
@@ -631,9 +631,9 @@
                 transform: translateY(-2px) scale(1.02);
             }
 
-        
+
         /* 7. SECTION HEADERS (3D Effect) */
-        
+
         .section-header {
             text-align: center;
             margin: 80px 0 40px;
@@ -670,9 +670,9 @@
             }
         }
 
-        /
+        /* ================================================= */
         /* 8. CAR CARDS (Advanced Hover Effects) */
-        
+        /* ================================================= */
         .car-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -797,7 +797,7 @@
         /* ================================================= */
         /* 9. PARTNERS SECTION (Enhanced Carousel) */
         /* ================================================= */
-       
+
         .partners-section {
             background: linear-gradient(135deg, var(--color-primary) 0%, #e0f2fe 100%);
             padding: 30px 0 40px 0;
@@ -808,7 +808,7 @@
             overflow: hidden;
             border-top: 1px solid #e5e7eb;
             position: sticky;
-            top: 80px; 
+            top: 80px;
             z-index: 50;
         }
 
@@ -857,31 +857,25 @@
             }
 
         @@keyframes scrollPartnersLeftToRight {
-            0%
+            0% {
+                transform: translateX(-50%);
+            }
 
-        {
-            transform: translateX(-50%);
-        }
-
-        100% {
-            transform: translateX(0%);
-        }
-
+            100% {
+                transform: translateX(0%);
+            }
         }
 
         @@keyframes fadeInUp {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ================================================= */
@@ -928,9 +922,9 @@
                 grid-template-columns: 1fr;
             }
         }
-/* ================================================= */
+        /* ================================================= */
         /* 12. SCROLL PROGRESS BAR */
-        
+        /* ================================================= */
         .scroll-progress {
             position: fixed;
             top: 0;
@@ -1151,118 +1145,121 @@
             </div>
         </section>
 
-        <!-- New Arrivals -->
+        <!-- ========================================== -->
+        <!-- NEW ARRIVALS SECTION - NOW DYNAMIC FROM DB -->
+        <!-- ========================================== -->
         <section id="new-arrivals">
             <h2 class="section-header"><span>New</span> Arrivals</h2>
             <div class="car-grid">
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="https://images.squarespace-cdn.com/content/v1/5903be40db29d65078192279/1572393623657-FVWD8Z2GTB5UTDF34Q48/IMG_6452.jpeg
-" alt="Electric Hypercar">
-                    </div>
-                    <div class="card-info">
-                        <h3>Electric Hyper GT</h3>
-                        <p>Experience silent speed and groundbreaking electric performance. New model.</p>
-                        <div class="price-tag">$350/day</div>
-                    </div>
-                </div>
-
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="https://i.ytimg.com/vi/n0fWyKBs44s/maxresdefault.jpg" alt="Luxury Sedan">
-                    </div>
-                    <div class="card-info">
-                        <h3>Executive Sedan S-Class</h3>
-                        <p>The pinnacle of luxury and comfort for long-distance executive travel.</p>
-                        <div class="price-tag">$220/day</div>
-                    </div>
-                </div>
-
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="https://www.hondaoflosangeles.com/blogs/5120/wp-content/uploads/2024/11/03-2026-Honda-Passport-TrailSport-Off-Road-1024x575.jpg" alt="High-End SUV">
-                    </div>
-                    <div class="card-info">
-                        <h3>Adventure SUV Elite</h3>
-                        <p>Powerful and spacious, combining luxury with rugged capability.</p>
-                        <div class="price-tag">$190/day</div>
-                    </div>
-                </div>
+                @* CHANGE: Now using Model.NewArrivals from database instead of hardcoded data *@
+                @if (Model.NewArrivals != null && Model.NewArrivals.Count > 0)
+                {
+                    @foreach (var car in Model.NewArrivals)
+                    {
+                        <div class="car-card">
+                            <div class="car-image-wrapper">
+                                @* CHANGE: Using database image URL *@
+                                <img src="@car.Image" alt="@car.Name">
+                            </div>
+                            <div class="card-info">
+                                @* CHANGE: Using database car name *@
+                                <h3>@car.Name</h3>
+                                @* CHANGE: Using database brand and year *@
+                                <p>@car.Brand @car.Year - Experience the latest model with cutting-edge technology.</p>
+                                @* CHANGE: Using database price with EGP formatting *@
+                                <div class="price-tag">@car.Price EGP/day</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @* Fallback if no cars in database *@
+                    <p style="text-align: center; color: var(--color-text-muted); grid-column: 1 / -1;">
+                        No new arrivals available at the moment.
+                    </p>
+                }
             </div>
         </section>
 
-        <!-- Trending Now -->
+        <!-- ========================================== -->
+        <!-- TRENDING NOW SECTION - NOW DYNAMIC FROM DB -->
+        <!-- ========================================== -->
         <section id="trendy-cars">
             <h2 class="section-header"><span>Trending</span> Now</h2>
             <div class="car-grid">
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.Z2Ci7xM8R_OWESp6vaumUQHaFj?cb=ucfimg2&pid=ImgDet&ucfimg=1&w=474&h=355&rs=1&o=7&rm=3" alt="Sporty Roadster">
-                    </div>
-                    <div class="card-info">
-                        <h3>Convertible Roadster Z4</h3>
-                        <p>The most exhilarating rental for weekend getaways and scenic drives.</p>
-                        <div class="price-tag">$290/day</div>
-                    </div>
-                </div>
-
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="https://www.hgreglux.com/photos/by-size/L62313CS/1200x630/content.homenetiol.com_2001243_2130496_0x0_bf5daa638f444791b73a113e216d9ff5.jpg" alt="Performance Coupe">
-                    </div>
-                    <div class="card-info">
-                        <h3>Performance Coupe M8</h3>
-                        <p>Unmatched driving dynamics and raw engine power for the enthusiast.</p>
-                        <div class="price-tag">$310/day</div>
-                    </div>
-                </div>
-
-                <div class="car-card">
-                    <div class="car-image-wrapper">
-                        <img src="data:image/jpeg;base64,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" alt="Economy Hatchback">
-                    </div>
-                    <div class="card-info">
-                        <h3>Economy Hatch (Best Value)</h3>
-                        <p>The practical, reliable, and fuel-efficient choice for city logistics.</p>
-                        <div class="price-tag">$75/day</div>
-                    </div>
-                </div>
+                @* CHANGE: Now using Model.TrendingCars from database based on last month's transactions *@
+                @if (Model.TrendingCars != null && Model.TrendingCars.Count > 0)
+                {
+                    @foreach (var car in Model.TrendingCars)
+                    {
+                        <div class="car-card">
+                            <div class="car-image-wrapper">
+                                @* CHANGE: Using database image URL *@
+                                <img src="@car.Image" alt="@car.Name">
+                            </div>
+                            <div class="card-info">
+                                @* CHANGE: Using database car name *@
+                                <h3>@car.Name</h3>
+                                @* CHANGE: Using database brand and year *@
+                                <p>@car.Brand @car.Year - Most popular choice this month!</p>
+                                @* CHANGE: Using database price with EGP formatting *@
+                                <div class="price-tag">@car.Price EGP/day</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @* Fallback if no trending data *@
+                    <p style="text-align: center; color: var(--color-text-muted); grid-column: 1 / -1;">
+                        No trending cars available at the moment.
+                    </p>
+                }
             </div>
         </section>
     </div>
 
     <div id="booking" style="padding: 10px 0;"></div>
 
-    <!-- Partners Section -->
+    <!-- ========================================== -->
+    <!-- PARTNERS SECTION - NOW DYNAMIC FROM DB -->
+    <!-- ========================================== -->
     <section class="partners-section" id="partners">
         <h2>Trusted Vehicle Partners</h2>
         <div class="partner-track-wrapper">
             <div class="partner-track">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-
-                <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
-                <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
-                <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-
-                <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
-                <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
-                <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
-
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-
-                <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
-                <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
-                <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes">
-                <img class="partner-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg" alt="BMW">
-
-                <img class="partner-logo" src="https://www.pngall.com/wp-content/uploads/15/Volvo-Logo-PNG-Photos.png" alt="Volvo">
-                <img class="partner-logo" src="https://www.freepnglogos.com/uploads/toyota-logo-png/toyota-logos-brands-10.png" alt="Toyota">
-                <img class="partner-logo" src="https://th.bing.com/th/id/R.3ff8e4fce59fc30d12fb7707322798cb?rik=kR7PM0FrbZVedg&riu=http%3a%2f%2frgbcarparts.com%2fcdn%2fshop%2fcollections%2faudi-logo_1200x1200.png%3fv%3d1682731815&ehk=7NVPsJA1SN4zyMAQPCnNfwq8buZZ2feaFF21g9JYzPM%3d&risl=&pid=ImgRaw&r=0" alt="Audi">
+                @* CHANGE: Now using Model.Partners from database instead of hardcoded partner logos *@
+                @* The logos are duplicated 4 times to create seamless infinite scroll effect *@
+                @if (Model.Partners != null && Model.Partners.Count > 0)
+                {
+                    @* First set of partners *@
+                    @foreach (var partner in Model.Partners)
+                    {
+                        <img class="partner-logo" src="@partner.LogoUrl" alt="@partner.BrandName">
+                    }
+                    @* Second set - duplicate for seamless scrolling *@
+                    @foreach (var partner in Model.Partners)
+                    {
+                        <img class="partner-logo" src="@partner.LogoUrl" alt="@partner.BrandName">
+                    }
+                    @* Third set - duplicate for seamless scrolling *@
+                    @foreach (var partner in Model.Partners)
+                    {
+                        <img class="partner-logo" src="@partner.LogoUrl" alt="@partner.BrandName">
+                    }
+                    @* Fourth set - duplicate for seamless scrolling *@
+                    @foreach (var partner in Model.Partners)
+                    {
+                        <img class="partner-logo" src="@partner.LogoUrl" alt="@partner.BrandName">
+                    }
+                }
+                else
+                {
+                    <p style="text-align: center; color: var(--color-text-muted);">
+                        No partners available at the moment.
+                    </p>
+                }
             </div>
         </div>
     </section>

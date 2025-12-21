@@ -4,13 +4,12 @@ using System.Reflection.Metadata;
 using System.Data;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        private readonly string _connectionString = "Data Source = AMR; Initial Catalog= Car_agency ; Integrated Security = True; Trust Server Certificate=True;";
+        private readonly string _connectionString = "Data Source = ; Initial Catalog= ; Integrated Security = True; Trust Server Certificate=True;";
         private SqlConnection _connection;
 
         public DB()
@@ -19,11 +18,200 @@ namespace Car_Agency_Management.Data
         }
 
         // ============================================
+        // HOMEPAGE QUERIES - NEWLY ADDED SECTION
+        // ============================================
+        // These three methods were ADDED to support the homepage dynamic data
+        // They fetch: New Arrivals, Trending Cars, and Active Partners
+
+        /// <summary>
+        /// ADDED: Get top 3 newest cars for New Arrivals section on homepage
+        /// Query: SELECT TOP 3 * FROM CAR ORDER BY DATE_ADDED DESC
+        /// Returns: List of CarSummary with newest cars based on DATE_ADDED field
+        /// </summary>
+        public List<CarSummary> GetNewArrivals()
+        {
+            List<CarSummary> cars = new List<CarSummary>();
+
+            // ADDED: Query to get 3 most recently added cars
+            string query = @"SELECT TOP 3
+                            CAR_ID,
+                            CAR_NAME,
+                            BRAND,
+                            YEAR,
+                            PRICE,
+                            MAIN_IMAGE,
+                            TRANSMISSION,
+                            FUEL_TYPE,
+                            MIN_DEPOSIT,
+                            MONTHLY_INSTALLMENT
+                            FROM CAR
+                            ORDER BY DATE_ADDED DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cars.Add(new CarSummary
+                    {
+                        CarId = reader["CAR_ID"].ToString(),
+                        Name = reader["CAR_NAME"].ToString(),
+                        Brand = reader["BRAND"].ToString(),
+                        Year = reader["YEAR"].ToString(),
+                        Price = reader["PRICE"].ToString(),
+                        Image = reader["MAIN_IMAGE"].ToString(),
+                        // ADDED: Handle nullable fields with DBNull check
+                        Transmission = reader["TRANSMISSION"] != DBNull.Value ? reader["TRANSMISSION"].ToString() : "",
+                        FuelType = reader["FUEL_TYPE"] != DBNull.Value ? reader["FUEL_TYPE"].ToString() : "",
+                        MinDeposit = reader["MIN_DEPOSIT"] != DBNull.Value ? reader["MIN_DEPOSIT"].ToString() : "",
+                        MonthlyInstallment = reader["MONTHLY_INSTALLMENT"] != DBNull.Value ? reader["MONTHLY_INSTALLMENT"].ToString() : ""
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetNewArrivals: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return cars;
+        }
+
+        /// <summary>
+        /// ADDED: Get top 3 trending cars based on transactions in last month for homepage
+        /// Query: Complex join between CAR, BUYING_RENTING, CUSTOMER, and PAYMENT tables
+        /// Filters by PAYMENT_DATE >= last 30 days and groups by car to count transactions
+        /// Returns: List of CarSummary with most popular cars in descending order
+        /// </summary>
+        public List<CarSummary> GetTrendingCars()
+        {
+            List<CarSummary> cars = new List<CarSummary>();
+
+            // ADDED: Complex query to get trending cars based on last month's transactions
+            string query = @"DECLARE @LastMonthStart DATE;
+                            SET @LastMonthStart = DATEADD(month, -1, GETDATE());
+                            
+                            SELECT TOP 3 
+                                C.CAR_ID,
+                                C.CAR_NAME,
+                                C.BRAND,
+                                C.YEAR,
+                                C.PRICE,
+                                C.MAIN_IMAGE,
+                                C.TRANSMISSION,
+                                C.FUEL_TYPE,
+                                C.MIN_DEPOSIT,
+                                C.MONTHLY_INSTALLMENT,
+                                COUNT(BR.CAR_ID) AS TotalTransactions
+                            FROM CAR C
+                            JOIN BUYING_RENTING BR ON C.CAR_ID = BR.CAR_ID
+                            JOIN CUSTOMER CU ON BR.CUSTOMER_ID = CU.CUSTOMER_ID
+                            JOIN PAYMENT P ON CU.CUSTOMER_ID = P.CUSTOMER_ID
+                            WHERE P.PAYMENT_DATE >= @LastMonthStart
+                            GROUP BY C.CAR_ID, C.CAR_NAME, C.BRAND, C.YEAR, C.PRICE, 
+                                     C.MAIN_IMAGE, C.TRANSMISSION, C.FUEL_TYPE, 
+                                     C.MIN_DEPOSIT, C.MONTHLY_INSTALLMENT
+                            ORDER BY TotalTransactions DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cars.Add(new CarSummary
+                    {
+                        CarId = reader["CAR_ID"].ToString(),
+                        Name = reader["CAR_NAME"].ToString(),
+                        Brand = reader["BRAND"].ToString(),
+                        Year = reader["YEAR"].ToString(),
+                        Price = reader["PRICE"].ToString(),
+                        Image = reader["MAIN_IMAGE"].ToString(),
+                        Transmission = reader["TRANSMISSION"] != DBNull.Value ? reader["TRANSMISSION"].ToString() : "",
+                        FuelType = reader["FUEL_TYPE"] != DBNull.Value ? reader["FUEL_TYPE"].ToString() : "",
+                        MinDeposit = reader["MIN_DEPOSIT"] != DBNull.Value ? reader["MIN_DEPOSIT"].ToString() : "",
+                        MonthlyInstallment = reader["MONTHLY_INSTALLMENT"] != DBNull.Value ? reader["MONTHLY_INSTALLMENT"].ToString() : ""
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTrendingCars: {ex.Message}");
+                // ADDED: Fallback to newest cars if no trending data exists
+                _connection.Close();
+                return GetNewArrivals();
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+
+            return cars;
+        }
+
+        /// <summary>
+        /// ADDED: Get active partners for homepage carousel
+        /// Query: SELECT BRAND_NAME, LOGO_URL FROM PARTNERS WHERE IS_ACTIVE = 1
+        /// Returns: List of Partner objects with brand name and logo URL
+        /// </summary>
+        public List<Partner> GetActivePartners()
+        {
+            List<Partner> partners = new List<Partner>();
+
+            // ADDED: Query to get all active partners for homepage carousel
+            string query = @"SELECT BRAND_NAME, LOGO_URL
+                            FROM PARTNERS
+                            WHERE IS_ACTIVE = 1
+                            ORDER BY BRAND_NAME";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    partners.Add(new Partner
+                    {
+                        BrandName = reader["BRAND_NAME"].ToString(),
+                        LogoUrl = reader["LOGO_URL"].ToString()
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetActivePartners: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return partners;
+        }
+
+        // ============================================
         // CAR GALLERY - RETRIEVE OPERATIONS
+        // UNCHANGED - These methods existed before
         // ============================================
 
         /// <summary>
-        /// Get all cars for the gallery view
+        /// UNCHANGED: Get all cars for the gallery view
         /// </summary>
         public List<CarSummary> GetAllCars()
         {
@@ -69,7 +257,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get brands with car count for sidebar/brands tab
+        /// UNCHANGED: Get brands with car count for sidebar/brands tab
         /// </summary>
         public Dictionary<string, int> GetBrandsWithCount()
         {
@@ -105,7 +293,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Filter cars by brand
+        /// UNCHANGED: Filter cars by brand
         /// </summary>
         public List<CarSummary> GetCarsByBrand(string brand)
         {
@@ -153,7 +341,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Filter cars by maximum price
+        /// UNCHANGED: Filter cars by maximum price
         /// </summary>
         public List<CarSummary> GetCarsByMaxPrice(decimal maxPrice)
         {
@@ -201,7 +389,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Filter cars with combined filters (brand + price range)
+        /// UNCHANGED: Filter cars with combined filters (brand + price range)
         /// </summary>
         public List<CarSummary> GetCarsFiltered(string brand = null, decimal? minPrice = null, decimal? maxPrice = null)
         {
@@ -253,7 +441,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Sort cars by price (low to high or high to low)
+        /// UNCHANGED: Sort cars by price (low to high or high to low)
         /// </summary>
         public List<CarSummary> GetCarsSortedByPrice(bool ascending = true)
         {
@@ -300,7 +488,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Sort cars by newest first
+        /// UNCHANGED: Sort cars by newest first
         /// </summary>
         public List<CarSummary> GetCarsNewestFirst()
         {
@@ -346,7 +534,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get most popular cars based on rentals/sales
+        /// UNCHANGED: Get most popular cars based on rentals/sales
         /// </summary>
         public List<CarSummary> GetMostPopularCars()
         {
@@ -395,7 +583,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get total results count for filters
+        /// UNCHANGED: Get total results count for filters
         /// </summary>
         public int GetTotalResultsCount(string brand = null, decimal? minPrice = null, decimal? maxPrice = null)
         {
@@ -430,7 +618,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get basic car info when clicking a card
+        /// UNCHANGED: Get basic car info when clicking a card
         /// </summary>
         public CarSummary GetCarBasicInfo(string carId)
         {
@@ -475,10 +663,11 @@ namespace Car_Agency_Management.Data
 
         // ============================================
         // CAR DETAILS - EDIT MODE
+        // UNCHANGED - All methods below existed before
         // ============================================
 
         /// <summary>
-        /// Get complete car details for edit mode
+        /// UNCHANGED: Get complete car details for edit mode
         /// </summary>
         public CarDetails GetCarDetails(string carId)
         {
@@ -533,7 +722,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get car images for edit mode
+        /// UNCHANGED: Get car images for edit mode
         /// </summary>
         public List<string> GetCarImages(string carId)
         {
@@ -570,7 +759,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Get car features for edit mode
+        /// UNCHANGED: Get car features for edit mode
         /// </summary>
         public List<string> GetCarFeatures(string carId)
         {
@@ -607,7 +796,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Update car main details
+        /// UNCHANGED: Update car main details
         /// </summary>
         public bool UpdateCarDetails(CarDetails car)
         {
@@ -663,7 +852,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Delete old car images
+        /// UNCHANGED: Delete old car images
         /// </summary>
         public bool DeleteCarImages(string carId)
         {
@@ -689,7 +878,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Insert car image
+        /// UNCHANGED: Insert car image
         /// </summary>
         public bool InsertCarImage(string carId, string imageUrl)
         {
@@ -718,7 +907,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Delete old car features
+        /// UNCHANGED: Delete old car features
         /// </summary>
         public bool DeleteCarFeatures(string carId)
         {
@@ -744,7 +933,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Insert car feature
+        /// UNCHANGED: Insert car feature
         /// </summary>
         public bool InsertCarFeature(string carId, string featureName)
         {
@@ -773,7 +962,7 @@ namespace Car_Agency_Management.Data
         }
 
         /// <summary>
-        /// Delete car and all related data
+        /// UNCHANGED: Delete car and all related data
         /// </summary>
         public bool DeleteCar(string carId)
         {
@@ -801,10 +990,11 @@ namespace Car_Agency_Management.Data
 
         // ============================================
         // ADD CAR MODE
+        // UNCHANGED - This section existed before
         // ============================================
 
         /// <summary>
-        /// Add new car and return the new car ID
+        /// UNCHANGED: Add new car and return the new car ID
         /// </summary>
         public string AddCar(CarDetails car)
         {
@@ -854,12 +1044,72 @@ namespace Car_Agency_Management.Data
 
             return newCarId;
         }
+        // NEW: Get customer data (Uses FNAME, LNAME, and CUSTOMER_EMAIL from your schema)
+        public CustomerModel GetCustomerProfile(int customerId)
+        {
+            CustomerModel customer = null;
+            string query = "SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = @Id";
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@Id", customerId);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    customer = new CustomerModel
+                    {
+                        Id = (int)reader["CUSTOMER_ID"],
+                        FirstName = reader["FNAME"].ToString(),
+                        LastName = reader["LNAME"].ToString(),
+                        Email = reader["CUSTOMER_EMAIL"].ToString(),
+                        Address = reader["ADDRESS"].ToString()
+                    };
+                }
+            }
+            finally { _connection.Close(); }
+            return customer;
+        }
+
+        // NEW: Get customer history (Joins CAR, BUYING_RENTING, and PAYMENT)
+        public List<TransactionSummary> GetCustomerTransactions(int customerId)
+        {
+            List<TransactionSummary> list = new List<TransactionSummary>();
+            string query = @"SELECT C.CAR_NAME, C.BRAND, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE
+                    FROM BUYING_RENTING BR
+                    JOIN CAR C ON BR.CAR_ID = C.CAR_ID
+                    JOIN PAYMENT P ON BR.CUSTOMER_ID = P.CUSTOMER_ID
+                    WHERE BR.CUSTOMER_ID = @Id
+                    ORDER BY P.PAYMENT_DATE DESC";
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@Id", customerId);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    list.Add(new TransactionSummary
+                    {
+                        CarTitle = $"{reader["BRAND"]} {reader["CAR_NAME"]}",
+                        Method = reader["PAYMENT_METHOD"].ToString(),
+                        Amount = reader["AMOUNT"].ToString(),
+                        Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString()
+                    });
+                }
+            }
+            finally { _connection.Close(); }
+            return list;
+        }
     }
 
     // ============================================
     // HELPER CLASSES
     // ============================================
 
+    /// <summary>
+    /// UNCHANGED: CarSummary class for car list views
+    /// </summary>
     public class CarSummary
     {
         public string CarId { get; set; } = "";
@@ -874,6 +1124,9 @@ namespace Car_Agency_Management.Data
         public string MonthlyInstallment { get; set; } = "";
     }
 
+    /// <summary>
+    /// UNCHANGED: CarDetails class for detailed car information
+    /// </summary>
     public class CarDetails
     {
         public string CarId { get; set; } = "";
@@ -892,4 +1145,62 @@ namespace Car_Agency_Management.Data
         public string MonthlyInstallment { get; set; } = "";
         public string Description { get; set; } = "";
     }
+
+    /// <summary>
+    /// ADDED: Partner class for homepage partners carousel
+    /// Stores partner brand name and logo URL from PARTNERS table
+    /// </summary>
+    public class Partner
+    {
+        public string BrandName { get; set; } = "";
+        public string LogoUrl { get; set; } = "";
+    }
+    public class CustomerModel
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+    }
+
+    public class TransactionSummary
+    {
+        public string CarTitle { get; set; }
+        public string Method { get; set; }
+        public string Amount { get; set; }
+        public string Date { get; set; }
+    }
 }
+
+// ============================================
+// SUMMARY OF ALL CHANGES TO DB.CS:
+// ============================================
+// 1. ADDED: GetNewArrivals() method
+//    - Fetches top 3 newest cars ordered by DATE_ADDED DESC
+//    - Used for "New Arrivals" section on homepage
+//
+// 2. ADDED: GetTrendingCars() method  
+//    - Complex query joining CAR, BUYING_RENTING, CUSTOMER, PAYMENT tables
+//    - Fetches top 3 cars with most transactions in last 30 days
+//    - Used for "Trending Now" section on homepage
+//    - Falls back to GetNewArrivals() if no transaction data exists
+//
+// 3. ADDED: GetActivePartners() method
+//    - Fetches all partners where IS_ACTIVE = 1
+//    - Used for partners carousel on homepage
+//
+// 4. ADDED: Partner class
+//    - New helper class with BrandName and LogoUrl properties
+//    - Represents a row from the PARTNERS table
+//
+// 5. UNCHANGED: All other methods (gallery, filtering, sorting, CRUD operations)
+//    - GetAllCars(), GetCarsByBrand(), GetCarsByMaxPrice()
+//    - GetCarsFiltered(), GetCarsSortedByPrice(), GetCarsNewestFirst()
+//    - GetMostPopularCars(), GetTotalResultsCount(), GetCarBasicInfo()
+//    - GetCarDetails(), GetCarImages(), GetCarFeatures()
+//    - UpdateCarDetails(), DeleteCarImages(), InsertCarImage()
+//    - DeleteCarFeatures(), InsertCarFeature(), DeleteCar(), AddCar()
+//
+// 6. UNCHANGED: CarSummary and CarDetails helper classes
+// ============================================

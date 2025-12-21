@@ -368,22 +368,18 @@
                 </div>
 
                 <div class="profile-info">
-                    <h2>@Model.UserName</h2>
+                    <h2>@Model.Customer.FirstName @Model.Customer.LastName</h2>
                     <p>
                         <i class="fa-solid fa-envelope" style="color: var(--color-accent);"></i>
-                        Email: <span>@Model.Email</span>
+                        Email: <span>@Model.Customer.Email</span>
                     </p>
                     <p>
                         <i class="fa-solid fa-id-card" style="color: var(--color-accent);"></i>
-                        User ID: <span>@Model.UserId</span>
+                        User ID: <span>@Model.Customer.Id</span>
                     </p>
                     <p>
-                        <i class="fa-solid fa-phone" style="color: var(--color-accent);"></i>
-                        Contact: <span>+1 (555) 123-4567</span>
-                    </p>
-                    <p>
-                        <i class="fa-solid fa-car" style="color: var(--color-accent);"></i>
-                        Member Since: <span>2022-04-15</span>
+                        <i class="fa-solid fa-location-dot" style="color: var(--color-accent);"></i>
+                        Address: <span>@Model.Customer.Address</span>
                     </p>
                 </div>
             </div>
@@ -393,30 +389,35 @@
             <table class="payment-history-table">
                 <thead>
                     <tr>
-                        <th>#ID</th>
-                        <th>Service</th>
+                        <th>Vehicle</th>
+                        <th>Payment Method</th>
                         <th>Amount</th>
                         <th>Date</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var record in Model.PaymentHistory)
+                    @if (Model.Transactions != null && Model.Transactions.Any())
+                    {
+                        @foreach (var record in Model.Transactions)
+                        {
+                            <tr>
+                                <td>@record.CarTitle</td>
+                                <td>@record.Method</td>
+                                <td>
+                                    <span class="price-tag">$@record.Amount</span>
+                                </td>
+                                <td>@record.Date</td>
+                                <td>
+                                    <span class="status-badge status-paid">Completed</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@record.InvoiceId</td>
-                            <td>@record.Service</td>
-                            <td>
-                                <span class="price-tag">$@record.Amount.ToString("N2")</span>
-                            </td>
-                            <td>@record.Date</td>
-                            <td>
-                                @{
-                                    // Determine the correct CSS class based on the Status string from the model
-                                    string statusClass = record.Status.ToLower().Contains("paid") ? "status-paid" : "status-pending";
-                                }
-                                <span class="status-badge @statusClass">@record.Status</span>
-                            </td>
+                            <td colspan="5" style="text-align:center;">No transaction history found.</td>
                         </tr>
                     }
                 </tbody>
