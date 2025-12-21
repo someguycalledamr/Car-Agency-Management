@@ -121,5 +121,19 @@ namespace Car_Agency_Management.Pages
             LoadBrands();
             return Page();
         }
+
+        public IActionResult OnPostDelete(string carId)
+        {
+            if (!string.IsNullOrEmpty(carId))
+            {
+                // Delete car features
+                _db.DeleteCarFeatures(carId);
+                // Delete car images
+                _db.DeleteCarImages(carId);
+                // Delete car record
+                _db.DeleteCar(carId);
+            }
+            return RedirectToPage("/Car-gallery");
+        }
     }
 }

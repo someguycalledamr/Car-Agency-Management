@@ -1,21 +1,67 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Data.SqlTypes;
-using System.Reflection.Metadata;
-using System.Data;
+﻿
+using Car_Agency_Management.Pages;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlTypes;
+using System.Reflection.Metadata;
 
 namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        private readonly string _connectionString = "Data Source = ; Initial Catalog= ; Integrated Security = True; Trust Server Certificate=True;";
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DB;Integrated Security=True";
         private SqlConnection _connection;
 
         public DB()
         {
             _connection = new SqlConnection(_connectionString);
         }
+
+        // ============================================
+        // DATABASE SETUP & RESET
+        // ============================================
+
+        /// <summary>
+        /// Resets the database using the setup.sql script
+        /// WARNING: This will drop existing tables and data
+        /// </summary>
+        public bool ResetDatabase(string scriptPath)
+        {
+            try
+            {
+                if (!System.IO.File.Exists(scriptPath))
+                {
+                    Console.WriteLine($"Setup script not found at: {scriptPath}");
+                    return false;
+                }
+
+                string script = System.IO.File.ReadAllText(scriptPath);
+
+                // Split script into batches (GO or simple line breaks if needed)
+                // Since this is a simple script without GO, we can try running it as one block 
+                // or split by logical sections if needed. For now, running as one block.
+                // However, localdb might require multiple commands.
+                // Let's execute it directly.
+
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(script, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error resetting database: {ex.Message}");
+                return false;
+            }
+        }
+
 
         // ============================================
         // HOMEPAGE QUERIES - NEWLY ADDED SECTION
@@ -1032,19 +1078,168 @@ namespace Car_Agency_Management.Data
                 {
                     newCarId = result.ToString();
                 }
+
+                // Log the activity
+                if (!string.IsNullOrEmpty(newCarId))
+                {
+                    _connection.Close(); // Close existing connection before logging (LogActivity opens its own)
+                    LogActivity("New Car Added", $"Car: {car.CarName} added to inventory", "success");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in AddCar: {ex.Message}");
+                if (_connection.State == ConnectionState.Open) _connection.Close();
             }
             finally
             {
-                _connection.Close();
+                if (_connection.State == ConnectionState.Open) _connection.Close();
             }
 
             return newCarId;
         }
-        // NEW: Get customer data (Uses FNAME, LNAME, and CUSTOMER_EMAIL from your schema)
+
+        // LOGGING HELPER METHODS
+
+        /// <summary>
+        /// Log an activity to ACTIVITY_LOG table
+        /// </summary>
+        public void LogActivity(string action, string description, string type)
+        {
+            string query = @"INSERT INTO ACTIVITY_LOG (ACTION, DESCRIPTION, TYPE, TIMESTAMP) 
+                     VALUES (@Action, @Description, @Type, GETDATE())";
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Action", action);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@Type", type);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error logging activity: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Log a transaction to TRANSACTION_LOG table
+        /// </summary>
+        public void LogTransaction(int paymentId, string customerName, string carName, decimal amount, string status)
+        {
+            string query = @"INSERT INTO TRANSACTION_LOG (PAYMENT_ID, CUSTOMER_NAME, CAR_NAME, AMOUNT, DATE, STATUS) 
+                     VALUES (@PaymentId, @CustomerName, @CarName, @Amount, GETDATE(), @Status)";
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@PaymentId", paymentId);
+                        cmd.Parameters.AddWithValue("@CustomerName", customerName);
+                        cmd.Parameters.AddWithValue("@CarName", (object)carName ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Amount", amount);
+                        cmd.Parameters.AddWithValue("@Status", status);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error logging transaction: {ex.Message}");
+            }
+        }
+
+        // MISSING RESERVATION AND PAYMENT METHODS
+
+        /// <summary>
+        /// Add a new reservation
+        /// </summary>
+        public int AddReservation(int customerId, DateTime startDate, DateTime endDate, string status = "Confirmed")
+        {
+            int reservationId = 0;
+            string query = @"INSERT INTO RESERVATIONS (CUSTOMER_ID, RESERVATION_START_DATE, RESERVATION_END_DATE, RESERVATION_STATUS)
+                     VALUES (@CustomerId, @StartDate, @EndDate, @Status);
+                     SELECT SCOPE_IDENTITY();";
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CustomerId", customerId);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+                cmd.Parameters.AddWithValue("@Status", status);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    reservationId = Convert.ToInt32(result);
+                    _connection.Close();
+                    LogActivity("Rental Started", $"Car rented by customer", "info");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddReservation: {ex.Message}");
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open) _connection.Close();
+            }
+            return reservationId;
+        }
+
+        /// <summary>
+        /// Add a new payment and log transaction
+        /// </summary>
+        public int AddPayment(int customerId, string method, decimal amount, string status = "Completed")
+        {
+            int paymentId = 0;
+            string query = @"INSERT INTO PAYMENT (CUSTOMER_ID, PAYMENT_METHOD, PAYMENT_STATUS, PAYMENT_DATE, AMOUNT)
+                     VALUES (@CustomerId, @Method, @Status, GETDATE(), @Amount);
+                     SELECT SCOPE_IDENTITY();";
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CustomerId", customerId);
+                cmd.Parameters.AddWithValue("@Method", method);
+                cmd.Parameters.AddWithValue("@Status", status);
+                cmd.Parameters.AddWithValue("@Amount", amount);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    paymentId = Convert.ToInt32(result);
+                    _connection.Close();
+
+                    // Log basic activity
+                    LogActivity("Payment Received", $"Payment of EGP {amount} received", "success");
+
+                    // Fetch customer name for transaction log
+                    string customerName = "Unknown Customer";
+                    // In a real scenario we'd query it or pass it. For now, let's query it quickly or just placeholder.
+                    // Simplified:
+                    LogTransaction(paymentId, "Customer #" + customerId, "N/A", amount, status);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddPayment: {ex.Message}");
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open) _connection.Close();
+            }
+            return paymentId;
+        }        // NEW: Get customer data (Uses FNAME, LNAME, and CUSTOMER_EMAIL from your schema)
         public CustomerModel GetCustomerProfile(int customerId)
         {
             CustomerModel customer = null;
@@ -1101,7 +1296,741 @@ namespace Car_Agency_Management.Data
             finally { _connection.Close(); }
             return list;
         }
+
+
+        // ============================================
+        // ADMIN DASHBOARD QUERIES
+        // ============================================
+
+        /// <summary>
+        /// Get total count of cars in inventory
+        /// Query: SELECT COUNT(*) AS TotalCars FROM CAR
+        /// </summary>
+        public int GetTotalCars()
+        {
+            int totalCars = 0;
+            string query = "SELECT COUNT(*) AS TotalCars FROM CAR";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    totalCars = Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTotalCars: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return totalCars;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Get total sales count from BUYING_RENTING table
+        /// Query: SELECT COUNT(*) AS TotalSales FROM BUYING_RENTING
+        /// </summary>
+        public int GetTotalSales()
+        {
+            int totalSales = 0;
+            string query = "SELECT COUNT(*) AS TotalSales FROM BUYING_RENTING";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    totalSales = Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTotalSales: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return totalSales;
+        }
+
+
+
+
+        /// <summary>
+        /// Get count of active rentals with status 'Confirmed'
+        /// Query: SELECT COUNT(*) AS ActiveRentals FROM RESERVATIONS WHERE RESERVATION_STATUS = 'Confirmed'
+        /// </summary>
+        public int GetActiveRentals()
+        {
+            int activeRentals = 0;
+            string query = @"SELECT COUNT(*) AS ActiveRentals 
+                            FROM RESERVATIONS 
+                            WHERE RESERVATION_STATUS = 'Confirmed'";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    activeRentals = Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetActiveRentals: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return activeRentals;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Get total users count from CUSTOMER table
+        /// Query: SELECT COUNT(*) AS TotalUsers FROM CUSTOMER
+        /// </summary>
+        public int GetTotalUsers()
+        {
+            int totalUsers = 0;
+            string query = "SELECT COUNT(*) AS TotalUsers FROM CUSTOMER";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    totalUsers = Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTotalUsers: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return totalUsers;
+        }
+
+
+        /// <summary>
+        /// Get total revenue from all completed payments
+        /// Query: SELECT SUM(AMOUNT) AS TotalRevenue FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'
+        /// </summary>
+        public decimal GetTotalRevenue()
+        {
+            decimal totalRevenue = 0;
+            string query = @"SELECT SUM(AMOUNT) AS TotalRevenue 
+                            FROM PAYMENT 
+                            WHERE PAYMENT_STATUS = 'Completed'";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    totalRevenue = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTotalRevenue: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return totalRevenue;
+        }
+
+
+
+        /// <summary>
+        /// Get monthly revenue for current month
+        /// Query: SELECT SUM(AMOUNT) FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' 
+        ///        AND MONTH(PAYMENT_DATE) = MONTH(GETDATE()) AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())
+        /// </summary>
+        public decimal GetMonthlyRevenue()
+        {
+            decimal monthlyRevenue = 0;
+            string query = @"SELECT SUM(AMOUNT) AS MonthlyRevenue 
+                            FROM PAYMENT 
+                            WHERE PAYMENT_STATUS = 'Completed'
+                            AND MONTH(PAYMENT_DATE) = MONTH(GETDATE())
+                            AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    monthlyRevenue = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMonthlyRevenue: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return monthlyRevenue;
+        }
+
+
+
+        /// <summary>
+        /// Get revenue data for chart grouped by month
+        /// Query: SELECT DATENAME(MONTH, PAYMENT_DATE) AS Month, SUM(AMOUNT) AS Revenue
+        ///        FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())
+        ///        GROUP BY MONTH(PAYMENT_DATE), DATENAME(MONTH, PAYMENT_DATE)
+        /// </summary>
+        public List<MonthlyRevenue> GetMonthlyRevenueData()
+        {
+            List<MonthlyRevenue> revenueData = new List<MonthlyRevenue>();
+            string query = @"SELECT 
+                            DATENAME(MONTH, PAYMENT_DATE) AS Month,
+                            SUM(AMOUNT) AS Revenue
+                            FROM PAYMENT
+                            WHERE PAYMENT_STATUS = 'Completed'
+                            AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())
+                            GROUP BY MONTH(PAYMENT_DATE), DATENAME(MONTH, PAYMENT_DATE)
+                            ORDER BY MONTH(PAYMENT_DATE)";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    revenueData.Add(new MonthlyRevenue
+                    {
+                        Month = reader["Month"].ToString(),
+                        Revenue = reader["Revenue"] != DBNull.Value ? Convert.ToDecimal(reader["Revenue"]) : 0
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMonthlyRevenueData: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return revenueData;
+        }
+        /// <summary>
+        /// Get car sales by brand for chart
+        /// Query: SELECT c.BRAND, COUNT(br.CAR_ID) AS Sales
+        ///        FROM CAR c LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+        ///        GROUP BY c.BRAND ORDER BY Sales DESC
+        /// </summary>
+        public List<CarSalesData> GetCarSalesByBrand()
+        {
+            List<CarSalesData> salesData = new List<CarSalesData>();
+            string query = @"SELECT 
+                            c.BRAND,
+                            COUNT(br.CAR_ID) AS Sales
+                            FROM CAR c
+                            LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+                            GROUP BY c.BRAND
+                            ORDER BY Sales DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    salesData.Add(new CarSalesData
+                    {
+                        Brand = reader["BRAND"].ToString(),
+                        Sales = reader["Sales"] != DBNull.Value ? Convert.ToInt32(reader["Sales"]) : 0
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarSalesByBrand: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return salesData;
+        }
+
+
+        /// <summary>
+        /// Get top 5 selling cars
+        /// Query: SELECT TOP 5 c.CAR_NAME, COUNT(br.CAR_ID) AS Sales, 
+        ///        SUM(CAST(REPLACE(c.PRICE, ',', '') AS DECIMAL(10,2))) AS Revenue
+        ///        FROM CAR c LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+        ///        GROUP BY c.CAR_ID, c.CAR_NAME, c.PRICE ORDER BY Sales DESC
+        /// </summary>
+        public List<TopCar> GetTopSellingCars()
+        {
+            List<TopCar> topCars = new List<TopCar>();
+            string query = @"SELECT TOP 5
+                            c.CAR_NAME AS Name,
+                            COUNT(br.CAR_ID) AS Sales,
+                            SUM(CAST(REPLACE(c.PRICE, ',', '') AS DECIMAL(10,2))) AS Revenue
+                            FROM CAR c
+                            LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+                            GROUP BY c.CAR_ID, c.CAR_NAME, c.PRICE
+                            ORDER BY Sales DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    topCars.Add(new TopCar
+                    {
+                        Name = reader["Name"].ToString(),
+                        Sales = reader["Sales"] != DBNull.Value ? Convert.ToInt32(reader["Sales"]) : 0,
+                        Revenue = reader["Revenue"] != DBNull.Value ? Convert.ToDecimal(reader["Revenue"]) : 0
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTopSellingCars: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return topCars;
+        }
+
+
+
+        /// <summary>
+        /// Get recent activities (last 10 activities from ACTIVITY_LOG table)
+        /// </summary>
+        public List<ActivityLog> GetRecentActivities()
+        {
+            List<ActivityLog> activities = new List<ActivityLog>();
+            string query = @"SELECT TOP 10 ACTION, DESCRIPTION, TIMESTAMP, TYPE 
+                            FROM ACTIVITY_LOG 
+                            ORDER BY TIMESTAMP DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    activities.Add(new ActivityLog
+                    {
+                        Action = reader["ACTION"].ToString(),
+                        Description = reader["DESCRIPTION"].ToString(),
+                        Timestamp = reader["TIMESTAMP"] != DBNull.Value ? Convert.ToDateTime(reader["TIMESTAMP"]) : DateTime.Now,
+                        Type = reader["TYPE"].ToString()
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetRecentActivities: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return activities;
+        }
+
+
+        // <summary>
+        /// Get recent transactions (last 10 transactions from TRANSACTION_LOG table)
+        /// </summary>
+        public List<Transaction> GetRecentTransactions()
+        {
+            List<Transaction> transactions = new List<Transaction>();
+            string query = @"SELECT TOP 10 
+                            TRANS_ID AS Id,
+                            CUSTOMER_NAME AS Customer,
+                            CAR_NAME AS Car,
+                            AMOUNT AS Amount,
+                            DATE AS Date,
+                            STATUS AS Status
+                            FROM TRANSACTION_LOG
+                            ORDER BY DATE DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    transactions.Add(new Transaction
+                    {
+                        Id = "TRX-" + reader["Id"].ToString().PadLeft(6, '0'),
+                        Customer = reader["Customer"].ToString(),
+                        Car = reader["Car"] != DBNull.Value ? reader["Car"].ToString() : "N/A",
+                        Amount = reader["Amount"] != DBNull.Value ? Convert.ToDecimal(reader["Amount"]) : 0,
+                        Date = reader["Date"] != DBNull.Value ? Convert.ToDateTime(reader["Date"]) : DateTime.Now,
+                        Status = reader["Status"].ToString()
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetRecentTransactions: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return transactions;
+        }
+
+        // ============================================
+        // CAR DETAILS PAGE QUERIES
+        // ============================================
+
+        /// <summary>
+        /// Get main car details by car ID
+        /// Query: SELECT * FROM CAR WHERE CAR_ID = @CarId
+        /// </summary>
+        public CarDetails GetCarDetailsFull(int carId)
+        {
+            CarDetails car = null;
+            string query = @"SELECT 
+                            c.CAR_ID,
+                            c.CAR_NAME,
+                            c.BRAND,
+                            c.YEAR,
+                            c.PRICE,
+                            c.MAIN_IMAGE,
+                            c.TRANSMISSION,
+                            c.FUEL_TYPE,
+                            c.ENGINE,
+                            c.SEATS,
+                            c.COLOR,
+                            c.MILEAGE,
+                            c.MIN_DEPOSIT,
+                            c.MONTHLY_INSTALLMENT,
+                            c.DESCRIPTION
+                            FROM CAR c
+                            WHERE c.CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    car = new CarDetails
+                    {
+                        CarId = reader["CAR_ID"].ToString(),
+                        CarName = reader["CAR_NAME"].ToString(),
+                        Brand = reader["BRAND"].ToString(),
+                        Year = reader["YEAR"].ToString(),
+                        Price = reader["PRICE"].ToString(),
+                        MainImage = reader["MAIN_IMAGE"] != DBNull.Value ? reader["MAIN_IMAGE"].ToString() : "",
+                        Transmission = reader["TRANSMISSION"] != DBNull.Value ? reader["TRANSMISSION"].ToString() : "",
+                        FuelType = reader["FUEL_TYPE"] != DBNull.Value ? reader["FUEL_TYPE"].ToString() : "",
+                        Engine = reader["ENGINE"] != DBNull.Value ? reader["ENGINE"].ToString() : "",
+                        Seats = reader["SEATS"] != DBNull.Value ? reader["SEATS"].ToString() : "",
+                        Color = reader["COLOR"] != DBNull.Value ? reader["COLOR"].ToString() : "",
+                        Mileage = reader["MILEAGE"] != DBNull.Value ? reader["MILEAGE"].ToString() : "",
+                        MinDeposit = reader["MIN_DEPOSIT"] != DBNull.Value ? reader["MIN_DEPOSIT"].ToString() : "",
+                        MonthlyInstallment = reader["MONTHLY_INSTALLMENT"] != DBNull.Value ? reader["MONTHLY_INSTALLMENT"].ToString() : "",
+                        Description = reader["DESCRIPTION"] != DBNull.Value ? reader["DESCRIPTION"].ToString() : ""
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarDetailsFull: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return car;
+        }
+
+        /// <summary>
+        /// Get all images for a specific car
+        /// Query: SELECT IMAGE_URL FROM CAR_IMAGES WHERE CAR_ID = @CarId ORDER BY IMAGE_ID
+        /// </summary>
+        public List<string> GetCarImagesById(int carId)
+        {
+            List<string> images = new List<string>();
+            string query = @"SELECT IMAGE_URL 
+                            FROM CAR_IMAGES 
+                            WHERE CAR_ID = @CarId
+                            ORDER BY IMAGE_ID";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    images.Add(reader["IMAGE_URL"].ToString());
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarImagesById: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return images;
+        }
+
+        /// <summary>
+        /// Get all features for a specific car
+        /// Query: SELECT FEATURE_NAME FROM CAR_FEATURES WHERE CAR_ID = @CarId ORDER BY FEATURE_ID
+        /// </summary>
+        public List<string> GetCarFeaturesById(int carId)
+        {
+            List<string> features = new List<string>();
+            string query = @"SELECT FEATURE_NAME 
+                            FROM CAR_FEATURES 
+                            WHERE CAR_ID = @CarId
+                            ORDER BY FEATURE_ID";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    features.Add(reader["FEATURE_NAME"].ToString());
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarFeaturesById: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return features;
+        }
+
+        /// <summary>
+        /// Get car with insurance information
+        /// Query joins CAR and INSURANCE tables
+        /// </summary>
+        public CarWithInsurance GetCarWithInsurance(int carId)
+        {
+            CarWithInsurance carInfo = null;
+            string query = @"SELECT 
+                            c.*,
+                            i.INSURANCE_ID,
+                            i.INSURANCE_START_DATE,
+                            i.INSURANCE_END_DATE,
+                            i.COMPANY_COVERING_NAME,
+                            i.COVERAGE_TYPE
+                            FROM CAR c
+                            LEFT JOIN INSURANCE i ON c.CAR_ID = i.CAR_ID
+                            WHERE c.CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    carInfo = new CarWithInsurance
+                    {
+                        CarId = Convert.ToInt32(reader["CAR_ID"]),
+                        CarName = reader["CAR_NAME"].ToString(),
+                        Brand = reader["BRAND"].ToString(),
+                        InsuranceId = reader["INSURANCE_ID"] != DBNull.Value ? Convert.ToInt32(reader["INSURANCE_ID"]) : 0,
+                        InsuranceStartDate = reader["INSURANCE_START_DATE"] != DBNull.Value ? Convert.ToDateTime(reader["INSURANCE_START_DATE"]) : DateTime.MinValue,
+                        InsuranceEndDate = reader["INSURANCE_END_DATE"] != DBNull.Value ? Convert.ToDateTime(reader["INSURANCE_END_DATE"]) : DateTime.MinValue,
+                        CompanyCoveringName = reader["COMPANY_COVERING_NAME"] != DBNull.Value ? reader["COMPANY_COVERING_NAME"].ToString() : "",
+                        CoverageType = reader["COVERAGE_TYPE"] != DBNull.Value ? reader["COVERAGE_TYPE"].ToString() : ""
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarWithInsurance: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return carInfo;
+        }
+
+        /// <summary>
+        /// Get maintenance history for a specific car
+        /// Query joins MAINTENANCE_REPORT and MAINTENANCE_STAFF tables
+        /// </summary>
+        public List<MaintenanceRecord> GetMaintenanceHistory(int carId)
+        {
+            List<MaintenanceRecord> records = new List<MaintenanceRecord>();
+            string query = @"SELECT 
+                            mr.REPAIR_COST,
+                            mr.MAINTENANCE_START_DATE,
+                            mr.MAINTENANCE_END_DATE,
+                            ms.SPECIALIZATION AS MaintenanceType,
+                            ms.MAINTENANCE_STAFF_ID
+                            FROM MAINTENANCE_REPORT mr
+                            INNER JOIN MAINTENANCE_STAFF ms ON mr.MAINTENANCE_STAFF_ID = ms.MAINTENANCE_STAFF_ID
+                            WHERE mr.CAR_ID = @CarId
+                            ORDER BY mr.MAINTENANCE_START_DATE DESC";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    records.Add(new MaintenanceRecord
+                    {
+                        RepairCost = reader["REPAIR_COST"] != DBNull.Value ? Convert.ToDecimal(reader["REPAIR_COST"]) : 0,
+                        MaintenanceStartDate = reader["MAINTENANCE_START_DATE"] != DBNull.Value ? Convert.ToDateTime(reader["MAINTENANCE_START_DATE"]) : DateTime.MinValue,
+                        MaintenanceEndDate = reader["MAINTENANCE_END_DATE"] != DBNull.Value ? Convert.ToDateTime(reader["MAINTENANCE_END_DATE"]) : DateTime.MinValue,
+                        MaintenanceType = reader["MaintenanceType"].ToString(),
+                        StaffId = Convert.ToInt32(reader["MAINTENANCE_STAFF_ID"])
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMaintenanceHistory: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return records;
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// ADDED: Add a new complaint/message
+        /// </summary>
+        public bool AddComplaint(string description, int? customerId = null)
+        {
+            string query = @"INSERT INTO COMPLAINTS (COMPLAINT_DATE, PROBLEM_DESCRIPTION, COMPLAINT_STATUTS, CUSTOMER_ID)
+                             VALUES (GETDATE(), @Description, 'Pending', @CustomerId)";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@Description", description);
+                cmd.Parameters.AddWithValue("@CustomerId", (object)customerId ?? DBNull.Value);
+                
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddComplaint: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
     }
+
+
+
+
 
     // ============================================
     // HELPER CLASSES
@@ -1171,6 +2100,80 @@ namespace Car_Agency_Management.Data
         public string Amount { get; set; }
         public string Date { get; set; }
     }
+
+
+
+
+    // ============================================
+    // HELPER CLASSES FOR ADMIN DASHBOARD
+    // ============================================
+    public class MonthlyRevenue
+    {
+        public string Month { get; set; } = "";
+        public decimal Revenue { get; set; }
+    }
+
+    public class CarSalesData
+    {
+        public string Brand { get; set; } = "";
+        public int Sales { get; set; }
+    }
+
+    public class TopCar
+    {
+        public string Name { get; set; } = "";
+        public int Sales { get; set; }
+        public decimal Revenue { get; set; }
+    }
+
+    public class ActivityLog
+    {
+        public string Action { get; set; } = "";
+        public string Description { get; set; } = "";
+        public DateTime Timestamp { get; set; }
+        public string Type { get; set; } = "";
+    }
+
+    public class Transaction
+    {
+        public string Id { get; set; } = "";
+        public string Customer { get; set; } = "";
+        public string Car { get; set; } = "";
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+        public string Status { get; set; } = "";
+    }
+
+
+
+
+
+    // ============================================
+    // HELPER CLASSES FOR CAR DETAILS
+    // ============================================
+    public class CarWithInsurance
+    {
+        public int CarId { get; set; }
+        public string CarName { get; set; } = "";
+        public string Brand { get; set; } = "";
+        public int InsuranceId { get; set; }
+        public DateTime InsuranceStartDate { get; set; }
+        public DateTime InsuranceEndDate { get; set; }
+        public string CompanyCoveringName { get; set; } = "";
+        public string CoverageType { get; set; } = "";
+    }
+
+    public class MaintenanceRecord
+    {
+        public decimal RepairCost { get; set; }
+        public DateTime MaintenanceStartDate { get; set; }
+        public DateTime MaintenanceEndDate { get; set; }
+        public string MaintenanceType { get; set; } = "";
+        public int StaffId { get; set; }
+    }
+
+
+
 }
 
 // ============================================

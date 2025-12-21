@@ -1,0 +1,178 @@
+@page
+@model Car_Agency_Management.Pages.ContactUsModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - AutoLux.Drive</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .contact-form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+            border-color: #0066cc;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,102,204,0.3);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        @@media (max-width: 768px) {
+            .contact-card {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-card">
+        <div class="contact-info">
+            <h2 style="margin-bottom: 30px;">Get in Touch</h2>
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <div style="font-weight:600; font-size:14px; opacity:0.9;">ADDRESS</div>
+                    <div>123 Luxury Lane, Cairo, Egypt</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-phone"></i></div>
+                <div>
+                    <div style="font-weight:600; font-size:14px; opacity:0.9;">PHONE</div>
+                    <div>+20 123 456 7890</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <div style="font-weight:600; font-size:14px; opacity:0.9;">EMAIL</div>
+                    <div>contact@autolux.drive</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form-container">
+            <h3 style="margin-bottom: 25px; color:#333;">Send us a message</h3>
+            
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success">@Model.SuccessMessage</div>
+                <script>
+                    setTimeout(function() {
+                        window.location.href = '/Car-gallery';
+                    }, 2000);
+                </script>
+            }
+
+            <form method="post">
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="How can we help you?" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn-submit">Send Message</button>
+                    <a href="/Car-gallery" style="display:block; text-align:center; margin-top:15px; color:#666; text-decoration:none; font-size:14px;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

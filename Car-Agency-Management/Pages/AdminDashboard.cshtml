@@ -27,44 +27,47 @@
             overflow-x: hidden;
         }
 
-        /* Animated floating circles */
-        body::before,
-        body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
+            /* Animated floating circles */
+            body::before,
+            body::after {
+                content: '';
+                position: fixed;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+            }
 
-        body::before {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
-            top: -300px;
-            right: -300px;
-            animation: floatCircle1 20s ease-in-out infinite;
-        }
+            body::before {
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
+                top: -300px;
+                right: -300px;
+                animation: floatCircle1 20s ease-in-out infinite;
+            }
 
-        body::after {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
-            bottom: -250px;
-            left: -250px;
-            animation: floatCircle2 18s ease-in-out infinite;
-        }
+            body::after {
+                width: 500px;
+                height: 500px;
+                background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
+                bottom: -250px;
+                left: -250px;
+                animation: floatCircle2 18s ease-in-out infinite;
+            }
 
         @@keyframes floatCircle1 {
             0%, 100% {
                 transform: translate(0, 0) scale(1);
             }
+
             25% {
                 transform: translate(-100px, 150px) scale(1.1);
             }
+
             50% {
                 transform: translate(-50px, 300px) scale(0.9);
             }
+
             75% {
                 transform: translate(50px, 200px) scale(1.05);
             }
@@ -74,12 +77,15 @@
             0%, 100% {
                 transform: translate(0, 0) scale(1);
             }
+
             25% {
                 transform: translate(150px, -100px) scale(1.15);
             }
+
             50% {
                 transform: translate(100px, -50px) scale(0.85);
             }
+
             75% {
                 transform: translate(50px, -150px) scale(1.1);
             }
@@ -126,9 +132,11 @@
             0%, 100% {
                 transform: translateY(0) translateX(0) rotate(0deg);
             }
+
             33% {
                 transform: translateY(-30px) translateX(20px) rotate(120deg);
             }
+
             66% {
                 transform: translateY(20px) translateX(-30px) rotate(240deg);
             }
@@ -481,6 +489,9 @@
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="window.location.href='/Car-gallary'">View Cars</button>
                 <button class="btn btn-primary" onclick="window.location.href='/Index'">Main Site</button>
+                <form method="post" asp-page-handler="ResetDatabase" onsubmit="return confirm('WARNING: This will reset the database to its initial state. All current data will be lost. Are you sure?');" style="margin-left: 10px; display: inline-block;">
+                    <button type="submit" class="btn btn-primary" style="background-color: #dc3545; color: white;">Reset DB</button>
+                </form>
             </div>
         </div>
 
@@ -575,24 +586,24 @@
                 <div class="activity-list">
                     @foreach (var activity in Model.RecentActivities)
                     {
-                            <div class="activity-item">
-                                <div class="activity-icon activity-@activity.Type">
+                        <div class="activity-item">
+                            <div class="activity-icon activity-@activity.Type">
                                 @if (activity.Type == "success")
                                 {
-                                            <span>✓</span>
+                                    <span>✓</span>
                                 }
                                 else
                                 {
 
-                                            <span>ℹ</span>
+                                    <span>ℹ</span>
                                 }
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-action">@activity.Action</div>
-                                    <div class="activity-description">@activity.Description</div>
-                                    <div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy hh:mm tt")</div>
-                                </div>
                             </div>
+                            <div class="activity-content">
+                                <div class="activity-action">@activity.Action</div>
+                                <div class="activity-description">@activity.Description</div>
+                                <div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy hh:mm tt")</div>
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
@@ -603,13 +614,13 @@
                 <div class="top-cars-list">
                     @foreach (var car in Model.TopSellingCars)
                     {
-                            <div class="top-car-item">
-                                <div class="top-car-info">
-                                    <div class="top-car-name">@car.Name</div>
-                                    <div class="top-car-sales">@car.Sales units sold</div>
-                                </div>
-                                <div class="top-car-revenue">EGP @car.Revenue.ToString("N0")</div>
+                        <div class="top-car-item">
+                            <div class="top-car-info">
+                                <div class="top-car-name">@car.Name</div>
+                                <div class="top-car-sales">@car.Sales units sold</div>
                             </div>
+                            <div class="top-car-revenue">EGP @car.Revenue.ToString("N0")</div>
+                        </div>
                     }
                 </div>
             </div>
@@ -632,18 +643,18 @@
                 <tbody>
                     @foreach (var transaction in Model.RecentTransactions)
                     {
-                            <tr>
-                                <td>@transaction.Id</td>
-                                <td>@transaction.Customer</td>
-                                <td>@transaction.Car</td>
-                                <td>EGP @transaction.Amount.ToString("N0")</td>
-                                <td>@transaction.Date.ToString("MMM dd, yyyy")</td>
-                                <td>
-                                    <span class="status-badge status-@transaction.Status.ToLower()">
+                        <tr>
+                            <td>@transaction.Id</td>
+                            <td>@transaction.Customer</td>
+                            <td>@transaction.Car</td>
+                            <td>EGP @transaction.Amount.ToString("N0")</td>
+                            <td>@transaction.Date.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="status-badge status-@transaction.Status.ToLower()">
                                     @transaction.Status
-                                    </span>
-                                </td>
-                            </tr>
+                                </span>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

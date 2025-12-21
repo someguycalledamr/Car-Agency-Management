@@ -1,11 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Car_Agency_Management.Data;
+using System.Collections.Generic;
 
 namespace Car_Agency_Management.Pages
 {
     public class AdminDashboardModel : PageModel
     {
-        // Dashboard Statistics
+        // Database instance
+        private readonly DB _database;
+
+        // Dashboard Statistics - Now populated from database
         public int TotalCars { get; set; }
         public int TotalSales { get; set; }
         public int ActiveRentals { get; set; }
@@ -13,188 +18,231 @@ namespace Car_Agency_Management.Pages
         public decimal TotalRevenue { get; set; }
         public decimal MonthlyRevenue { get; set; }
 
-        // Recent Activities
+        // Recent Activities - From database
         public List<ActivityLog> RecentActivities { get; set; } = new List<ActivityLog>();
 
-        // Sales Data for Charts
+        // Sales Data for Charts - From database
         public List<MonthlyRevenue> MonthlyRevenueData { get; set; } = new List<MonthlyRevenue>();
         public List<CarSalesData> CarSalesData { get; set; } = new List<CarSalesData>();
 
-        // Top Selling Cars
+        // Top Selling Cars - From database
         public List<TopCar> TopSellingCars { get; set; } = new List<TopCar>();
 
-        // Recent Transactions
+        // Recent Transactions - From database
         public List<Transaction> RecentTransactions { get; set; } = new List<Transaction>();
+
+        public AdminDashboardModel()
+        {
+            // Initialize database connection
+            _database = new DB();
+        }
 
         public void OnGet()
         {
-            LoadDashboardData();
+            // Load all dashboard data from database
+            LoadDashboardDataFromDatabase();
         }
 
-        private void LoadDashboardData()
+        public IActionResult OnPostResetDatabase()
         {
-            // Load statistics
-            TotalCars = 24;
-            TotalSales = 156;
-            ActiveRentals = 18;
-            TotalUsers = 342;
-            TotalRevenue = 45250000;
-            MonthlyRevenue = 8750000;
+            string scriptPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Data", "setup.sql");
+            bool success = _database.ResetDatabase(scriptPath);
+            
+            if (success)
+            {
+                // Reload dashboard to reflect new data
+                return RedirectToPage();
+            }
+            else
+            {
+                // Ideally show error message
+                return RedirectToPage();
+            }
+        }
 
-            // Load monthly revenue data for chart
+        /// <summary>
+        /// Load all dashboard data from SQL Server database
+        /// Replaces hardcoded sample data with real database queries
+        /// </summary>
+        private void LoadDashboardDataFromDatabase()
+        {
+            try
+            {
+                // ============================================
+                // LOAD STATISTICS FROM DATABASE
+                // ============================================
+
+                // Get total cars count
+                // Query: SELECT COUNT(*) FROM CAR
+                TotalCars = _database.GetTotalCars();
+
+                // Get total sales count
+                // Query: SELECT COUNT(*) FROM BUYING_RENTING
+                TotalSales = _database.GetTotalSales();
+
+                // Get active rentals count (status = 'Confirmed')
+                // Query: SELECT COUNT(*) FROM RESERVATIONS WHERE RESERVATION_STATUS = 'Confirmed'
+                ActiveRentals = _database.GetActiveRentals();
+
+                // Get total users count
+                // Query: SELECT COUNT(*) FROM CUSTOMER
+                TotalUsers = _database.GetTotalUsers();
+
+                // Get total revenue (all completed payments)
+                // Query: SELECT SUM(AMOUNT) FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed'
+                TotalRevenue = _database.GetTotalRevenue();
+
+                // Get monthly revenue (current month)
+                // Query: SELECT SUM(AMOUNT) FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' 
+                //        AND MONTH(PAYMENT_DATE) = MONTH(GETDATE())
+                MonthlyRevenue = _database.GetMonthlyRevenue();
+
+                // ============================================
+                // LOAD CHART DATA FROM DATABASE
+                // ============================================
+
+                // Load monthly revenue data for the chart
+                // Query: SELECT DATENAME(MONTH, PAYMENT_DATE) AS Month, SUM(AMOUNT) AS Revenue
+                //        FROM PAYMENT WHERE PAYMENT_STATUS = 'Completed' AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())
+                //        GROUP BY MONTH(PAYMENT_DATE), DATENAME(MONTH, PAYMENT_DATE)
+                MonthlyRevenueData = _database.GetMonthlyRevenueData();
+
+                // Load car sales data by brand
+                // Query: SELECT c.BRAND, COUNT(br.CAR_ID) AS Sales
+                //        FROM CAR c LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+                //        GROUP BY c.BRAND ORDER BY Sales DESC
+                CarSalesData = _database.GetCarSalesByBrand();
+
+                // ============================================
+                // LOAD TOP SELLING CARS FROM DATABASE
+                // ============================================
+
+                // Query: SELECT TOP 5 c.CAR_NAME, COUNT(br.CAR_ID) AS Sales,
+                //        SUM(CAST(REPLACE(c.PRICE, ',', '') AS DECIMAL(10,2))) AS Revenue
+                //        FROM CAR c LEFT JOIN BUYING_RENTING br ON c.CAR_ID = br.CAR_ID
+                //        GROUP BY c.CAR_ID, c.CAR_NAME, c.PRICE ORDER BY Sales DESC
+                TopSellingCars = _database.GetTopSellingCars();
+
+                // ============================================
+                // LOAD RECENT ACTIVITIES FROM DATABASE
+                // ============================================
+
+                // Combined query from new cars, sales, rentals, and payments
+                // Query: SELECT TOP 10 * FROM (
+                //        SELECT 'New Car Added' AS Action, 'Car: ' + CAR_NAME + ' added' AS Description, DATE_ADDED AS Timestamp
+                //        UNION ALL SELECT 'Sale Completed'... UNION ALL SELECT 'Rental Started'... etc.)
+                RecentActivities = _database.GetRecentActivities();
+
+                // ============================================
+                // LOAD RECENT TRANSACTIONS FROM DATABASE
+                // ============================================
+
+                // Query: SELECT TOP 10 'TRX-' + CAST(p.PAYMENT_ID AS VARCHAR) AS Id,
+                //        c.FNAME + ' ' + c.LNAME AS Customer, car.CAR_NAME AS Car,
+                //        p.AMOUNT, p.PAYMENT_DATE, p.PAYMENT_STATUS
+                //        FROM PAYMENT p JOIN CUSTOMER c JOIN BUYING_RENTING br JOIN CAR car
+                //        ORDER BY p.PAYMENT_DATE DESC
+                RecentTransactions = _database.GetRecentTransactions();
+
+                // Log success
+                Console.WriteLine($"Dashboard data loaded successfully:");
+                Console.WriteLine($"- Total Cars: {TotalCars}");
+                Console.WriteLine($"- Total Sales: {TotalSales}");
+                Console.WriteLine($"- Active Rentals: {ActiveRentals}");
+                Console.WriteLine($"- Total Users: {TotalUsers}");
+                Console.WriteLine($"- Total Revenue: EGP {TotalRevenue:N2}");
+                Console.WriteLine($"- Monthly Revenue: EGP {MonthlyRevenue:N2}");
+            }
+            catch (Exception ex)
+            {
+                // Log error and use fallback data if database connection fails
+                Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+                LoadFallbackData();
+            }
+        }
+
+        /// <summary>
+        /// Fallback data in case database connection fails
+        /// Uses sample data to ensure dashboard still displays
+        /// </summary>
+        private void LoadFallbackData()
+        {
+            // Use sample statistics
+            TotalCars = 12;
+            TotalSales = 0;
+            ActiveRentals = 0;
+            TotalUsers = 2;
+            TotalRevenue = 33433.00m;
+            MonthlyRevenue = 33433.00m;
+
+            // Sample monthly revenue data
             MonthlyRevenueData = new List<MonthlyRevenue>
             {
-                new MonthlyRevenue { Month = "Jan", Revenue = 5200000 },
-                new MonthlyRevenue { Month = "Feb", Revenue = 6100000 },
-                new MonthlyRevenue { Month = "Mar", Revenue = 5800000 },
-                new MonthlyRevenue { Month = "Apr", Revenue = 7200000 },
-                new MonthlyRevenue { Month = "May", Revenue = 6900000 },
-                new MonthlyRevenue { Month = "Jun", Revenue = 8100000 },
-                new MonthlyRevenue { Month = "Jul", Revenue = 7500000 },
-                new MonthlyRevenue { Month = "Aug", Revenue = 8750000 },
-                new MonthlyRevenue { Month = "Sep", Revenue = 7800000 },
-                new MonthlyRevenue { Month = "Oct", Revenue = 8200000 },
-                new MonthlyRevenue { Month = "Nov", Revenue = 8900000 },
-                new MonthlyRevenue { Month = "Dec", Revenue = 9500000 }
+                new MonthlyRevenue { Month = "Jan", Revenue = 0 },
+                new MonthlyRevenue { Month = "Feb", Revenue = 0 },
+                new MonthlyRevenue { Month = "Mar", Revenue = 0 },
+                new MonthlyRevenue { Month = "Apr", Revenue = 0 },
+                new MonthlyRevenue { Month = "May", Revenue = 0 },
+                new MonthlyRevenue { Month = "Jun", Revenue = 0 },
+                new MonthlyRevenue { Month = "Jul", Revenue = 0 },
+                new MonthlyRevenue { Month = "Aug", Revenue = 0 },
+                new MonthlyRevenue { Month = "Sep", Revenue = 0 },
+                new MonthlyRevenue { Month = "Oct", Revenue = 0 },
+                new MonthlyRevenue { Month = "Nov", Revenue = 33433 },
+                new MonthlyRevenue { Month = "Dec", Revenue = 0 }
             };
 
-            // Load car sales data
+            // Sample car sales data
             CarSalesData = new List<CarSalesData>
             {
-                new CarSalesData { Brand = "Suzuki", Sales = 45 },
-                new CarSalesData { Brand = "Nissan", Sales = 38 },
-                new CarSalesData { Brand = "Mercedes", Sales = 28 },
-                new CarSalesData { Brand = "BMW", Sales = 25 },
-                new CarSalesData { Brand = "Toyota", Sales = 20 }
+                new CarSalesData { Brand = "Suzuki", Sales= 0 },
+                new CarSalesData { Brand = "Nissan", Sales = 0 },
+                new CarSalesData { Brand = "Mercedes-Benz", Sales = 0 },
+                new CarSalesData { Brand = "BMW", Sales = 0 },
+                new CarSalesData { Brand = "Toyota", Sales = 0 }
             };
 
-            // Load top selling cars
+            // Sample top selling cars
             TopSellingCars = new List<TopCar>
             {
-                new TopCar { Name = "Suzuki S-Presso", Sales = 45, Revenue = 24745500 },
-                new TopCar { Name = "Nissan Sunny", Sales = 38, Revenue = 24510000 },
-                new TopCar { Name = "Mercedes C-Class", Sales = 28, Revenue = 35000000 },
-                new TopCar { Name = "BMW X3", Sales = 25, Revenue = 36250000 }
+                new TopCar { Name = "No sales data yet", Sales = 0, Revenue = 0 }
             };
 
-            // Load recent activities
+            // Sample recent activities
             RecentActivities = new List<ActivityLog>
             {
                 new ActivityLog
                 {
-                    Action = "New Car Added",
-                    Description = "BMW X5 2025 added to inventory",
-                    Timestamp = DateTime.Now.AddMinutes(-15),
-                    Type = "success"
-                },
-                new ActivityLog
-                {
-                    Action = "Sale Completed",
-                    Description = "Mercedes C-Class sold to Ahmed Hassan",
-                    Timestamp = DateTime.Now.AddHours(-2),
-                    Type = "success"
-                },
-                new ActivityLog
-                {
-                    Action = "Rental Started",
-                    Description = "Nissan Sunny rented by Sara Mohamed",
-                    Timestamp = DateTime.Now.AddHours(-4),
-                    Type = "info"
-                },
-                new ActivityLog
-                {
-                    Action = "Payment Received",
-                    Description = "Payment of EGP 125,000 received",
-                    Timestamp = DateTime.Now.AddHours(-6),
-                    Type = "success"
-                },
-                new ActivityLog
-                {
-                    Action = "User Registered",
-                    Description = "New user: Mona Ali registered",
-                    Timestamp = DateTime.Now.AddHours(-8),
+                    Action = "Database Connection",
+                    Description = "Using fallback data - check database connection",
+                    Timestamp = DateTime.Now,
                     Type = "info"
                 }
             };
 
-            // Load recent transactions
+            // Sample recent transactions
             RecentTransactions = new List<Transaction>
             {
                 new Transaction
                 {
-                    Id = "TRX-001234",
-                    Customer = "Ahmed Hassan",
-                    Car = "Mercedes C-Class",
-                    Amount = 1250000,
-                    Date = DateTime.Now.AddDays(-1),
-                    Status = "pending"
-                },
-                new Transaction
-                {
-                    Id = "TRX-001235",
-                    Customer = "Sara Mohamed",
-                    Car = "Nissan Sunny",
-                    Amount = 645000,
-                    Date = DateTime.Now.AddDays(-2),
+                    Id = "TRX-000001",
+                    Customer = "Robert Anderson",
+                    Car = "Suzuki S Presso",
+                    Amount = 15386.00m,
+                    Date = new DateTime(2024, 11, 1),
                     Status = "Completed"
                 },
                 new Transaction
                 {
-                    Id = "TRX-001236",
-                    Customer = "Omar Ali",
-                    Car = "BMW X3",
-                    Amount = 1450000,
-                    Date = DateTime.Now.AddDays(-3),
-                    Status = "Pending"
-                },
-                new Transaction
-                {
-                    Id = "TRX-001237",
-                    Customer = "Fatima Youssef",
-                    Car = "Suzuki S-Presso",
-                    Amount = 549900,
-                    Date = DateTime.Now.AddDays(-4),
+                    Id = "TRX-000002",
+                    Customer = "Jennifer Taylor",
+                    Car = "Nissan Sunny",
+                    Amount = 18047.00m,
+                    Date = new DateTime(2024, 11, 5),
                     Status = "Completed"
                 }
             };
         }
     }
-
-    // Helper classes
-    public class ActivityLog
-    {
-        public string Action { get; set; } = "";
-        public string Description { get; set; } = "";
-        public DateTime Timestamp { get; set; }
-        public string Type { get; set; } = ""; // success, info, warning, error
-    }
-
-    public class MonthlyRevenue
-    {
-        public string Month { get; set; } = "";
-        public decimal Revenue { get; set; }
-    }
-
-    public class CarSalesData
-    {
-        public string Brand { get; set; } = "";
-        public int Sales { get; set; }
-    }
-
-    public class TopCar
-    {
-        public string Name { get; set; } = "";
-        public int Sales { get; set; }
-        public decimal Revenue { get; set; }
-    }
-
-    public class Transaction
-    {
-        public string Id { get; set; } = "";
-        public string Customer { get; set; } = "";
-        public string Car { get; set; } = "";
-        public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public string Status { get; set; } = "";
-    }
 }
+

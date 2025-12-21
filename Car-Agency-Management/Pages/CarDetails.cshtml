@@ -418,7 +418,7 @@
     <div class="floating-shape shape-3"></div>
 
     <div class="car-details-container">
-        <a href="/Car-gallary" class="back-button">Back to Gallery</a>
+        <a href="/Car-gallery" class="back-button">Back to Gallery</a>
 
         <div class="car-header">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -522,9 +522,9 @@
                 <div class="payment-box"><div class="payment-label">Monthly Installment</div><div class="payment-value">@($"{Model.MonthlyInstallment:N0}") EGP</div></div>
             </div>
             <div class="action-buttons">
-                <button class="btn-purchase" onclick="alert('Purchase coming soon!')">Purchase Now</button>
+                <a href="/Payment_page?CarId=@Model.CarId" class="btn-purchase">Purchase Now</a>
                 <a href="/rent?carId=@Model.CarId" class="btn-rent">Schedule Rental</a>
-                <button class="btn-contact" onclick="alert('We will call you soon!')">Contact Us</button>
+                <a href="/ContactUs" class="btn-contact">Contact Us</a>
             </div>
         </div>
 

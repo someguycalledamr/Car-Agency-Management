@@ -224,7 +224,7 @@
 </head>
 <body>
     <div class="form-container">
-        <a href="/Car-gallary" class="back-button">
+        <a href="/Car-gallery" class="back-button">
             <i class="fas fa-arrow-left"></i>
             Back to Gallery
         </a>
@@ -233,6 +233,7 @@
             <h1 class="form-title">@ViewData["Title"]</h1>
 
             <form method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="CarId" />
 
                 <!-- Basic Information -->
@@ -368,7 +369,7 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="/Car-gallary" class="btn-cancel">Cancel</a>
+                    <a href="/Car-gallery" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit">
                         <i class="fas fa-save" style="margin-right: 8px;"></i>
                         @(Model.IsEditMode ? "Update Car" : "Add Car")
