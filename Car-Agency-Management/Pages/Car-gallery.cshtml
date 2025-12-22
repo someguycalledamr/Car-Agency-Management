@@ -487,6 +487,8 @@
                                     {
                                         <div class="brand-card @(Model.SelectedBrand == brand.Key ? "selected" : "")" 
                                              onclick="filterByBrand('@brand.Key')">
+                                            <div class="brand-image">@brand</div>
+
                                             <div class="brand-name">@brand.Key</div>
                                             <div class="brand-count">(@brand.Value cars)</div>
                                         </div>
@@ -519,7 +521,7 @@
                             {
                                 @foreach (var car in Model.Cars)
                                 {
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-6 col-lg-6">
                                         <div class="car-card" data-car-id="@car.CarId">
                                             <div class="car-title">@car.Name</div>
 
