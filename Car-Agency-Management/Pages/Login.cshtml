@@ -7,9 +7,22 @@
         <h1>Enter Your <span style="color:#0ca39d;">Email</span> & <span style="color:#0ca39d;">Password</span></h1>
         <form method="post">
             <label>Email Address</label>
-            <input type="email" name="Username" placeholder="example@gmail.com" />
-            <label>Password</label>
-            <input type="password" name="Password" placeholder="************" required/>
+            <input type="email" name="Email" placeholder="example@gmail.com" />
+            <div style="position: relative;">
+                <input type="password" name="Password" id="loginPassword" placeholder="************" required style="padding-right: 40px;" />
+                <i class="fa-solid fa-eye" id="toggleLoginPassword" style="position: absolute; right: 10px; top: 38%; transform: translateY(-50%); cursor: pointer; color: #888;"></i>
+            </div>
+            
+            <script>
+                const togglePassword = document.querySelector('#toggleLoginPassword');
+                const password = document.querySelector('#loginPassword');
+
+                togglePassword.addEventListener('click', function (e) {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    this.classList.toggle('fa-eye-slash');
+                });
+            </script>
             <div class="options">
                 <div class="remember" style="display:flex; align-items:center; gap:8px; white-space:nowrap;">
                     <input type="checkbox" id="rememberMe" style="margin:0; vertical-align:middle;" />
@@ -34,6 +47,7 @@
 <div class="floating-shape shape-2"></div>
 <div class="floating-shape shape-3"></div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDlT+4yT2sRjP60K5Fv8P9e8hTz8pX/jI/j1xG7vK706r5q9m5L5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     /* PARALLAX BACKGROUND - Same as User Management */
     body {

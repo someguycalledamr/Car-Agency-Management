@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Car_Agency_Management.Data;  // ADDED: Import for database classes
 using System.Collections.Generic;   // ADDED: For List<T>
+using Microsoft.AspNetCore.Http;    // ADDED: For Session checking
 
 namespace Car_Agency_Management.Pages
 {
@@ -74,7 +75,12 @@ namespace Car_Agency_Management.Pages
        
         public IActionResult OnPostViewGallery()
         {
-            return RedirectToPage("/Car-gallary");
+            // CHECK SESSION: If not logged in, redirect to login
+            if (HttpContext.Session.GetInt32("UserId") == null)
+            {
+                return RedirectToPage("/Login");
+            }
+            return RedirectToPage("/Car-gallery");
         }
     }
 }

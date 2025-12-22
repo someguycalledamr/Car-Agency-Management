@@ -1,7 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -18,6 +26,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession(); // Added Session Middleware
 app.UseAuthorization();
 
 app.MapRazorPages();

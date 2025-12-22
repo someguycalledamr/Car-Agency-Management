@@ -21,9 +21,38 @@
             <label>Phone Number</label>
             <input type="tel" name="Phone" placeholder="+20" />
             <label>Password</label>
-            <input type="password" name="Password" placeholder="************" required />
+            <div style="position: relative;">
+                <input type="password" name="Password" id="signupPassword" placeholder="************" required style="padding-right: 40px;" />
+                <i class="fa-solid fa-eye" id="toggleSignupPassword" style="position: absolute; right: 10px; top: 38%; transform: translateY(-50%); cursor: pointer; color: #888;"></i>
+            </div>
+            
             <label>Confirm Password</label>
-            <input type="password" name="ConfirmPassword" placeholder="************" required />
+            <div style="position: relative;">
+                <input type="password" name="ConfirmPassword" id="signupConfirmPassword" placeholder="************" required style="padding-right: 40px;" />
+                <i class="fa-solid fa-eye" id="toggleSignupConfirmPassword" style="position: absolute; right: 10px; top: 38%; transform: translateY(-50%); cursor: pointer; color: #888;"></i>
+            </div>
+
+            <script>
+                // Toggle for Password
+                const toggleSignupPass = document.querySelector('#toggleSignupPassword');
+                const signupPass = document.querySelector('#signupPassword');
+
+                toggleSignupPass.addEventListener('click', function (e) {
+                    const type = signupPass.getAttribute('type') === 'password' ? 'text' : 'password';
+                    signupPass.setAttribute('type', type);
+                    this.classList.toggle('fa-eye-slash');
+                });
+
+                // Toggle for Confirm Password
+                const toggleSignupConfirmPass = document.querySelector('#toggleSignupConfirmPassword');
+                const signupConfirmPass = document.querySelector('#signupConfirmPassword');
+
+                toggleSignupConfirmPass.addEventListener('click', function (e) {
+                    const type = signupConfirmPass.getAttribute('type') === 'password' ? 'text' : 'password';
+                    signupConfirmPass.setAttribute('type', type);
+                    this.classList.toggle('fa-eye-slash');
+                });
+            </script>
             <div class="terms">
                 <input type="checkbox" id="terms" required />
                 <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
@@ -45,6 +74,7 @@
 <div class="floating-shape shape-2"></div>
 <div class="floating-shape shape-3"></div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDlT+4yT2sRjP60K5Fv8P9e8hTz8pX/jI/j1xG7vK706r5q9m5L5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     /* PARALLAX BACKGROUND - Same as User Management */
     html, body {

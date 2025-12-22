@@ -1,7 +1,9 @@
 // Profile.cshtml.cs
 
 using Car_Agency_Management.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 
 namespace AutoLux.Drive.Pages
 {
@@ -32,13 +34,27 @@ namespace AutoLux.Drive.Pages
         public CustomerModel Customer { get; set; }
         public List<TransactionSummary> Transactions { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            // Assuming you have the ID from a session or login
-            int loggedInId = 1;
+            // CHECK SESSION: If not logged in, redirect to login
+            int? loggedInId = HttpContext.Session.GetInt32("UserId");
+            if (loggedInId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
             var db = new DB();
-            Customer = db.GetCustomerProfile(loggedInId);
-            Transactions = db.GetCustomerTransactions(loggedInId);
+            Customer = db.GetCustomerProfile(loggedInId.Value);
+            Transactions = db.GetCustomerTransactions(loggedInId.Value);
+
+             // Fallback if customer not found
+            if (Customer == null)
+            {
+               // Handle edge case where session exists but user deleted?
+               return RedirectToPage("/Login");
+            }
+            
+            return Page();
         }
 
 

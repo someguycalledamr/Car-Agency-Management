@@ -1,0 +1,26 @@
+@page
+@using Car_Agency_Management.Data
+@using Microsoft.Data.SqlClient
+@model Car_Agency_Management.Pages.DebugUsersModel
+@{
+}
+<h3>Debug Users</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Password</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Email</td>
+                <td>@user.Password</td>
+            </tr>
+        }
+    </tbody>
+</table>

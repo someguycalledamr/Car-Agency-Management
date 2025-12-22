@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Car_Agency_Management.Data;
 
 namespace Car_Agency_Management.Pages
 {
@@ -43,9 +44,31 @@ namespace Car_Agency_Management.Pages
                 return Page();
             }
 
-            // Add your sign-up logic here (database save, etc.)
+            DB db = new DB();
+            
+            // Ensure inputs are not null using null-coalescing operator
+            string emailAddr = Email ?? "";
+            
+            if (db.IsEmailTaken(emailAddr))
+            {
+                ErrorMessage = "This email is already registered.";
+                return Page();
+            }
 
-            // If successful, redirect to login page
+            bool success = db.AddCustomer(
+                FirstName ?? "", 
+                LastName ?? "", 
+                emailAddr, 
+                Password ?? "", 
+                Phone ?? ""
+            );
+
+            if (!success)
+            {
+                ErrorMessage = "An error occurred during sign up. Please try again.";
+                return Page();
+            }
+
             return RedirectToPage("/Login");
         }
     }

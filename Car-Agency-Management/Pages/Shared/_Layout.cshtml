@@ -17,108 +17,96 @@
             right: 0;
             width: 100%;
             z-index: 1000;
-            background: rgba(22, 22, 23, 0.7) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
+            background: rgba(5, 5, 8, 0.75) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
             .navbar-glass.scrolled {
-                position: fixed;
-                background: rgba(22, 22, 23, 0.85) !important;
-                backdrop-filter: blur(25px);
-                -webkit-backdrop-filter: blur(25px);
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+                background: rgba(10, 10, 12, 0.9) !important;
+                backdrop-filter: blur(30px) saturate(180%);
+                -webkit-backdrop-filter: blur(30px) saturate(180%);
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
 
             .navbar-glass .navbar-brand,
             .navbar-glass .nav-link {
-                color: #ffffff !important;
+                color: rgba(255, 255, 255, 0.75) !important;
                 font-weight: 500;
                 transition: all 0.3s ease;
+                padding: 0.5rem 1.2rem !important;
+                margin: 0 4px;
+                border-radius: 50px;
+                letter-spacing: 0.3px;
+                font-size: 0.95rem;
             }
 
-                .navbar-glass .nav-link:hover {
-                    color: #00aaff !important;
-                    transform: translateY(-2px);
+                .navbar-glass .nav-link:hover,
+                .navbar-glass .nav-link.active {
+                    color: #ffffff !important;
+                    background: rgba(255, 255, 255, 0.1);
+                    transform: translateY(0);
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(4px);
+                }
+                
+                .navbar-glass .navbar-brand {
+                    font-weight: 800;
+                    letter-spacing: -0.5px;
+                    font-size: 1.6rem;
+                    padding-left: 0 !important;
+                    color: #fff !important;
                 }
 
             .navbar-glass .navbar-toggler {
-                border: 1px solid rgba(255, 255, 255, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 0.5rem 0.75rem;
             }
 
             .navbar-glass .navbar-toggler-icon {
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            }
-
-        .navbar-brand img {
-            max-height: 50px;
-            transition: transform 0.3s ease;
-            filter: brightness(1.2);
-        }
-
-            .navbar-brand img:hover {
-                transform: scale(1.05);
+                filter: invert(1);
+                opacity: 0.8;
             }
 
         /* Admin Dashboard Special Link */
         .nav-link.admin-dashboard {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 8px 16px !important;
-            border-radius: 8px;
+            padding: 0.5rem 1.5rem !important;
+            border-radius: 50px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-left: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin-left: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff !important;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
         }
 
             .nav-link.admin-dashboard:hover {
                 background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-                transform: translateY(-3px) !important;
-                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
+                border-color: rgba(255, 255, 255, 0.4);
             }
 
         .admin-icon {
-            font-size: 1.2rem;
-            animation: pulse 2s infinite;
+            font-size: 1rem;
         }
 
-         pulse {
-            0%, 100%
-
-        {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.1);
-        }
-
-        }
-
-        /* Add padding to body to account for fixed navbar */
-        body {
-            padding-top: 80px;
-        }
-
-        /* Smooth scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Mobile responsive for admin button */
-
-            .nav-link.admin-dashboard
-
-        {
-            margin-left: 0;
-            margin-top: 8px;
-            justify-content: center;
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         body footer.footer,
@@ -203,9 +191,11 @@
             display: inline-block;
         }
 
-            .footer-section a:hover {
-                color: white;
+            .sidebar-link:hover, .sidebar-link.active {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff !important;
                 transform: translateX(5px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             }
 
         .footer-section p {
@@ -219,21 +209,21 @@
             margin-top: 20px;
         }
 
-            .social-links a {
-                width: 40px;
-                height: 40px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
 
-                .social-links a:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                    transform: translateY(-3px);
-                }
+            .social-links a:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-3px);
+            }
 
         .footer-bottom {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -255,15 +245,16 @@
                 }
 
         @@media (max-width: 768px) {
-            .footer-content
-
-        {
-            grid-template-columns: 1fr;
-            gap: 30px;
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
         }
 
+        /* Adjust body for fixed navbar */
+        body {
+            padding-top: 80px;
         }
-
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -276,53 +267,69 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-start">
+                    <ul class="navbar-nav align-items-center">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                     
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Car-gallery">Car Gallery</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/sign_up">Sign Up</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/maintenance">maintenance</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/user_manage">user_manage</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/importedCars">Imported Cars</a>  
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link admin-dashboard" asp-area="" asp-page="/AdminDashboard">
-                                <i class="fas fa-user-shield admin-icon"></i>
-                                Admin Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" asp-page-handler="ProfileRedirect">
-                                <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 8px 16px; border: none;">
-                                    <i class="fas fa-user"></i> Profile
-                                </button>
-                            </form>
-                        </li>
+                        
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Car-gallery">Car Gallery</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/maintenance">Maintenance</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/importedCars">Imported</a>  
+                            </li>
+
+                            <li class="nav-item">
+                                <form method="post" asp-page-handler="ProfileRedirect" class="d-inline">
+                                    <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; padding: 0.5rem 1rem; border: none; background: transparent;">
+                                        <i class="fas fa-user"></i>
+                                    </button>
+                                </form>
+                            </li>
+
+                            @if (Context.Session.GetString("UserRole") == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/user_manage">Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link admin-dashboard" asp-area="" asp-page="/AdminDashboard">
+                                        <i class="fas fa-user-shield admin-icon"></i>
+                                        Admin
+                                    </a>
+                                </li>
+                            }
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" asp-area="" asp-page="/Logout" style="font-weight: 700;">
+                                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/sign_up">Sign Up</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

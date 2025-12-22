@@ -11,7 +11,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DB;Integrated Security=True";
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=web;Integrated Security=True";
         private SqlConnection _connection;
 
         public DB()
@@ -249,6 +249,122 @@ namespace Car_Agency_Management.Data
             }
 
             return partners;
+        }
+
+        // ============================================
+        // CUSTOMER OPERATIONS
+        // ============================================
+
+        public bool IsEmailTaken(string email)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM CUSTOMER WHERE CUSTOMER_EMAIL = @Email";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        int count = (int)cmd.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking email: {ex.Message}");
+                return true; 
+            }
+        }
+
+        public bool AddCustomer(string fname, string lname, string email, string password, string phone)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try 
+                        {
+                            // 1. Insert Customer (AdministratorId is NULL for public signups)
+                            string insertCustomerQuery = @"
+                                INSERT INTO CUSTOMER (FNAME, LNAME, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, MNAME) 
+                                VALUES (@Fname, @Lname, @Email, @Password, ''); 
+                                SELECT SCOPE_IDENTITY();";
+                                
+                            int newCustomerId = 0;
+
+                            using (SqlCommand cmd = new SqlCommand(insertCustomerQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Fname", fname);
+                                cmd.Parameters.AddWithValue("@Lname", lname);
+                                cmd.Parameters.AddWithValue("@Email", email);
+                                cmd.Parameters.AddWithValue("@Password", password);
+                                
+                                object result = cmd.ExecuteScalar();
+                                newCustomerId = Convert.ToInt32(result);
+                            }
+
+                            // 2. Insert Phone if provided
+                            if (!string.IsNullOrEmpty(phone) && newCustomerId > 0)
+                            {
+                                string insertPhoneQuery = "INSERT INTO CUSTOMER_PHONE_NUMBERS (CUSTOMER_ID, PHONE_NUMBERS) VALUES (@CustId, @Phone)";
+                                using (SqlCommand cmd = new SqlCommand(insertPhoneQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@CustId", newCustomerId);
+                                    cmd.Parameters.AddWithValue("@Phone", phone);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding customer: {ex.Message}");
+                return false;
+            }
+        }
+
+        public int ValidateCustomer(string email, string password)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT CUSTOMER_ID FROM CUSTOMER WHERE CUSTOMER_EMAIL = @Email AND CUSTOMER_PASSWORD = @Password";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@Password", password);
+                        
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            return Convert.ToInt32(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error validating customer: {ex.Message}");
+            }
+            return 0; // Return 0 if validation fails
         }
 
         // ============================================
@@ -2041,16 +2157,16 @@ namespace Car_Agency_Management.Data
     /// </summary>
     public class CarSummary
     {
-        public string CarId { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string Brand { get; set; } = "";
-        public string Year { get; set; } = "";
-        public string Price { get; set; } = "";
-        public string Image { get; set; } = "";
-        public string Transmission { get; set; } = "";
-        public string FuelType { get; set; } = "";
-        public string MinDeposit { get; set; } = "";
-        public string MonthlyInstallment { get; set; } = "";
+        public string? CarId { get; set; }
+        public string? Name { get; set; }
+        public string? Brand { get; set; }
+        public string? Year { get; set; }
+        public string? Price { get; set; }
+        public string? Image { get; set; }
+        public string? Transmission { get; set; }
+        public string? FuelType { get; set; }
+        public string? MinDeposit { get; set; }
+        public string? MonthlyInstallment { get; set; }
     }
 
     /// <summary>
