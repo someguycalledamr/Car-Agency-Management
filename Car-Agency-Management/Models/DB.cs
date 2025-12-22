@@ -1,17 +1,11 @@
-﻿
-using Car_Agency_Management.Pages;
-using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Data.SqlTypes;
-using System.Reflection.Metadata;
 
 namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=web;Integrated Security=True";
+        public readonly string _connectionString = "Data Source=AMR; Initial Catalog=Car_agency; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         private SqlConnection _connection;
 
         public DB()
@@ -1163,53 +1157,68 @@ namespace Car_Agency_Management.Data
             string newCarId = null;
 
             string query = @"INSERT INTO CAR (CAR_NAME, BRAND, YEAR, PRICE, COLOR, TRANSMISSION,
-                            FUEL_TYPE, ENGINE, SEATS, MILEAGE, MAIN_IMAGE, MIN_DEPOSIT,
-                            MONTHLY_INSTALLMENT, DESCRIPTION)
-                            VALUES (@CarName, @Brand, @Year, @Price, @Color, @Transmission,
-                            @FuelType, @Engine, @Seats, @Mileage, @MainImage, @MinDeposit,
-                            @MonthlyInstallment, @Description);
-                            SELECT SCOPE_IDENTITY();";
+                    FUEL_TYPE, ENGINE, SEATS, MILEAGE, MAIN_IMAGE, MIN_DEPOSIT,
+                    MONTHLY_INSTALLMENT, DESCRIPTION, DATE_ADDED)
+                    VALUES (@CarName, @Brand, @Year, @Price, @Color, @Transmission,
+                    @FuelType, @Engine, @Seats, @Mileage, @MainImage, @MinDeposit,
+                    @MonthlyInstallment, @Description, GETDATE());
+                    SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             try
             {
                 _connection.Open();
                 SqlCommand cmd = new SqlCommand(query, _connection);
-                cmd.Parameters.AddWithValue("@CarName", car.CarName);
-                cmd.Parameters.AddWithValue("@Brand", car.Brand);
-                cmd.Parameters.AddWithValue("@Year", car.Year);
-                cmd.Parameters.AddWithValue("@Price", car.Price);
-                cmd.Parameters.AddWithValue("@Color", car.Color);
-                cmd.Parameters.AddWithValue("@Transmission", car.Transmission);
-                cmd.Parameters.AddWithValue("@FuelType", car.FuelType);
-                cmd.Parameters.AddWithValue("@Engine", car.Engine);
-                cmd.Parameters.AddWithValue("@Seats", car.Seats);
-                cmd.Parameters.AddWithValue("@Mileage", car.Mileage);
-                cmd.Parameters.AddWithValue("@MainImage", car.MainImage);
-                cmd.Parameters.AddWithValue("@MinDeposit", car.MinDeposit);
-                cmd.Parameters.AddWithValue("@MonthlyInstallment", car.MonthlyInstallment);
-                cmd.Parameters.AddWithValue("@Description", car.Description);
+                cmd.Parameters.AddWithValue("@CarName", car.CarName ?? "");
+                cmd.Parameters.AddWithValue("@Brand", car.Brand ?? "");
+                cmd.Parameters.AddWithValue("@Year", car.Year ?? "");
+                cmd.Parameters.AddWithValue("@Price", car.Price ?? "");
+                cmd.Parameters.AddWithValue("@Color", car.Color ?? "");
+                cmd.Parameters.AddWithValue("@Transmission", car.Transmission ?? "");
+                cmd.Parameters.AddWithValue("@FuelType", car.FuelType ?? "");
+                cmd.Parameters.AddWithValue("@Engine", car.Engine ?? "");
+                cmd.Parameters.AddWithValue("@Seats", car.Seats ?? "");
+                cmd.Parameters.AddWithValue("@Mileage", car.Mileage ?? "");
+                cmd.Parameters.AddWithValue("@MainImage", car.MainImage ?? "");
+                cmd.Parameters.AddWithValue("@MinDeposit", car.MinDeposit ?? "");
+                cmd.Parameters.AddWithValue("@MonthlyInstallment", car.MonthlyInstallment ?? "");
+                cmd.Parameters.AddWithValue("@Description", car.Description ?? "");
 
                 object result = cmd.ExecuteScalar();
-                if (result != null)
+                if (result != null && result != DBNull.Value)
                 {
                     newCarId = result.ToString();
+                    Console.WriteLine($" Car added successfully with ID: {newCarId}");
                 }
-
-                // Log the activity
-                if (!string.IsNullOrEmpty(newCarId))
+                else
                 {
-                    _connection.Close(); // Close existing connection before logging (LogActivity opens its own)
-                    LogActivity("New Car Added", $"Car: {car.CarName} added to inventory", "success");
+                    Console.WriteLine(" AddCar: SCOPE_IDENTITY returned null");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddCar: {ex.Message}");
-                if (_connection.State == ConnectionState.Open) _connection.Close();
+                Console.WriteLine($" Error in AddCar: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
             }
             finally
             {
-                if (_connection.State == ConnectionState.Open) _connection.Close();
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+
+            // Log activity AFTER connection is closed
+            if (!string.IsNullOrEmpty(newCarId))
+            {
+                try
+                {
+                    LogActivity("New Car Added", $"Car: {car.CarName} added to inventory", "success");
+                }
+                catch (Exception logEx)
+                {
+                    Console.WriteLine($"Warning: Failed to log activity: {logEx.Message}");
+                    // Don't fail the entire operation if logging fails
+                }
             }
 
             return newCarId;
@@ -2127,7 +2136,7 @@ namespace Car_Agency_Management.Data
                 SqlCommand cmd = new SqlCommand(query, _connection);
                 cmd.Parameters.AddWithValue("@Description", description);
                 cmd.Parameters.AddWithValue("@CustomerId", (object)customerId ?? DBNull.Value);
-                
+
                 int rowsAffected = cmd.ExecuteNonQuery();
                 return rowsAffected > 0;
             }
@@ -2140,6 +2149,704 @@ namespace Car_Agency_Management.Data
             {
                 _connection.Close();
             }
+        }
+        public CarPaymentInfo GetCarPaymentInfo(int carId)
+        {
+            CarPaymentInfo carInfo = null;
+
+            string query = @"SELECT 
+                    CAR_ID,
+                    CAR_NAME,
+                    PRICE,
+                    MAIN_IMAGE,
+                    MIN_DEPOSIT,
+                    MONTHLY_INSTALLMENT
+                    FROM CAR
+                    WHERE CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    carInfo = new CarPaymentInfo
+                    {
+                        CarId = Convert.ToInt32(reader["CAR_ID"]),
+                        CarName = reader["CAR_NAME"].ToString(),
+                        Price = reader["PRICE"].ToString(),
+                        MainImage = reader["MAIN_IMAGE"].ToString(),
+                        MinDeposit = reader["MIN_DEPOSIT"].ToString(),
+                        MonthlyInstallment = reader["MONTHLY_INSTALLMENT"].ToString()
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarPaymentInfo: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return carInfo;
+        }
+
+        /// <summary>
+        /// Get insurance plans for selected car
+        /// </summary>
+        public List<InsurancePlan> GetInsurancePlans(int carId)
+        {
+            List<InsurancePlan> plans = new List<InsurancePlan>();
+
+            string query = @"SELECT 
+                    INSURANCE_ID,
+                    COMPANY_COVERING_NAME,
+                    COVERAGE_TYPE,
+                    INSURANCE_START_DATE,
+                    INSURANCE_END_DATE,
+                    PRICE
+                    FROM INSURANCE
+                    WHERE CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    plans.Add(new InsurancePlan
+                    {
+                        InsuranceId = Convert.ToInt32(reader["INSURANCE_ID"]),
+                        CompanyName = reader["COMPANY_COVERING_NAME"].ToString(),
+                        CoverageType = reader["COVERAGE_TYPE"].ToString(),
+                        StartDate = Convert.ToDateTime(reader["INSURANCE_START_DATE"]),
+                        EndDate = Convert.ToDateTime(reader["INSURANCE_END_DATE"]),
+                        Price = reader["PRICE"] != DBNull.Value ? Convert.ToDecimal(reader["PRICE"]) : 0
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetInsurancePlans: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return plans;
+        }
+
+        /// <summary>
+        /// Validate discount code
+        /// </summary>
+        public DiscountInfo ValidateDiscountCode(string discountCode)
+        {
+            DiscountInfo discount = null;
+
+            string query = @"SELECT 
+                    DISCOUNT_ID,
+                    DISCOUNT_PERCENT,
+                    EXPIRY_DATE
+                    FROM DISCOUNTS
+                    WHERE CODE = @DiscountCode
+                    AND IS_ACTIVE = 1
+                    AND EXPIRY_DATE >= GETDATE()";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@DiscountCode", discountCode);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    discount = new DiscountInfo
+                    {
+                        DiscountId = Convert.ToInt32(reader["DISCOUNT_ID"]),
+                        DiscountPercent = Convert.ToDecimal(reader["DISCOUNT_PERCENT"]),
+                        ExpiryDate = Convert.ToDateTime(reader["EXPIRY_DATE"])
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ValidateDiscountCode: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return discount;
+        }
+
+        /// <summary>
+        /// Check car availability for selected dates
+        /// </summary>
+        public string CheckCarAvailability(int carId, DateTime startDate, DateTime endDate)
+        {
+            string availabilityStatus = "Available";
+
+            string query = @"SELECT 
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM RESERVATIONS r
+                            INNER JOIN BUYING_RENTING br 
+                                ON r.CUSTOMER_ID = br.CUSTOMER_ID
+                            WHERE br.CAR_ID = @CarId
+                              AND r.RESERVATION_STATUS = 'Confirmed'
+                              AND (
+                                  @StartDate BETWEEN r.RESERVATION_START_DATE AND r.RESERVATION_END_DATE
+                                  OR @EndDate BETWEEN r.RESERVATION_START_DATE AND r.RESERVATION_END_DATE
+                                  OR r.RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate
+                              )
+                        )
+                        THEN 'Not Available'
+                        ELSE 'Available'
+                    END AS AvailabilityStatus";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    availabilityStatus = result.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CheckCarAvailability: {ex.Message}");
+                availabilityStatus = "Error checking availability";
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return availabilityStatus;
+        }
+
+        /// <summary>
+        /// Create reservation and payment (Transaction)
+        /// </summary>
+        public PaymentResult CreateReservationAndPayment(
+            int customerId,
+            int carId,
+            DateTime startDate,
+            DateTime endDate,
+            string transactionType,
+            string paymentMethod,
+            decimal amountPaid)
+        {
+            PaymentResult result = new PaymentResult
+            {
+                Success = false,
+                ErrorMessage = ""
+            };
+
+            SqlTransaction transaction = null;
+
+            try
+            {
+                _connection.Open();
+                transaction = _connection.BeginTransaction();
+
+                // Step 1: Insert reservation
+                string reservationQuery = @"INSERT INTO RESERVATIONS (
+                                    CUSTOMER_ID,
+                                    RESERVATION_STATUS,
+                                    RESERVATION_START_DATE,
+                                    RESERVATION_END_DATE
+                                    )
+                                    VALUES (
+                                    @CustomerId,
+                                    'Confirmed',
+                                    @StartDate,
+                                    @EndDate
+                                    );
+                                    SELECT SCOPE_IDENTITY();";
+
+                SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
+                reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
+                reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                int reservationId = Convert.ToInt32(reservationCmd.ExecuteScalar());
+                result.ReservationId = reservationId;
+
+                // Step 2: Link customer with car (BUYING_RENTING)
+                string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
+                                      CUSTOMER_ID,
+                                      CAR_ID,
+                                      TRANSACTION_TYPE,
+                                      TRANSACTION_DATE
+                                      )
+                                      VALUES (
+                                      @CustomerId,
+                                      @CarId,
+                                      @TransactionType,
+                                      GETDATE()
+                                      )";
+
+                SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
+                buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
+                buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
+                buyingRentingCmd.ExecuteNonQuery();
+
+                // Step 3: Insert payment record
+                string paymentQuery = @"INSERT INTO PAYMENT (
+                               CUSTOMER_ID,
+                               PAYMENT_METHOD,
+                               PAYMENT_STATUS,
+                               PAYMENT_DATE,
+                               AMOUNT
+                               )
+                               VALUES (
+                               @CustomerId,
+                               @PaymentMethod,
+                               'Completed',
+                               GETDATE(),
+                               @AmountPaid
+                               );
+                               SELECT SCOPE_IDENTITY();";
+
+                SqlCommand paymentCmd = new SqlCommand(paymentQuery, _connection, transaction);
+                paymentCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                paymentCmd.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
+                paymentCmd.Parameters.AddWithValue("@AmountPaid", amountPaid);
+
+                int paymentId = Convert.ToInt32(paymentCmd.ExecuteScalar());
+                result.PaymentId = paymentId;
+
+                // Commit transaction
+                transaction.Commit();
+                result.Success = true;
+
+                // Log the transaction
+                LogTransaction(paymentId, $"Customer #{customerId}", $"Car #{carId}", amountPaid, "Completed");
+                LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for car #{carId}", "success");
+
+                Console.WriteLine($"✅ Reservation and payment created successfully!");
+                Console.WriteLine($"   Reservation ID: {reservationId}");
+                Console.WriteLine($"   Payment ID: {paymentId}");
+            }
+            catch (Exception ex)
+            {
+                // Rollback on error
+                transaction?.Rollback();
+                result.Success = false;
+                result.ErrorMessage = ex.Message;
+                Console.WriteLine($"❌ Error in CreateReservationAndPayment: {ex.Message}");
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get payment receipt/confirmation details
+        /// </summary>
+        public PaymentReceipt GetPaymentReceipt(int paymentId)
+        {
+            PaymentReceipt receipt = null;
+
+            string query = @"SELECT 
+                    'TRX-' + RIGHT('000000' + CAST(p.PAYMENT_ID AS VARCHAR), 6) AS TransactionId,
+                    p.AMOUNT,
+                    p.PAYMENT_METHOD,
+                    p.PAYMENT_STATUS,
+                    p.PAYMENT_DATE,
+                    c.FNAME + ' ' + c.LNAME AS CustomerName,
+                    car.CAR_NAME
+                    FROM PAYMENT p
+                    INNER JOIN CUSTOMER c 
+                        ON p.CUSTOMER_ID = c.CUSTOMER_ID
+                    INNER JOIN BUYING_RENTING br 
+                        ON c.CUSTOMER_ID = br.CUSTOMER_ID
+                    INNER JOIN CAR car 
+                        ON br.CAR_ID = car.CAR_ID
+                    WHERE p.PAYMENT_ID = @PaymentId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@PaymentId", paymentId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    receipt = new PaymentReceipt
+                    {
+                        TransactionId = reader["TransactionId"].ToString(),
+                        Amount = Convert.ToDecimal(reader["AMOUNT"]),
+                        PaymentMethod = reader["PAYMENT_METHOD"].ToString(),
+                        PaymentStatus = reader["PAYMENT_STATUS"].ToString(),
+                        PaymentDate = Convert.ToDateTime(reader["PAYMENT_DATE"]),
+                        CustomerName = reader["CustomerName"].ToString(),
+                        CarName = reader["CAR_NAME"].ToString()
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetPaymentReceipt: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return receipt;
+        }
+
+        /// <summary>
+        /// Get customer info for payment page
+        /// </summary>
+        public CustomerPaymentInfo GetCustomerPaymentInfo(int customerId)
+        {
+            CustomerPaymentInfo customerInfo = null;
+
+            string query = @"SELECT 
+                    CUSTOMER_ID,
+                    FNAME + ' ' + ISNULL(MNAME + ' ', '') + LNAME AS FullName,
+                    CUSTOMER_EMAIL,
+                    ADDRESS
+                    FROM CUSTOMER
+                    WHERE CUSTOMER_ID = @CustomerId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CustomerId", customerId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    customerInfo = new CustomerPaymentInfo
+                    {
+                        CustomerId = Convert.ToInt32(reader["CUSTOMER_ID"]),
+                        FullName = reader["FullName"].ToString(),
+                        Email = reader["CUSTOMER_EMAIL"].ToString(),
+                        Address = reader["ADDRESS"].ToString()
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCustomerPaymentInfo: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return customerInfo;
+        }
+
+        public CarRentalInfo GetCarRentalInfo(int carId)
+        {
+            CarRentalInfo carInfo = null;
+            string query = @"SELECT 
+                    CAR_ID,
+                    CAR_NAME,
+                    PRICE
+                    FROM CAR
+                    WHERE CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    carInfo = new CarRentalInfo
+                    {
+                        CarId = Convert.ToInt32(reader["CAR_ID"]),
+                        CarName = reader["CAR_NAME"].ToString(),
+                        Price = reader["PRICE"].ToString()
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCarRentalInfo: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return carInfo;
+        }
+
+        /// <summary>
+        /// Get all booked date ranges for a car (to disable in calendar)
+        /// UPDATED QUERY: Direct link via CAR_ID in RESERVATIONS table
+        /// Query: SELECT RESERVATION_START_DATE, RESERVATION_END_DATE 
+        ///        FROM RESERVATIONS WHERE CAR_ID = @CarId AND RESERVATION_STATUS = 'Confirmed'
+        /// </summary>
+        public List<DateRange> GetBookedDatesForCar(int carId)
+        {
+            List<DateRange> bookedDates = new List<DateRange>();
+            string query = @"SELECT 
+                    RESERVATION_START_DATE,
+                    RESERVATION_END_DATE
+                    FROM RESERVATIONS
+                    WHERE CAR_ID = @CarId
+                      AND RESERVATION_STATUS = 'Confirmed'
+                    ORDER BY RESERVATION_START_DATE";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    bookedDates.Add(new DateRange
+                    {
+                        StartDate = Convert.ToDateTime(reader["RESERVATION_START_DATE"]),
+                        EndDate = Convert.ToDateTime(reader["RESERVATION_END_DATE"])
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetBookedDatesForCar: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return bookedDates;
+        }
+
+        /// <summary>
+        /// Check if selected date range is available for rental
+        /// UPDATED QUERY: Direct check via CAR_ID in RESERVATIONS
+        /// Query: Check if selected rental dates are available
+        /// </summary>
+        public RentalAvailability CheckRentalAvailability(int carId, DateTime startDate, DateTime endDate)
+        {
+            RentalAvailability availability = new RentalAvailability
+            {
+                IsAvailable = true,
+                Message = "Car is available for selected dates"
+            };
+
+            string query = @"SELECT 
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM RESERVATIONS
+                            WHERE CAR_ID = @CarId
+                              AND RESERVATION_STATUS = 'Confirmed'
+                              AND (
+                                  @StartDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
+                                  OR @EndDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
+                                  OR RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate
+                              )
+                        )
+                        THEN 'Not Available'
+                        ELSE 'Available'
+                    END AS AvailabilityStatus";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                object result = cmd.ExecuteScalar();
+                string status = result?.ToString() ?? "Available";
+
+                availability.IsAvailable = (status == "Available");
+                availability.Message = availability.IsAvailable
+                    ? "Car is available for selected dates"
+                    : "Car is not available for the selected date range. Please choose different dates.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CheckRentalAvailability: {ex.Message}");
+                availability.IsAvailable = false;
+                availability.Message = "Error checking availability. Please try again.";
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return availability;
+        }
+
+        /// <summary>
+        /// Calculate rental duration in days
+        /// Query: Calculate rental duration in days
+        /// </summary>
+        public int CalculateRentalDays(DateTime startDate, DateTime endDate)
+        {
+            int rentalDays = 0;
+            string query = "SELECT DATEDIFF(DAY, @StartDate, @EndDate) AS RentalDays";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    rentalDays = Convert.ToInt32(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CalculateRentalDays: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return rentalDays;
+        }
+
+        /// <summary>
+        /// Calculate estimated rental cost (preview only)
+        /// Query: Calculate estimated rental cost
+        /// </summary>
+        public decimal CalculateEstimatedRentalCost(int carId, DateTime startDate, DateTime endDate)
+        {
+            decimal estimatedCost = 0;
+            string query = @"SELECT 
+                    DATEDIFF(DAY, @StartDate, @EndDate) 
+                    * CAST(REPLACE(PRICE, ',', '') AS DECIMAL(10,2)) AS EstimatedRentalCost
+                    FROM CAR
+                    WHERE CAR_ID = @CarId";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    estimatedCost = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CalculateEstimatedRentalCost: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return estimatedCost;
+        }
+
+        /// <summary>
+        /// UPDATED: Create reservation with direct CAR_ID link
+        /// Creates a reservation record linking car directly
+        /// </summary>
+        public int CreateCarReservation(int customerId, int carId, DateTime startDate, DateTime endDate)
+        {
+            int reservationId = 0;
+            string query = @"INSERT INTO RESERVATIONS (
+                        CUSTOMER_ID,
+                        CAR_ID,
+                        RESERVATION_START_DATE,
+                        RESERVATION_END_DATE,
+                        RESERVATION_STATUS
+                    )
+                    VALUES (
+                        @CustomerId,
+                        @CarId,
+                        @StartDate,
+                        @EndDate,
+                        'Confirmed'
+                    );
+                    SELECT SCOPE_IDENTITY();";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                cmd.Parameters.AddWithValue("@CustomerId", customerId);
+                cmd.Parameters.AddWithValue("@CarId", carId);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", endDate);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    reservationId = Convert.ToInt32(result);
+                    Console.WriteLine($"✅ Reservation created with ID: {reservationId}");
+
+                    // Log activity
+                    LogActivity("Reservation Created",
+                        $"Car #{carId} reserved from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+                        "info");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CreateCarReservation: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return reservationId;
         }
 
     }
@@ -2287,7 +2994,77 @@ namespace Car_Agency_Management.Data
         public string MaintenanceType { get; set; } = "";
         public int StaffId { get; set; }
     }
+    public class CarPaymentInfo
+    {
+        public int CarId { get; set; }
+        public string CarName { get; set; } = "";
+        public string Price { get; set; } = "";
+        public string MainImage { get; set; } = "";
+        public string MinDeposit { get; set; } = "";
+        public string MonthlyInstallment { get; set; } = "";
+    }
 
+    public class InsurancePlan
+    {
+        public int InsuranceId { get; set; }
+        public string CompanyName { get; set; } = "";
+        public string CoverageType { get; set; } = "";
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    public class DiscountInfo
+    {
+        public int DiscountId { get; set; }
+        public decimal DiscountPercent { get; set; }
+        public DateTime ExpiryDate { get; set; }
+    }
+
+    public class PaymentResult
+    {
+        public bool Success { get; set; }
+        public int ReservationId { get; set; }
+        public int PaymentId { get; set; }
+        public string ErrorMessage { get; set; } = "";
+    }
+
+    public class PaymentReceipt
+    {
+        public string TransactionId { get; set; } = "";
+        public decimal Amount { get; set; }
+        public string PaymentMethod { get; set; } = "";
+        public string PaymentStatus { get; set; } = "";
+        public DateTime PaymentDate { get; set; }
+        public string CustomerName { get; set; } = "";
+        public string CarName { get; set; } = "";
+    }
+
+    public class CustomerPaymentInfo
+    {
+        public int CustomerId { get; set; }
+        public string FullName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Address { get; set; } = "";
+    }
+    public class CarRentalInfo
+    {
+        public int CarId { get; set; }
+        public string CarName { get; set; } = "";
+        public string Price { get; set; } = "";
+    }
+
+    public class DateRange
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+
+    public class RentalAvailability
+    {
+        public bool IsAvailable { get; set; }
+        public string Message { get; set; } = "";
+    }
 
 
 }

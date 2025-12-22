@@ -1,148 +1,23 @@
 ﻿@page
 @model Car_Agency_Management.Pages.Payment_pageModel
 @{
+    ViewData["Title"] = "Payment / Booking";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment / Booking</title>
+    <title>@ViewData["Title"]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100%;
-            height: 100%;
-        }
-
         body {
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
-            overflow-x: hidden;
-            padding-top: 40px;
-        }
-
-        /* Animated floating circles */
-        body::before,
-        body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::before {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
-            top: -300px;
-            right: -300px;
-            animation: floatCircle1 20s ease-in-out infinite;
-        }
-
-        body::after {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
-            bottom: -250px;
-            left: -250px;
-            animation: floatCircle2 18s ease-in-out infinite;
-        }
-
-        @@keyframes floatCircle1 {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(-100px, 150px) scale(1.1);
-            }
-            50% {
-                transform: translate(-50px, 300px) scale(0.9);
-            }
-            75% {
-                transform: translate(50px, 200px) scale(1.05);
-            }
-        }
-
-        @@keyframes floatCircle2 {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(150px, -100px) scale(1.15);
-            }
-            50% {
-                transform: translate(100px, -50px) scale(0.85);
-            }
-            75% {
-                transform: translate(50px, -150px) scale(1.1);
-            }
-        }
-
-        /* Floating shapes */
-        .floating-shape {
-            position: fixed;
-            border-radius: 50%;
-            opacity: 0.1;
-            pointer-events: none;
-            animation: float 20s infinite ease-in-out;
-            z-index: 0;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            background: #06b6d4;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-
-        .shape-2 {
-            width: 200px;
-            height: 200px;
-            background: #1e293b;
-            top: 60%;
-            right: 10%;
-            animation-delay: 3s;
-        }
-
-        .shape-3 {
-            width: 150px;
-            height: 150px;
-            background: #06b6d4;
-            bottom: 20%;
-            left: 15%;
-            animation-delay: 6s;
-        }
-
-        @@keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-            }
-            33% {
-                transform: translateY(-30px) translateX(20px) rotate(120deg);
-            }
-            66% {
-                transform: translateY(20px) translateX(-30px) rotate(240deg);
-            }
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
+            padding-top: 100px;
         }
 
         .page-title {
@@ -152,32 +27,12 @@
             color: #212529;
         }
 
-        .insurance-section {
+        .insurance-section, .payment-section {
             background-color: white;
-            border: 2px solid #007bff;
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .insurance-section:hover {
-            transform: translateY(-5px);
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .section-title input[type="radio"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
         }
 
         .plan-btn {
@@ -191,24 +46,16 @@
             font-weight: 500;
         }
 
-        .plan-btn:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+            .plan-btn:hover {
+                background-color: #f0f0f0;
+                transform: translateY(-2px);
+            }
 
-        .plan-btn.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        .cost-label {
-            display: inline-block;
-            margin-left: 15px;
-            font-weight: 600;
-            color: #666;
-        }
+            .plan-btn.active {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
 
         .product-box {
             border: 2px solid #e0e0e0;
@@ -218,110 +65,14 @@
             display: flex;
             align-items: center;
             background: white;
-            transition: all 0.3s;
-        }
-
-        .product-box:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .product-image {
-            width: 80px;
-            height: 60px;
-            background-color: #f0f0f0;
+            width: 120px;
+            height: 90px;
             margin-right: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
             border-radius: 6px;
-        }
-
-        .discount-section {
-            margin: 20px 0;
-        }
-
-        .discount-section input {
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 10px 15px;
-            width: 200px;
-            transition: border-color 0.3s;
-        }
-
-        .discount-section input:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-
-        .discount-section button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 25px;
-            margin-left: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .discount-section button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
-        }
-
-        .subtotal-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        .payment-section {
-            background-color: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .payment-section:hover {
-            transform: translateY(-5px);
-        }
-
-        .security-text {
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .payment-method {
-            background-color: white;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .payment-method input[type="radio"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-        }
-
-        .card-logos {
-            float: right;
-        }
-
-        .card-logos i {
-            font-size: 32px;
-            margin-left: 10px;
+            object-fit: cover;
         }
 
         .form-control {
@@ -329,141 +80,239 @@
             border-radius: 6px;
             border: 1px solid #ccc;
             padding: 12px 15px;
-            transition: border-color 0.3s;
         }
 
-        .form-control:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
         }
 
-        .cvv-info {
-            font-size: 12px;
-            color: #666;
-        }
-
-        @@media (max-width: 768px) {
-            .page-title {
-                font-size: 24px;
+            .btn-submit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
             }
 
-            .plan-btn {
-                width: 100%;
-                margin: 5px 0;
-            }
-
-            .cost-label {
-                display: block;
-                margin-left: 0;
-                margin-top: 5px;
-            }
+        .alert {
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="floating-shape shape-1"></div>
-    <div class="floating-shape shape-2"></div>
-    <div class="floating-shape shape-3"></div>
+    <div class="container">
+        <!-- Success/Error Messages -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show">
+                <i class="fas fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
 
-    <div class="container" style="margin-top: 20px;">
-        <div class="page-title">Payment / Booking</div>
+        <h1 class="page-title">Payment / Booking</h1>
 
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="insurance-section">
-                    <div class="section-title">
-                        <input type="radio" name="insurance" id="insurance" checked>
-                        <label for="insurance">Insurance</label>
-                    </div>
+        <form method="post" id="paymentForm">
+            <div class="row">
+                <!-- Left Column - Insurance & Car Info -->
+                <div class="col-lg-7">
+                    <div class="insurance-section">
+                        <h5 class="mb-3">Insurance Plans</h5>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <button class="plan-btn active" data-plan="1-year" data-cost="$$$$">1-Year plan</button>
-                            <span class="cost-label">Cost $$$$</span>
+                        <!-- Insurance Plan Selection -->
+                        <div class="row mb-3">
+                            @if (Model.InsurancePlans != null && Model.InsurancePlans.Count > 0)
+                            {
+                                @foreach (var plan in Model.InsurancePlans)
+                                {
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" class="plan-btn w-100"
+                                                data-plan="@plan.CoverageType"
+                                                data-cost="@plan.Price">
+                                            @plan.CoverageType
+                                            <br><small>@plan.Price EGP</small>
+                                        </button>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No insurance plans available for this car.
+                                    </div>
+                                </div>
+                            }
                         </div>
-                        <div class="col-md-6">
-                            <button class="plan-btn" data-plan="5-year" data-cost="$$$$">5-Year plan</button>
-                            <span class="cost-label">Cost $$$$</span>
-                        </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <button class="plan-btn" data-plan="3-year" data-cost="$$$$">3-Year plan</button>
-                            <span class="cost-label">Cost $$$$</span>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="plan-btn" data-plan="10-year" data-cost="$$$$">10-Year plan</button>
-                            <span class="cost-label">Cost $$$$</span>
-                        </div>
-                    </div>
+                        <!-- Car Product Box -->
+                        @if (Model.CarInfo != null)
+                        {
+                            <div class="product-box">
+                                <img src="@Model.CarInfo.MainImage"
+                                     alt="@Model.CarInfo.CarName"
+                                     class="product-image"
+                                     onerror="this.src='/images/placeholder-car.png'">
+                                <div>
+                                    <strong>@Model.CarInfo.CarName</strong><br>
+                                    <span>Price: @Model.CarInfo.Price EGP</span><br>
+                                    <small class="text-muted">Min. Deposit: @Model.CarInfo.MinDeposit EGP</small><br>
+                                    <small class="text-muted">Monthly: @Model.CarInfo.MonthlyInstallment EGP</small>
+                                </div>
+                            </div>
+                        }
 
-                    <div class="product-box">
-                        <div class="product-image">
-                            <i class="fas fa-image fa-2x"></i>
+                        <!-- Discount Code -->
+                        <div class="discount-section mt-3">
+                            <div class="input-group">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Discount code"
+                                       id="discountCodeInput"
+                                       asp-for="DiscountCode">
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        onclick="validateDiscount()">
+                                    Apply
+                                </button>
+                            </div>
+                            <div id="discountMessage" class="mt-2"></div>
                         </div>
-                        <div>
-                            <strong>Product Name</strong><br>
-                            <span>Product Price ^10EGP</span>
+
+                        <!-- Transaction Type -->
+                        <div class="mt-3">
+                            <label>Transaction Type</label>
+                            <select class="form-control" asp-for="TransactionType">
+                                <option value="Rent">Rent</option>
+                                <option value="Buy">Buy</option>
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="discount-section">
-                        <input type="text" placeholder="Discount code" id="discountCode">
-                        <button onclick="applyDiscount()">Apply</button>
-                    </div>
-
-                    <div class="subtotal-section">
-                        <strong>Subtotal:</strong><br>
-                        <small>Remaining to be payed in the Shop:</small>
-                        <div id="remainingAmount" class="mt-2"></div>
+                        <!-- Subtotal -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h6>Subtotal</h6>
+                            <div id="subtotalDisplay" class="mb-2">
+                                <strong>Total Amount: </strong>
+                                <span id="totalAmount">@Model.CarInfo.MinDeposit EGP</span>
+                            </div>
+                            <input type="hidden" asp-for="TotalAmount" id="totalAmountInput">
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-5">
-                <div class="payment-section">
-                    <div class="security-text">
-                        <i class="fas fa-lock"></i> All transactions are secure and encrypted
-                    </div>
+                <!-- Right Column - Payment Details -->
+                <div class="col-lg-5">
+                    <div class="payment-section">
+                        <div class="text-center mb-3 p-2 bg-light rounded">
+                            <i class="fas fa-lock"></i> All transactions are secure and encrypted
+                        </div>
 
-                    <div class="payment-method">
-                        <input type="radio" name="payment" id="creditCard" checked>
-                        <label for="creditCard">Credit card</label>
-                        <span class="card-logos">
-                            <i class="fab fa-cc-mastercard text-danger"></i>
-                            <i class="fab fa-cc-visa text-primary"></i>
-                        </span>
-                    </div>
+                        <h6 class="mb-3">
+                            <i class="fas fa-credit-card"></i> Credit Card Payment
+                            <span class="float-end">
+                                <i class="fab fa-cc-mastercard text-danger fa-2x"></i>
+                                <i class="fab fa-cc-visa text-primary fa-2x"></i>
+                            </span>
+                        </h6>
 
-                    <div class="mt-3">
-                        <input type="text" class="form-control" placeholder="Card number" id="cardNumber" maxlength="19">
+                        <!-- Card Number -->
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Card number (1234 5678 9012 3456)"
+                               id="cardNumber"
+                               asp-for="CardNumber"
+                               maxlength="19"
+                               required>
+                        <span asp-validation-for="CardNumber" class="text-danger"></span>
 
+                        <!-- Expiration & CVV -->
                         <div class="row">
                             <div class="col-6">
-                                <input type="text" class="form-control" placeholder="Expiration date (MM/YY)" id="expDate" maxlength="5">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="MM/YY"
+                                       id="expDate"
+                                       asp-for="ExpirationDate"
+                                       maxlength="5"
+                                       required>
+                                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
                             </div>
                             <div class="col-6">
-                                <input type="text" class="form-control" placeholder="Security code (CVV)" id="cvv" maxlength="3">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="CVV"
+                                       id="cvv"
+                                       asp-for="CVV"
+                                       maxlength="3"
+                                       required>
+                                <span asp-validation-for="CVV" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <input type="text" class="form-control" placeholder="Card Name" id="cardName">
+                        <!-- Card Name -->
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Cardholder Name"
+                               asp-for="CardName"
+                               required>
+                        <span asp-validation-for="CardName" class="text-danger"></span>
+
+                        <!-- Hidden Fields -->
+                        <input type="hidden" asp-for="CarId">
+                        <input type="hidden" asp-for="CustomerId">
+                        <input type="hidden" asp-for="SelectedInsurancePlan">
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-submit mt-3">
+                            <i class="fas fa-check-circle"></i> Complete Payment
+                        </button>
+
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="All" class="text-danger mt-3"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
+        let selectedPlanCost = parseFloat('@Model.CarInfo?.MinDeposit'.replace(/,/g, '')) || 0;
+        let discountPercent = 0;
+
         // Plan selection
         document.querySelectorAll('.plan-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                updateSubtotal();
+
+                selectedPlanCost = parseFloat(this.dataset.cost) || 0;
+                document.getElementById('SelectedInsurancePlan').value = this.dataset.plan;
+
+                updateTotal();
             });
         });
 
@@ -488,28 +337,79 @@
             e.target.value = e.target.value.replace(/\D/g, '');
         });
 
-        // Apply discount
-        function applyDiscount() {
-            const code = document.getElementById('discountCode').value;
-            if (code) {
-                alert('Discount code "' + code + '" applied!');
-                updateSubtotal();
+        // Validate discount code
+        function validateDiscount() {
+            const code = document.getElementById('discountCodeInput').value;
+            const messageDiv = document.getElementById('discountMessage');
+
+            if (!code) {
+                messageDiv.innerHTML = '<div class="alert alert-warning">Please enter a discount code</div>';
+                return;
             }
+
+            // AJAX call to validate discount
+            fetch(`?handler=ValidateDiscount&code=${encodeURIComponent(code)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        discountPercent = data.discountPercent;
+                        messageDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                        updateTotal();
+                    } else {
+                        discountPercent = 0;
+                        messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                        updateTotal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error validating discount:', error);
+                    messageDiv.innerHTML = '<div class="alert alert-danger">Error validating discount code</div>';
+                });
         }
 
-        // Update subtotal
-        function updateSubtotal() {
-            const activePlan = document.querySelector('.plan-btn.active');
-            if (activePlan) {
-                const plan = activePlan.dataset.plan;
-                const cost = activePlan.dataset.cost;
-                document.getElementById('remainingAmount').innerHTML =
-                    `<strong>${plan}</strong> - ${cost}`;
+        // Update total amount
+        function updateTotal() {
+            const carPrice = parseFloat('@Model.CarInfo?.MinDeposit'.replace(/,/g, '')) || 0;
+            let total = carPrice + selectedPlanCost;
+
+            // Apply discount
+            if (discountPercent > 0) {
+                total = total - (total * discountPercent / 100);
             }
+
+            document.getElementById('totalAmount').textContent = total.toFixed(2) + ' EGP';
+            document.getElementById('totalAmountInput').value = total.toFixed(2);
         }
 
-       
-        updateSubtotal();
+        // Initialize total on page load
+        updateTotal();
+
+        // Form submission validation
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const expDate = document.getElementById('expDate').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (cardNumber.length < 13) {
+                alert('Please enter a valid card number');
+                e.preventDefault();
+                return false;
+            }
+
+            if (expDate.length !== 5 || !expDate.includes('/')) {
+                alert('Please enter a valid expiration date (MM/YY)');
+                e.preventDefault();
+                return false;
+            }
+
+            if (cvv.length < 3) {
+             1   alert('Please enter a valid CVV');
+                e.preventDefault();
+                return false;
+            }
+
+            return true;
+        });
     </script>
 </body>
 </html>

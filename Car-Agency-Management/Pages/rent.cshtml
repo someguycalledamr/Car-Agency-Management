@@ -1,7 +1,10 @@
 ﻿@page
 @model Car_Agency_Management.Pages.rentModel
+@using Car_Agency_Management.Data
 @{
+    ViewData["Title"] = "Schedule Your Rent";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,44 +36,46 @@
             overflow-x: hidden;
         }
 
-        /* Animated floating circles */
-        body::before,
-        body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
+            body::before,
+            body::after {
+                content: '';
+                position: fixed;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+            }
 
-        body::before {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
-            top: -300px;
-            right: -300px;
-            animation: floatCircle1 20s ease-in-out infinite;
-        }
+            body::before {
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent 70%);
+                top: -300px;
+                right: -300px;
+                animation: floatCircle1 20s ease-in-out infinite;
+            }
 
-        body::after {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
-            bottom: -250px;
-            left: -250px;
-            animation: floatCircle2 18s ease-in-out infinite;
-        }
+            body::after {
+                width: 500px;
+                height: 500px;
+                background: radial-gradient(circle, rgba(30, 41, 59, 0.08), transparent 70%);
+                bottom: -250px;
+                left: -250px;
+                animation: floatCircle2 18s ease-in-out infinite;
+            }
 
         @@keyframes floatCircle1 {
             0%, 100% {
                 transform: translate(0, 0) scale(1);
             }
+
             25% {
                 transform: translate(-100px, 150px) scale(1.1);
             }
+
             50% {
                 transform: translate(-50px, 300px) scale(0.9);
             }
+
             75% {
                 transform: translate(50px, 200px) scale(1.05);
             }
@@ -80,18 +85,20 @@
             0%, 100% {
                 transform: translate(0, 0) scale(1);
             }
+
             25% {
                 transform: translate(150px, -100px) scale(1.15);
             }
+
             50% {
                 transform: translate(100px, -50px) scale(0.85);
             }
+
             75% {
                 transform: translate(50px, -150px) scale(1.1);
             }
         }
 
-        /* Floating shapes */
         .floating-shape {
             position: fixed;
             border-radius: 50%;
@@ -132,9 +139,11 @@
             0%, 100% {
                 transform: translateY(0) translateX(0) rotate(0deg);
             }
+
             33% {
                 transform: translateY(-30px) translateX(20px) rotate(120deg);
             }
+
             66% {
                 transform: translateY(20px) translateX(-30px) rotate(240deg);
             }
@@ -189,9 +198,9 @@
             transition: transform 0.3s ease;
         }
 
-        .calendar-container:hover {
-            transform: translateY(-5px);
-        }
+            .calendar-container:hover {
+                transform: translateY(-5px);
+            }
 
         .calendar-header {
             display: flex;
@@ -200,19 +209,19 @@
             margin-bottom: 20px;
         }
 
-        .calendar-header button {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: #6c757d;
-            padding: 5px 10px;
-            transition: color 0.3s;
-        }
+            .calendar-header button {
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+                color: #6c757d;
+                padding: 5px 10px;
+                transition: color 0.3s;
+            }
 
-        .calendar-header button:hover {
-            color: #212529;
-        }
+                .calendar-header button:hover {
+                    color: #212529;
+                }
 
         .calendar-month {
             font-size: 16px;
@@ -244,31 +253,33 @@
             position: relative;
         }
 
-        .calendar-day:hover {
-            background-color: #e7f3ff;
-            color: #0066cc;
-        }
+            .calendar-day:hover:not(.disabled):not(.booked) {
+                background-color: #e7f3ff;
+                color: #0066cc;
+            }
 
-        .calendar-day.selected {
-            background-color: #0066cc;
-            color: white;
-            font-weight: 600;
-        }
+            .calendar-day.selected {
+                background-color: #0066cc;
+                color: white;
+                font-weight: 600;
+            }
 
-        .calendar-day.disabled {
-            color: #dee2e6;
-            cursor: not-allowed;
-        }
+            .calendar-day.disabled {
+                color: #dee2e6;
+                cursor: not-allowed;
+            }
 
-        .calendar-day.disabled:hover {
-            background-color: transparent;
-            color: #dee2e6;
-        }
+            .calendar-day.booked {
+                background-color: #ffe0e0;
+                color: #dc3545;
+                cursor: not-allowed;
+                text-decoration: line-through;
+            }
 
-        .calendar-day.in-range {
-            background-color: #e7f3ff;
-            color: #0066cc;
-        }
+            .calendar-day.in-range {
+                background-color: #e7f3ff;
+                color: #0066cc;
+            }
 
         .info-box {
             background: white;
@@ -281,9 +292,9 @@
             transition: transform 0.3s ease;
         }
 
-        .info-box:hover {
-            transform: translateY(-5px);
-        }
+            .info-box:hover {
+                transform: translateY(-5px);
+            }
 
         .info-text {
             font-size: 14px;
@@ -315,15 +326,17 @@
             transition: all 0.3s;
         }
 
-        .next-button:hover {
-            background-color: #0066cc;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,102,204,0.3);
-        }
+            .next-button:hover {
+                background-color: #0066cc;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+            }
 
-        .next-button:active {
-            transform: translateY(0);
-        }
+            .next-button:disabled {
+                background-color: #6c757d;
+                cursor: not-allowed;
+                transform: none;
+            }
 
         .date-inputs {
             display: flex;
@@ -335,26 +348,50 @@
             flex: 1;
         }
 
-        .date-input-group label {
-            display: block;
-            font-size: 13px;
-            color: #6c757d;
-            margin-bottom: 5px;
-            font-weight: 500;
+            .date-input-group label {
+                display: block;
+                font-size: 13px;
+                color: #6c757d;
+                margin-bottom: 5px;
+                font-weight: 500;
+            }
+
+            .date-input-group input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #dee2e6;
+                border-radius: 6px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+
+                .date-input-group input:focus {
+                    outline: none;
+                    border-color: #0066cc;
+                }
+
+        .alert-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        .date-input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+        .alert-success {
+            background-color: #d1f4e0;
+            color: #0f5132;
+            border: 1px solid #a3e4b8;
         }
 
-        .date-input-group input:focus {
-            outline: none;
-            border-color: #0066cc;
+        .alert-error {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #997404;
+            border: 1px solid #ffe69c;
         }
     </style>
 </head>
@@ -364,89 +401,171 @@
     <div class="floating-shape shape-3"></div>
 
     <div class="page-container">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert-message alert-error">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (Model.IsCheckingAvailability)
+        {
+            if (Model.IsAvailable)
+            {
+                <div class="alert-message alert-success">
+                    ✅ @Model.AvailabilityMessage - Estimated cost: EGP @Model.EstimatedCost.ToString("N2") for @Model.RentalDays day(s)
+                </div>
+            }
+            else
+            {
+                <div class="alert-message alert-error">
+                    ❌ @Model.AvailabilityMessage
+                </div>
+            }
+        }
+
         <h1 class="page-title">Schedule your Rent</h1>
-        <p class="page-subtitle">Check out our availability and book the start date and end date</p>
+        <p class="page-subtitle">
+            @if (Model.CarInfo != null)
+            {
+                <span>Booking: <strong>@Model.CarInfo.CarName</strong> - Check availability and select your rental dates</span>
+            }
+            else
+            {
+                <span>Check out our availability and book the start date and end date</span>
+            }
+        </p>
 
-        <div class="content-grid">
-            <!-- Date and Time Selection -->
-            <div>
-                <h3 class="section-title">Select a Date and Time</h3>
-                <div class="calendar-container">
-                    <div class="calendar-header">
-                        <button onclick="previousMonth()">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="calendar-month" id="currentMonth">December 2025</div>
-                        <button onclick="nextMonth()">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div class="calendar-days" id="calendarDays">
-                        <div class="calendar-day-header">Sun</div>
-                        <div class="calendar-day-header">Mon</div>
-                        <div class="calendar-day-header">Tue</div>
-                        <div class="calendar-day-header">Wed</div>
-                        <div class="calendar-day-header">Thu</div>
-                        <div class="calendar-day-header">Fri</div>
-                        <div class="calendar-day-header">Sat</div>
-                    </div>
-                    <div class="date-inputs">
-                        <div class="date-input-group">
-                            <label>Start Date</label>
-                            <input type="date" id="startDateInput" onchange="updateFromInput()">
+        <form method="post">
+            <input type="hidden" name="carId" value="@Model.CarId" />
+            <input type="hidden" id="startDateHidden" name="startDate" />
+            <input type="hidden" id="endDateHidden" name="endDate" />
+
+            <div class="content-grid">
+                <!-- Date and Time Selection -->
+                <div>
+                    <h3 class="section-title">Select a Date and Time</h3>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button type="button" onclick="previousMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="calendar-month" id="currentMonth">December 2025</div>
+                            <button type="button" onclick="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
-                        <div class="date-input-group">
-                            <label>End Date</label>
-                            <input type="date" id="endDateInput" onchange="updateFromInput()">
+                        <div class="calendar-days" id="calendarDays">
+                            <div class="calendar-day-header">Sun</div>
+                            <div class="calendar-day-header">Mon</div>
+                            <div class="calendar-day-header">Tue</div>
+                            <div class="calendar-day-header">Wed</div>
+                            <div class="calendar-day-header">Thu</div>
+                            <div class="calendar-day-header">Fri</div>
+                            <div class="calendar-day-header">Sat</div>
+                        </div>
+                        <div class="date-inputs">
+                            <div class="date-input-group">
+                                <label>Start Date</label>
+                                <input type="date" id="startDateInput" onchange="updateFromInput()">
+                            </div>
+                            <div class="date-input-group">
+                                <label>End Date</label>
+                                <input type="date" id="endDateInput" onchange="updateFromInput()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Availability -->
+                <div>
+                    <h3 class="section-title">Car Availability</h3>
+                    <div class="info-box">
+                        <div class="info-text">
+                            Selected start date
+                        </div>
+                        <div class="info-highlight" id="availabilityDate">Please select dates</div>
+                    </div>
+                </div>
+
+                <!-- Service Details -->
+                <div>
+                    <h3 class="section-title">Service Details</h3>
+                    <div class="info-box">
+                        <div class="info-text">
+                            Rent
+                        </div>
+                        <div class="info-highlight" id="serviceDetails">
+                            @if (Model.CarInfo != null)
+                            {
+                                <span>@Model.CarInfo.CarName</span>
+                            }
+                            else
+                            {
+                                <span>Select dates to see details</span>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Car Availability -->
-            <div>
-                <h3 class="section-title">Car Availability</h3>
-                <div class="info-box">
-                    <div class="info-text">
-                        Car is available starting
-                    </div>
-                    <div class="info-highlight" id="availabilityDate">YY/MM/DD</div>
-                </div>
+            <div class="next-button-container">
+                <button type="button" class="next-button" id="checkButton" onclick="checkAvailability()" style="margin-right: 10px; background-color: #6c757d;" disabled>
+                    Check Availability
+                </button>
+                <button type="submit" class="next-button" id="nextButton" formaction="?handler=ProceedToPayment" disabled>
+                    Next
+                </button>
             </div>
-
-            <!-- Service Details -->
-            <div>
-                <h3 class="section-title">Service Details</h3>
-                <div class="info-box">
-                    <div class="info-text">
-                        Rent
-                    </div>
-                    <div class="info-highlight" id="serviceDetails">xxxxxx for (period)</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="next-button-container">
-            <button class="next-button" onclick="proceedToNext()">Next</button>
-        </div>
+        </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentMonth = 11; // December (0-indexed)
-        let currentYear = 2025;
+        // Configuration from backend - NO JSON!
+        const carId = @Model.CarId;
+        let bookedDateRanges = [
+            @if (Model.BookedDates != null && Model.BookedDates.Count > 0)
+            {
+                    for (int i = 0; i < Model.BookedDates.Count; i++)
+                    {
+                            <text>
+                            {
+                                startDate: '@Model.BookedDates[i].StartDate.ToString("yyyy-MM-dd")',
+                                endDate: '@Model.BookedDates[i].EndDate.ToString("yyyy-MM-dd")'
+                            }@(i < Model.BookedDates.Count - 1 ? "," : "")
+                            </text>
+                    }
+            }
+        ];
+
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
         let selectedStartDate = null;
         let selectedEndDate = null;
 
+        // Check if a date is booked
+        function isDateBooked(date) {
+            for (let range of bookedDateRanges) {
+                const start = new Date(range.startDate);
+                const end = new Date(range.endDate);
+                if (date >= start && date <= end) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function generateCalendar() {
             const calendarDays = document.getElementById('calendarDays');
-            // Keep headers
             const headers = calendarDays.querySelectorAll('.calendar-day-header');
             calendarDays.innerHTML = '';
             headers.forEach(h => calendarDays.appendChild(h));
 
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             // Empty cells before first day
             for (let i = 0; i < firstDay; i++) {
@@ -458,17 +577,36 @@
             // Days of the month
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
+                const currentDate = new Date(currentYear, currentMonth, day);
+
                 dayElement.className = 'calendar-day';
                 dayElement.textContent = day;
                 dayElement.setAttribute('data-day', day);
                 dayElement.setAttribute('data-month', currentMonth);
                 dayElement.setAttribute('data-year', currentYear);
-                dayElement.onclick = function() { selectDate(this); };
+
+                // Disable past dates
+                if (currentDate < today) {
+                    dayElement.classList.add('disabled');
+                }
+                // Mark booked dates
+                else if (isDateBooked(currentDate)) {
+                    dayElement.classList.add('booked');
+                    dayElement.title = 'This date is already booked';
+                }
+                else {
+                    dayElement.onclick = function() { selectDate(this); };
+                }
+
                 calendarDays.appendChild(dayElement);
             }
         }
 
         function selectDate(element) {
+            if (element.classList.contains('disabled') || element.classList.contains('booked')) {
+                return;
+            }
+
             const day = parseInt(element.getAttribute('data-day'));
             const month = parseInt(element.getAttribute('data-month'));
             const year = parseInt(element.getAttribute('data-year'));
@@ -481,14 +619,32 @@
                 selectedStartDate = selectedDate;
                 document.getElementById('startDateInput').valueAsDate = selectedDate;
                 updateAvailability();
+                document.getElementById('checkButton').disabled = true;
+                document.getElementById('nextButton').disabled = true;
             } else if (!selectedEndDate) {
                 // Select end date
                 if (selectedDate > selectedStartDate) {
+                    // Check if any dates in range are booked
+                    let rangeBlocked = false;
+                    for (let d = new Date(selectedStartDate); d <= selectedDate; d.setDate(d.getDate() + 1)) {
+                        if (isDateBooked(new Date(d))) {
+                            rangeBlocked = true;
+                            break;
+                        }
+                    }
+
+                    if (rangeBlocked) {
+                        alert('Selected date range contains booked dates. Please choose different dates.');
+                        return;
+                    }
+
                     selectedEndDate = selectedDate;
                     element.classList.add('selected');
                     document.getElementById('endDateInput').valueAsDate = selectedDate;
                     highlightRange();
                     updateServiceDetails();
+                    document.getElementById('checkButton').disabled = false;
+                    document.getElementById('checkButton').style.backgroundColor = '#0066cc';
                 } else {
                     alert('End date must be after start date');
                 }
@@ -501,13 +657,16 @@
                 document.getElementById('startDateInput').valueAsDate = selectedDate;
                 document.getElementById('endDateInput').value = '';
                 updateAvailability();
-                document.getElementById('serviceDetails').textContent = 'xxxxxx for (period)';
+                document.getElementById('serviceDetails').innerHTML = '@Model.CarInfo?.CarName';
+                document.getElementById('checkButton').disabled = true;
+                document.getElementById('checkButton').style.backgroundColor = '#6c757d';
+                document.getElementById('nextButton').disabled = true;
             }
         }
 
         function highlightRange() {
             document.querySelectorAll('.calendar-day').forEach(day => {
-                if (day.classList.contains('disabled')) return;
+                if (day.classList.contains('disabled') || day.classList.contains('booked')) return;
                 const dayNum = parseInt(day.getAttribute('data-day'));
                 const monthNum = parseInt(day.getAttribute('data-month'));
                 const yearNum = parseInt(day.getAttribute('data-year'));
@@ -532,7 +691,8 @@
         function updateServiceDetails() {
             if (selectedStartDate && selectedEndDate) {
                 const days = Math.ceil((selectedEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('serviceDetails').textContent = `Car Rental for ${days} day(s)`;
+                const carName = '@Model.CarInfo?.CarName' || 'Car Rental';
+                document.getElementById('serviceDetails').textContent = `${carName} for ${days} day(s)`;
             }
         }
 
@@ -542,15 +702,20 @@
 
             if (startInput) {
                 selectedStartDate = new Date(startInput);
+                selectedStartDate.setHours(0, 0, 0, 0);
                 updateAvailability();
             }
 
             if (endInput) {
                 selectedEndDate = new Date(endInput);
+                selectedEndDate.setHours(0, 0, 0, 0);
+
                 if (selectedStartDate && selectedEndDate > selectedStartDate) {
-                    updateServiceDetails();
                     generateCalendar();
                     highlightCalendarFromInputs();
+                    updateServiceDetails();
+                    document.getElementById('checkButton').disabled = false;
+                    document.getElementById('checkButton').style.backgroundColor = '#0066cc';
                 } else if (selectedStartDate) {
                     alert('End date must be after start date');
                     document.getElementById('endDateInput').value = '';
@@ -562,7 +727,7 @@
         function highlightCalendarFromInputs() {
             document.querySelectorAll('.calendar-day').forEach(day => {
                 day.classList.remove('selected', 'in-range');
-                if (day.classList.contains('disabled')) return;
+                if (day.classList.contains('disabled') || day.classList.contains('booked')) return;
 
                 const dayNum = parseInt(day.getAttribute('data-day'));
                 const monthNum = parseInt(day.getAttribute('data-month'));
@@ -570,11 +735,12 @@
                 if (!dayNum) return;
 
                 const dayDate = new Date(yearNum, monthNum, dayNum);
+                dayDate.setHours(0, 0, 0, 0);
 
-                if (selectedStartDate && dayDate.toDateString() === selectedStartDate.toDateString()) {
+                if (selectedStartDate && dayDate.getTime() === selectedStartDate.getTime()) {
                     day.classList.add('selected');
                 }
-                if (selectedEndDate && dayDate.toDateString() === selectedEndDate.toDateString()) {
+                if (selectedEndDate && dayDate.getTime() === selectedEndDate.getTime()) {
                     day.classList.add('selected');
                 }
                 if (selectedStartDate && selectedEndDate && dayDate > selectedStartDate && dayDate < selectedEndDate) {
@@ -615,17 +781,58 @@
             document.getElementById('currentMonth').textContent = `${months[currentMonth]} ${currentYear}`;
         }
 
-        function proceedToNext() {
+        function checkAvailability() {
             if (!selectedStartDate || !selectedEndDate) {
                 alert('Please select both start and end dates');
                 return;
             }
-            // Proceed to next page or submit
-            alert(`Rental confirmed from ${selectedStartDate.toLocaleDateString()} to ${selectedEndDate.toLocaleDateString()}`);
+
+            // Update hidden form fields
+            document.getElementById('startDateHidden').value = selectedStartDate.toISOString().split('T')[0];
+            document.getElementById('endDateHidden').value = selectedEndDate.toISOString().split('T')[0];
+
+            // Submit form to check availability
+            document.querySelector('form').submit();
         }
 
-        // Initialize calendar
+        // Initialize calendar on page load
+        updateCalendarDisplay();
         generateCalendar();
+
+        // Restore selected dates if page was posted back
+        @if (Model.IsCheckingAvailability)
+        {
+                <text>
+                // Restore dates from the check
+                const savedStartDate = '@Request.Form["startDate"]';
+                const savedEndDate = '@Request.Form["endDate"]';
+
+                if (savedStartDate && savedEndDate) {
+                    selectedStartDate = new Date(savedStartDate);
+                    selectedEndDate = new Date(savedEndDate);
+
+                    document.getElementById('startDateInput').value = savedStartDate;
+                    document.getElementById('endDateInput').value = savedEndDate;
+                    document.getElementById('startDateHidden').value = savedStartDate;
+                    document.getElementById('endDateHidden').value = savedEndDate;
+
+                    updateAvailability();
+                    updateServiceDetails();
+                    highlightCalendarFromInputs();
+
+                    document.getElementById('checkButton').disabled = false;
+                    document.getElementById('checkButton').style.backgroundColor = '#0066cc';
+
+                    @if (Model.IsAvailable)
+                    {
+                            <text>
+                            // Enable next button if available
+                            document.getElementById('nextButton').disabled = false;
+                            </text>
+                    }
+                }
+                </text>
+        }
     </script>
 </body>
 </html>
