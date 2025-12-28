@@ -559,8 +559,8 @@
                                                         <a href="/AddCar?carId=@car.CarId" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation();">
                                                             <i class="fas fa-edit"></i> Edit
                                                         </a>
-                                                        <form method="post" asp-page-handler="Delete" asp-route-carId="@car.CarId" onsubmit="return confirm('Are you sure you want to delete this car?');" style="display:inline;" onclick="event.stopPropagation();">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <form id="deleteForm-@car.CarId" method="post" asp-page-handler="Delete" asp-route-carId="@car.CarId" style="display:inline;" onclick="event.stopPropagation();">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeleteCar(@car.CarId)">
                                                                 <i class="fas fa-trash"></i> Delete
                                                             </button>
                                                         </form>
@@ -668,6 +668,24 @@
                 dropdown.value = sortParam;
             }
         });
+
+        function confirmDeleteCar(carId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This car will be removed from the gallery permanently!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete car!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + carId).submit();
+                }
+            });
+        }
     </script>
 </body>
 </html>

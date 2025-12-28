@@ -397,7 +397,90 @@
             color: white;
         }
 
-      
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #059669;
+            border: 1px solid #059669;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
 
         /* RESPONSIVE */
         @@media (max-width: 1024px) {
@@ -433,6 +516,10 @@
             .section-header {
                 font-size: 2rem;
             }
+
+            .modal-content {
+                width: 90%;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -455,18 +542,32 @@
         <main class="main-content">
             <h2 class="section-header" id="manageHeader">User <span>Management</span></h2>
 
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success">
+                    <i class="fa-solid fa-check-circle"></i> @Model.SuccessMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-exclamation-circle"></i> @Model.ErrorMessage
+                </div>
+            }
+
             <div class="controls-bar">
                 <div class="search-box">
-                    <input type="text" placeholder="Search users by name, email, or ID..." />
+                    <input type="text" id="userSearch" placeholder="Search users by name, email, or ID..." onkeyup="filterUsers()" />
                     <i class="fa-solid fa-search"></i>
                 </div>
-                <button class="btn-primary">
+                <button class="btn-primary" onclick="openAddModal()">
                     <i class="fa-solid fa-user-plus"></i>
                     Add New User
                 </button>
             </div>
 
-            <table class="users-table">
+            <table class="users-table" id="userTable">
                 <thead>
                     <tr>
                         <th>User</th>
@@ -478,146 +579,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">JD</div>
-                                <div class="user-details">
-                                    <h4>John Doe</h4>
-                                    <p>john.doe@@autolux.drive</p>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar">@(user.FirstName.Substring(0, 1))@(user.LastName.Substring(0, 1))</div>
+                                    <div class="user-details">
+                                        <h4>@user.FirstName @user.LastName</h4>
+                                        <p>@user.Email</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>ALX980123</td>
-                        <td>+1 (555) 123-4567</td>
-                        <td>2022-04-15</td>
-                        <td><span class="status-badge status-active">Active</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" title="View Profile">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button class="btn-action btn-edit" title="Edit User">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Delete User">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">SM</div>
-                                <div class="user-details">
-                                    <h4>Sarah Miller</h4>
-                                    <p>sarah.m@@autolux.drive</p>
+                            </td>
+                            <td>USR-@user.Id.ToString("D5")</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.JoinDate</td>
+                            <td><span class="status-badge status-active">@user.Status</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view" title="View Profile" onclick="viewUser(@user.Id)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Edit User" 
+                                            onclick="openEditModal(@user.Id, '@user.FirstName', '@user.LastName', '@user.Email', '@user.PhoneNumber', '@user.Address')">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" title="Delete User" onclick="confirmDelete(@user.Id)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
-                            </div>
-                        </td>
-                        <td>ALX980124</td>
-                        <td>+1 (555) 234-5678</td>
-                        <td>2023-01-20</td>
-                        <td><span class="status-badge status-active">Active</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" title="View Profile">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button class="btn-action btn-edit" title="Edit User">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Delete User">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">MW</div>
-                                <div class="user-details">
-                                    <h4>Michael Wang</h4>
-                                    <p>michael.w@@autolux.drive</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td>ALX980125</td>
-                        <td>+1 (555) 345-6789</td>
-                        <td>2023-06-10</td>
-                        <td><span class="status-badge status-suspended">inactive</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" title="View Profile">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button class="btn-action btn-edit" title="Edit User">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Delete User">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">EJ</div>
-                                <div class="user-details">
-                                    <h4>Emily Johnson</h4>
-                                    <p>emily.j@@autolux.drive</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td>ALX980126</td>
-                        <td>+1 (555) 456-7890</td>
-                        <td>2023-09-05</td>
-                        <td><span class="status-badge status-active">Active</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" title="View Profile">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button class="btn-action btn-edit" title="Edit User">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Delete User">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">DB</div>
-                                <div class="user-details">
-                                    <h4>David Brown</h4>
-                                    <p>david.b@@autolux.drive</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td>ALX980127</td>
-                        <td>+1 (555) 567-8901</td>
-                        <td>2024-02-14</td>
-                        <td><span class="status-badge status-inactive">Inactive</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" title="View Profile">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                                <button class="btn-action btn-edit" title="Edit User">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Delete User">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 
@@ -625,14 +618,88 @@
                 <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
                 <button class="page-btn active">1</button>
                 <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
                 <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </main>
     </div>
 
+    <!-- ADD USER MODAL -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-user-plus"></i> Add New User</h2>
+            <form method="post" asp-page-handler="AddUser">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" required />
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" required />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" />
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" rows="2"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action" style="width: auto; padding: 0 15px;" onclick="closeModal('addModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- EDIT USER MODAL -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-pen"></i> Edit User</h2>
+            <form method="post" asp-page-handler="EditUser">
+                <input type="hidden" name="userId" id="editUserId" />
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" id="editFirstName" required />
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" id="editLastName" required />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" id="editEmail" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" id="editPhone" />
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" id="editAddress" rows="2"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action" style="width: auto; padding: 0 15px;" onclick="closeModal('editModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION FORM (HIDDEN) -->
+    <form id="deleteForm" method="post" asp-page-handler="DeleteUser" style="display:none;">
+        <input type="hidden" name="userId" id="deleteUserId" />
+    </form>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -654,6 +721,69 @@
                 observer.observe(header);
             });
         });
+
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+        }
+
+        function openEditModal(id, fname, lname, email, phone, address) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editFirstName').value = fname;
+            document.getElementById('editLastName').value = lname;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editAddress').value = address;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This user and all their associated data will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, delete user!',
+                cancelButtonText: 'No, keep them',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteUserId').value = id;
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+
+        function viewUser(id) {
+            window.location.href = '/Profile?handler=View&id=' + id;
+        }
+
+        function filterUsers() {
+            let input = document.getElementById('userSearch');
+            let filter = input.value.toLowerCase();
+            let table = document.getElementById('userTable');
+            let tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let text = tr[i].innerText.toLowerCase();
+                if (text.indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = "none";
+            }
+        }
     </script>
 </body>
 </html>

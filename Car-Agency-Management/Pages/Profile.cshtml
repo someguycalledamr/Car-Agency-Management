@@ -409,7 +409,9 @@
                                 </td>
                                 <td>@record.Date</td>
                                 <td>
-                                    <span class="status-badge status-paid">Completed</span>
+                                    <span class="status-badge @(record.Status.ToLower() == "completed" || record.Status.ToLower() == "paid" ? "status-paid" : "status-pending")">
+                                        @record.Status
+                                    </span>
                                 </td>
                             </tr>
                         }

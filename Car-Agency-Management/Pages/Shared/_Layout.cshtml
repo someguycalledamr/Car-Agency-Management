@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Car_Agency_Management.styles.css" asp-append-version="true" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/@@sweetalert2/theme-dark@@4/dark.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@@11/dist/sweetalert2.min.js"></script>
     <style>
         /* Frosted Glass Navbar Styles */
         .navbar-glass {
@@ -255,6 +258,59 @@
         body {
             padding-top: 80px;
         }
+
+        /* Modern SweetAlert Customizations */
+        .swal2-popup {
+            border-radius: 24px !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            padding: 2.5rem !important;
+        }
+
+        .swal2-title {
+            color: #fff !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.025em !important;
+        }
+
+        .swal2-html-container {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 1.1rem !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%) !important;
+            border-radius: 12px !important;
+            padding: 12px 32px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 20px 25px -5px rgba(6, 182, 212, 0.4) !important;
+        }
+
+        .swal2-cancel {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px !important;
+            padding: 12px 32px !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-cancel:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .swal2-icon {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -310,7 +366,7 @@
                             }
                             
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-page="/Logout" style="font-weight: 700;">
+                                <a id="logoutLink" class="nav-link text-danger" href="javascript:void(0);" onclick="confirmSignOut()" style="font-weight: 700;">
                                     <i class="fas fa-sign-out-alt"></i> Sign Out
                                 </a>
                             </li>
@@ -435,5 +491,24 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        function confirmSignOut() {
+            Swal.fire({
+                title: 'Sign Out?',
+                text: "Are you sure you want to sign out of your account?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Logout';
+                }
+            });
+        }
+    </script>
 </body>
 </html>

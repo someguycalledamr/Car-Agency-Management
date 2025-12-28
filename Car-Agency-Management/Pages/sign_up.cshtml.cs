@@ -16,6 +16,9 @@ namespace Car_Agency_Management.Pages
         public string? Email { get; set; }
 
         [BindProperty]
+        public string? Address { get; set; }
+
+        [BindProperty]
         public string? Phone { get; set; }
 
         [BindProperty]
@@ -55,12 +58,19 @@ namespace Car_Agency_Management.Pages
                 return Page();
             }
 
+            if (!string.IsNullOrEmpty(Phone) && db.IsPhoneTaken(Phone))
+            {
+                ErrorMessage = "This phone number is already used.";
+                return Page();
+            }
+
             bool success = db.AddCustomer(
                 FirstName ?? "", 
                 LastName ?? "", 
                 emailAddr, 
                 Password ?? "", 
-                Phone ?? ""
+                Phone ?? "",
+                Address ?? ""
             );
 
             if (!success)

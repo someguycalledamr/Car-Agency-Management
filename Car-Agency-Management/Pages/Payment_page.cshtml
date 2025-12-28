@@ -283,6 +283,8 @@
                         <input type="hidden" asp-for="CarId">
                         <input type="hidden" asp-for="CustomerId">
                         <input type="hidden" asp-for="SelectedInsurancePlan">
+                        <input type="hidden" asp-for="StartDate">
+                        <input type="hidden" asp-for="EndDate">
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn-submit mt-3">
@@ -300,7 +302,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
-        let selectedPlanCost = parseFloat('@Model.CarInfo?.MinDeposit'.replace(/,/g, '')) || 0;
+        let basePrice = parseFloat('@Model.TotalAmount'.replace(/,/g, '')) || 0;
+        let selectedPlanCost = 0;
         let discountPercent = 0;
 
         // Plan selection
@@ -369,8 +372,7 @@
 
         // Update total amount
         function updateTotal() {
-            const carPrice = parseFloat('@Model.CarInfo?.MinDeposit'.replace(/,/g, '')) || 0;
-            let total = carPrice + selectedPlanCost;
+            let total = basePrice + selectedPlanCost;
 
             // Apply discount
             if (discountPercent > 0) {
@@ -391,19 +393,31 @@
             const cvv = document.getElementById('cvv').value;
 
             if (cardNumber.length < 13) {
-                alert('Please enter a valid card number');
+                Swal.fire({
+                    title: 'Invalid Card Number',
+                    text: 'Please enter a valid card number correctly.',
+                    icon: 'error'
+                });
                 e.preventDefault();
                 return false;
             }
 
             if (expDate.length !== 5 || !expDate.includes('/')) {
-                alert('Please enter a valid expiration date (MM/YY)');
+                Swal.fire({
+                    title: 'Invalid Expiry Date',
+                    text: 'Please enter a valid expiration date in MM/YY format.',
+                    icon: 'error'
+                });
                 e.preventDefault();
                 return false;
             }
 
             if (cvv.length < 3) {
-             1   alert('Please enter a valid CVV');
+                Swal.fire({
+                    title: 'Invalid CVV',
+                    text: 'Please enter a valid 3 or 4-digit CVV.',
+                    icon: 'error'
+                });
                 e.preventDefault();
                 return false;
             }

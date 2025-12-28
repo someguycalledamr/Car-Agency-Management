@@ -101,14 +101,33 @@ namespace Car_Agency_Management.Pages
             InsurancePlans = _db.GetInsurancePlans(CarId);
             Console.WriteLine($"✅ Found {InsurancePlans.Count} insurance plans");
 
-            // Load customer information
-            if (CustomerId > 0)
+            // Load customer information from session
+            int? sessionUserId = HttpContext.Session.GetInt32("UserId");
+            if (sessionUserId != null)
             {
+                CustomerId = sessionUserId.Value;
                 CustomerInfo = _db.GetCustomerPaymentInfo(CustomerId);
                 if (CustomerInfo != null)
                 {
-                    Console.WriteLine($"✅ Customer loaded: {CustomerInfo.FullName}");
+                    Console.WriteLine($"✅ Customer loaded from session: {CustomerInfo.FullName}");
                 }
+            }
+
+            // Restore dates from TempData (passed from /rent page)
+            if (TempData["RentalStartDate"] != null)
+            {
+                StartDate = DateTime.Parse(TempData["RentalStartDate"].ToString());
+                TempData.Keep("RentalStartDate"); // Keep for postback if needed
+            }
+            if (TempData["RentalEndDate"] != null)
+            {
+                EndDate = DateTime.Parse(TempData["RentalEndDate"].ToString());
+                TempData.Keep("RentalEndDate");
+            }
+            if (TempData["EstimatedCost"] != null)
+            {
+                TotalAmount = Convert.ToDecimal(TempData["EstimatedCost"]);
+                TempData.Keep("EstimatedCost");
             }
 
             // Check car availability

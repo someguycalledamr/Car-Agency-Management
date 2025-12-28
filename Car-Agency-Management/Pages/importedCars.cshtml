@@ -500,7 +500,11 @@
                 const message = document.getElementById(`message${carId}`).value.trim();
 
                 if (!name || !email || !phone) {
-                    alert('Please fill in all required fields');
+                    Swal.fire({
+                        title: 'Missing Information',
+                        text: 'Please fill in all required fields to proceed.',
+                        icon: 'info'
+                    });
                     return;
                 }
 
@@ -525,7 +529,13 @@
                 toggleRequestForm(carId);
                 renderRequests();
 
-                alert(`Import request submitted successfully!\nWe'll contact you at ${email} soon.`);
+                Swal.fire({
+                    title: 'Request Submitted!',
+                    text: `Import request submitted successfully! We'll contact you at ${email} soon.`,
+                    icon: 'success',
+                    timer: 5000,
+                    timerProgressBar: true
+                });
             }
 
             function renderRequests() {

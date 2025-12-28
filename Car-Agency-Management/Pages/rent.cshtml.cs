@@ -25,6 +25,9 @@ namespace Car_Agency_Management.Pages
         public bool IsCheckingAvailability { get; set; }
         public bool IsAvailable { get; set; }
         public string AvailabilityMessage { get; set; }
+        public string ErrorMessage { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int RentalDays { get; set; }
         public decimal EstimatedCost { get; set; }
 
@@ -69,33 +72,68 @@ namespace Car_Agency_Management.Pages
             BookedDates = _db.GetBookedDatesForCar(CarId);
 
             // Get dates from form
-            string startDateStr = Request.Form["startDate"];
-            string endDateStr = Request.Form["endDate"];
-
-            if (!string.IsNullOrEmpty(startDateStr) && !string.IsNullOrEmpty(endDateStr))
+            try
             {
-                DateTime startDate = DateTime.Parse(startDateStr);
-                DateTime endDate = DateTime.Parse(endDateStr);
-
-                // Check availability
-                var availability = _db.CheckRentalAvailability(CarId, startDate, endDate);
-
-                IsCheckingAvailability = true;
-                IsAvailable = availability.IsAvailable;
-                AvailabilityMessage = availability.Message;
-
-                if (IsAvailable)
+                DateTime startDate, endDate;
+                if (!DateTime.TryParse(Request.Form["startDate"], out startDate) ||
+                    !DateTime.TryParse(Request.Form["endDate"], out endDate))
                 {
-                    // Calculate rental details
+                    ErrorMessage = "Please select valid start and end dates.";
+                    AvailabilityMessage = ErrorMessage; // Added
+                    IsAvailable = false; // Added
+                    IsCheckingAvailability = true;
+                    return;
+                }
+
+                if (startDate < DateTime.Today)
+                {
+                    ErrorMessage = "Start date cannot be in the past.";
+                    AvailabilityMessage = ErrorMessage; // Added
+                    IsAvailable = false; // Added
+                    IsCheckingAvailability = true;
+                    return;
+                }
+
+                if (endDate <= startDate)
+                {
+                    ErrorMessage = "End date must be at least one day after start date.";
+                    AvailabilityMessage = ErrorMessage; // Added
+                    IsAvailable = false; // Added
+                    IsCheckingAvailability = true;
+                    return;
+                }
+
+                var availability = _db.CheckRentalAvailability(CarId, startDate, endDate);
+                if (availability.IsAvailable)
+                {
+                    IsCheckingAvailability = true; // Set to true to show results
+                    IsAvailable = true; // Keep this for consistency with original logic if needed
+                    AvailabilityMessage = availability.Message; // Keep this for consistency with original logic if needed
                     RentalDays = _db.CalculateRentalDays(startDate, endDate);
                     EstimatedCost = _db.CalculateEstimatedRentalCost(CarId, startDate, endDate);
+                    
+                    // Update model properties
+                    StartDate = startDate;
+                    EndDate = endDate;
+
+                    Console.WriteLine($"✅ Car available for {CarId}: {startDate:d} to {endDate:d}. Cost: {EstimatedCost}");
+                }
+                else
+                {
+                    ErrorMessage = availability.Message;
+                    IsCheckingAvailability = true;
+                    IsAvailable = false; // Keep this for consistency with original logic if needed
+                    AvailabilityMessage = availability.Message; // Keep this for consistency with original logic if needed
+                    Console.WriteLine($"❌ Car NOT available for {CarId}: {availability.Message}");
                 }
             }
-            else
+            catch (Exception ex)
             {
+                ErrorMessage = "An unexpected error occurred while checking availability. Please try again.";
                 IsCheckingAvailability = true;
-                IsAvailable = false;
-                AvailabilityMessage = "Please select both start and end dates";
+                IsAvailable = false; // Keep this for consistency with original logic if needed
+                AvailabilityMessage = ErrorMessage; // Keep this for consistency with original logic if needed
+                Console.WriteLine($"Critical Error in rent OnPost: {ex.Message}");
             }
         }
 
@@ -104,42 +142,52 @@ namespace Car_Agency_Management.Pages
         /// </summary>
         public IActionResult OnPostProceedToPayment()
         {
-            string startDateStr = Request.Form["startDate"];
-            string endDateStr = Request.Form["endDate"];
-
-            if (string.IsNullOrEmpty(startDateStr) || string.IsNullOrEmpty(endDateStr))
+            try
             {
-                TempData["ErrorMessage"] = "Please select both start and end dates";
+                DateTime startDate, endDate;
+                if (!DateTime.TryParse(Request.Form["startDate"], out startDate) ||
+                    !DateTime.TryParse(Request.Form["endDate"], out endDate))
+                {
+                    TempData["ErrorMessage"] = "Please select valid start and end dates.";
+                    return RedirectToPage("/rent", new { carId = CarId });
+                }
+
+                if (startDate < DateTime.Today)
+                {
+                    TempData["ErrorMessage"] = "Start date cannot be in the past.";
+                    return RedirectToPage("/rent", new { carId = CarId });
+                }
+
+                if (endDate <= startDate)
+                {
+                    TempData["ErrorMessage"] = "End date must be at least one day after start date.";
+                    return RedirectToPage("/rent", new { carId = CarId });
+                }
+
+                var availability = _db.CheckRentalAvailability(CarId, startDate, endDate);
+
+                if (!availability.IsAvailable)
+                {
+                    TempData["ErrorMessage"] = availability.Message;
+                    return RedirectToPage("/rent", new { carId = CarId });
+                }
+
+                decimal cost = _db.CalculateEstimatedRentalCost(CarId, startDate, endDate);
+                
+                // Store dates in TempData for payment page
+                TempData["RentalCarId"] = CarId;
+                TempData["RentalStartDate"] = startDate.ToString("yyyy-MM-dd");
+                TempData["RentalEndDate"] = endDate.ToString("yyyy-MM-dd");
+                TempData["RentalDays"] = _db.CalculateRentalDays(startDate, endDate);
+                TempData["EstimatedCost"] = cost;
+
+                return RedirectToPage("/Payment_page", new { CarId = CarId });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while proceeding: " + ex.Message;
                 return RedirectToPage("/rent", new { carId = CarId });
             }
-
-            DateTime startDate = DateTime.Parse(startDateStr);
-            DateTime endDate = DateTime.Parse(endDateStr);
-
-            // Validate dates
-            if (startDate >= endDate)
-            {
-                TempData["ErrorMessage"] = "End date must be after start date";
-                return RedirectToPage("/rent", new { carId = CarId });
-            }
-
-            // Check availability one more time
-            var availability = _db.CheckRentalAvailability(CarId, startDate, endDate);
-
-            if (!availability.IsAvailable)
-            {
-                TempData["ErrorMessage"] = availability.Message;
-                return RedirectToPage("/rent", new { carId = CarId });
-            }
-
-            // Store dates in TempData for payment page
-            TempData["RentalCarId"] = CarId;
-            TempData["RentalStartDate"] = startDate.ToString("yyyy-MM-dd");
-            TempData["RentalEndDate"] = endDate.ToString("yyyy-MM-dd");
-            TempData["RentalDays"] = _db.CalculateRentalDays(startDate, endDate);
-            TempData["EstimatedCost"] = _db.CalculateEstimatedRentalCost(CarId, startDate, endDate);
-
-            return RedirectToPage("/Payment", new { carId = CarId });
         }
     }
 }

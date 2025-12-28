@@ -489,8 +489,8 @@
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="window.location.href='/Car-gallary'">View Cars</button>
                 <button class="btn btn-primary" onclick="window.location.href='/Index'">Main Site</button>
-                <form method="post" asp-page-handler="ResetDatabase" onsubmit="return confirm('WARNING: This will reset the database to its initial state. All current data will be lost. Are you sure?');" style="margin-left: 10px; display: inline-block;">
-                    <button type="submit" class="btn btn-primary" style="background-color: #dc3545; color: white;">Reset DB</button>
+                <form id="resetDbForm" method="post" asp-page-handler="ResetDatabase" style="margin-left: 10px; display: inline-block;">
+                    <button type="button" class="btn btn-primary" style="background-color: #dc3545; color: white;" onclick="confirmResetDB()">Reset DB</button>
                 </form>
             </div>
         </div>
@@ -728,6 +728,25 @@
                 }
             }
         });
+        });
+
+        function confirmResetDB() {
+            Swal.fire({
+                title: 'WARNING: Reset Database?',
+                text: "All current data will be permanently lost and reset to its initial state. This cannot be undone!",
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, reset everything!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resetDbForm').submit();
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=AMR; Initial Catalog=Car_agency; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=web; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         private SqlConnection _connection;
 
         public DB()
@@ -272,7 +272,97 @@ namespace Car_Agency_Management.Data
             }
         }
 
-        public bool AddCustomer(string fname, string lname, string email, string password, string phone)
+        public bool IsPhoneTaken(string phone)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM CUSTOMER_PHONE_NUMBERS WHERE PHONE_NUMBERS = @Phone";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Phone", phone);
+                        int count = (int)cmd.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking phone: {ex.Message}");
+                return true;
+            }
+        }
+
+        public bool VerifyPhoneLast4(string email, string last4)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    // We join CUSTOMER with CUSTOMER_PHONE_NUMBERS to verify the last 4 digits
+                    string query = @"
+                        SELECT TOP 1 PN.PHONE_NUMBERS 
+                        FROM CUSTOMER C
+                        JOIN CUSTOMER_PHONE_NUMBERS PN ON C.CUSTOMER_ID = PN.CUSTOMER_ID
+                        WHERE C.CUSTOMER_EMAIL = @Email";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        object result = cmd.ExecuteScalar();
+                        
+                        if (result != null)
+                        {
+                            string fullPhone = result.ToString();
+                            // Handle cases where phone might have spaces or special characters
+                            string cleanPhone = new string(fullPhone.Where(char.IsDigit).ToArray());
+                            return cleanPhone.EndsWith(last4);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying phone digits: {ex.Message}");
+            }
+            return false;
+        }
+
+        public bool ResetPassword(string email, string newPassword)
+        {
+            try
+            {
+                string cleanEmail = email?.Trim() ?? "";
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = "UPDATE CUSTOMER SET CUSTOMER_PASSWORD = @Password WHERE CUSTOMER_EMAIL = @Email";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", cleanEmail);
+                        cmd.Parameters.AddWithValue("@Password", newPassword);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        
+                        if (rowsAffected > 0)
+                        {
+                            LogActivity("Password Reset", $"Password reset successful for {email}", "info");
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ResetPassword: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool AddCustomer(string fname, string lname, string email, string password, string phone, string address)
         {
             try
             {
@@ -286,8 +376,8 @@ namespace Car_Agency_Management.Data
                         {
                             // 1. Insert Customer (AdministratorId is NULL for public signups)
                             string insertCustomerQuery = @"
-                                INSERT INTO CUSTOMER (FNAME, LNAME, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, MNAME) 
-                                VALUES (@Fname, @Lname, @Email, @Password, ''); 
+                                INSERT INTO CUSTOMER (FNAME, LNAME, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, ADDRESS, MNAME) 
+                                VALUES (@Fname, @Lname, @Email, @Password, @Address, ''); 
                                 SELECT SCOPE_IDENTITY();";
                                 
                             int newCustomerId = 0;
@@ -298,6 +388,7 @@ namespace Car_Agency_Management.Data
                                 cmd.Parameters.AddWithValue("@Lname", lname);
                                 cmd.Parameters.AddWithValue("@Email", email);
                                 cmd.Parameters.AddWithValue("@Password", password);
+                                cmd.Parameters.AddWithValue("@Address", address ?? (object)DBNull.Value);
                                 
                                 object result = cmd.ExecuteScalar();
                                 newCustomerId = Convert.ToInt32(result);
@@ -1391,38 +1482,40 @@ namespace Car_Agency_Management.Data
             return customer;
         }
 
-        // NEW: Get customer history (Joins CAR, BUYING_RENTING, and PAYMENT)
-        public List<TransactionSummary> GetCustomerTransactions(int customerId)
+        // NEW: Get customer history using TRANSACTION_LOG for accurate car mapping
+public List<TransactionSummary> GetCustomerTransactions(int customerId)
+{
+    List<TransactionSummary> list = new List<TransactionSummary>();
+    string query = @"SELECT T.CAR_NAME, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE, P.PAYMENT_STATUS
+            FROM TRANSACTION_LOG T
+            JOIN PAYMENT P ON T.PAYMENT_ID = P.PAYMENT_ID
+            WHERE P.CUSTOMER_ID = @Id
+            ORDER BY P.PAYMENT_DATE DESC";
+    try
+    {
+        _connection.Open();
+        SqlCommand cmd = new SqlCommand(query, _connection);
+        cmd.Parameters.AddWithValue("@Id", customerId);
+        SqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
         {
-            List<TransactionSummary> list = new List<TransactionSummary>();
-            string query = @"SELECT C.CAR_NAME, C.BRAND, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE
-                    FROM BUYING_RENTING BR
-                    JOIN CAR C ON BR.CAR_ID = C.CAR_ID
-                    JOIN PAYMENT P ON BR.CUSTOMER_ID = P.CUSTOMER_ID
-                    WHERE BR.CUSTOMER_ID = @Id
-                    ORDER BY P.PAYMENT_DATE DESC";
-            try
+            list.Add(new TransactionSummary
             {
-                _connection.Open();
-                SqlCommand cmd = new SqlCommand(query, _connection);
-                cmd.Parameters.AddWithValue("@Id", customerId);
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    list.Add(new TransactionSummary
-                    {
-                        CarTitle = $"{reader["BRAND"]} {reader["CAR_NAME"]}",
-                        Method = reader["PAYMENT_METHOD"].ToString(),
-                        Amount = reader["AMOUNT"].ToString(),
-                        Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString()
-                    });
-                }
-            }
-            finally { _connection.Close(); }
-            return list;
+                CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
+                Method = reader["PAYMENT_METHOD"].ToString(),
+                Amount = reader["AMOUNT"].ToString(),
+                Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
+                Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
+            });
         }
-
-
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in GetCustomerTransactions: {ex.Message}");
+    }
+    finally { _connection.Close(); }
+    return list;
+}
         // ============================================
         // ADMIN DASHBOARD QUERIES
         // ============================================
@@ -2298,52 +2391,8 @@ namespace Car_Agency_Management.Data
         /// </summary>
         public string CheckCarAvailability(int carId, DateTime startDate, DateTime endDate)
         {
-            string availabilityStatus = "Available";
-
-            string query = @"SELECT 
-                    CASE 
-                        WHEN EXISTS (
-                            SELECT 1
-                            FROM RESERVATIONS r
-                            INNER JOIN BUYING_RENTING br 
-                                ON r.CUSTOMER_ID = br.CUSTOMER_ID
-                            WHERE br.CAR_ID = @CarId
-                              AND r.RESERVATION_STATUS = 'Confirmed'
-                              AND (
-                                  @StartDate BETWEEN r.RESERVATION_START_DATE AND r.RESERVATION_END_DATE
-                                  OR @EndDate BETWEEN r.RESERVATION_START_DATE AND r.RESERVATION_END_DATE
-                                  OR r.RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate
-                              )
-                        )
-                        THEN 'Not Available'
-                        ELSE 'Available'
-                    END AS AvailabilityStatus";
-
-            try
-            {
-                _connection.Open();
-                SqlCommand cmd = new SqlCommand(query, _connection);
-                cmd.Parameters.AddWithValue("@CarId", carId);
-                cmd.Parameters.AddWithValue("@StartDate", startDate);
-                cmd.Parameters.AddWithValue("@EndDate", endDate);
-
-                object result = cmd.ExecuteScalar();
-                if (result != null)
-                {
-                    availabilityStatus = result.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in CheckCarAvailability: {ex.Message}");
-                availabilityStatus = "Error checking availability";
-            }
-            finally
-            {
-                _connection.Close();
-            }
-
-            return availabilityStatus;
+            var availability = CheckRentalAvailability(carId, startDate, endDate);
+            return availability.IsAvailable ? "Available" : "Not Available";
         }
 
         /// <summary>
@@ -2374,12 +2423,14 @@ namespace Car_Agency_Management.Data
                 // Step 1: Insert reservation
                 string reservationQuery = @"INSERT INTO RESERVATIONS (
                                     CUSTOMER_ID,
+                                    CAR_ID,
                                     RESERVATION_STATUS,
                                     RESERVATION_START_DATE,
                                     RESERVATION_END_DATE
                                     )
                                     VALUES (
                                     @CustomerId,
+                                    @CarId,
                                     'Confirmed',
                                     @StartDate,
                                     @EndDate
@@ -2388,6 +2439,7 @@ namespace Car_Agency_Management.Data
 
                 SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
                 reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                reservationCmd.Parameters.AddWithValue("@CarId", carId);
                 reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
                 reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
 
@@ -2580,7 +2632,7 @@ namespace Car_Agency_Management.Data
             string query = @"SELECT 
                     CAR_ID,
                     CAR_NAME,
-                    PRICE
+                    ISNULL(DAILY_RENT_PRICE, CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS Price
                     FROM CAR
                     WHERE CAR_ID = @CarId";
 
@@ -2597,7 +2649,7 @@ namespace Car_Agency_Management.Data
                     {
                         CarId = Convert.ToInt32(reader["CAR_ID"]),
                         CarName = reader["CAR_NAME"].ToString(),
-                        Price = reader["PRICE"].ToString()
+                        Price = Convert.ToDecimal(reader["Price"]).ToString("N2")
                     };
                 }
                 reader.Close();
@@ -2763,7 +2815,7 @@ namespace Car_Agency_Management.Data
             decimal estimatedCost = 0;
             string query = @"SELECT 
                     DATEDIFF(DAY, @StartDate, @EndDate) 
-                    * CAST(REPLACE(PRICE, ',', '') AS DECIMAL(10,2)) AS EstimatedRentalCost
+                    * ISNULL(DAILY_RENT_PRICE, CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS EstimatedRentalCost
                     FROM CAR
                     WHERE CAR_ID = @CarId";
 
@@ -2849,7 +2901,268 @@ namespace Car_Agency_Management.Data
             return reservationId;
         }
 
+        // ============================================
+        // USER MANAGEMENT OPERATIONS
+        // ============================================
+
+        /// <summary>
+        /// Get all users for administration management
+        /// Joins CUSTOMER with CUSTOMER_PHONE_NUMBERS
+        /// </summary>
+        public List<UserManagementModel> GetAllUsers()
+        {
+            List<UserManagementModel> users = new List<UserManagementModel>();
+            string query = @"SELECT 
+                            c.CUSTOMER_ID, 
+                            c.FNAME, 
+                            c.LNAME, 
+                            c.CUSTOMER_EMAIL, 
+                            c.ADDRESS,
+                            (SELECT TOP 1 PHONE_NUMBERS FROM CUSTOMER_PHONE_NUMBERS WHERE CUSTOMER_ID = c.CUSTOMER_ID) as Phone,
+                            (SELECT TOP 1 CAST(PAYMENT_DATE AS DATE) FROM PAYMENT WHERE CUSTOMER_ID = c.CUSTOMER_ID ORDER BY PAYMENT_DATE ASC) as JoinDate
+                            FROM CUSTOMER c";
+
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand(query, _connection);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    users.Add(new UserManagementModel
+                    {
+                        Id = Convert.ToInt32(reader["CUSTOMER_ID"]),
+                        FirstName = reader["FNAME"].ToString() ?? "",
+                        LastName = reader["LNAME"].ToString() ?? "",
+                        Email = reader["CUSTOMER_EMAIL"].ToString() ?? "",
+                        Address = reader["ADDRESS"].ToString() ?? "",
+                        PhoneNumber = reader["Phone"] != DBNull.Value ? reader["Phone"].ToString() ?? "" : "",
+                        JoinDate = reader["JoinDate"] != DBNull.Value ? Convert.ToDateTime(reader["JoinDate"]).ToString("yyyy-MM-dd") : "N/A",
+                        Status = "Active" // Default for now
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers: {ex.Message}");
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return users;
+        }
+
+        public bool AddUser(string fname, string lname, string email, string password, string phone, string address)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string insertCustomerQuery = @"
+                                INSERT INTO CUSTOMER (FNAME, LNAME, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, ADDRESS, MNAME) 
+                                VALUES (@Fname, @Lname, @Email, @Password, @Address, ''); 
+                                SELECT SCOPE_IDENTITY();";
+
+                            int newCustomerId = 0;
+                            using (SqlCommand cmd = new SqlCommand(insertCustomerQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Fname", fname);
+                                cmd.Parameters.AddWithValue("@Lname", lname);
+                                cmd.Parameters.AddWithValue("@Email", email);
+                                cmd.Parameters.AddWithValue("@Password", password);
+                                cmd.Parameters.AddWithValue("@Address", address ?? (object)DBNull.Value);
+
+                                object result = cmd.ExecuteScalar();
+                                newCustomerId = Convert.ToInt32(result);
+                            }
+
+                            if (!string.IsNullOrEmpty(phone) && newCustomerId > 0)
+                            {
+                                string insertPhoneQuery = "INSERT INTO CUSTOMER_PHONE_NUMBERS (CUSTOMER_ID, PHONE_NUMBERS) VALUES (@CustId, @Phone)";
+                                using (SqlCommand cmd = new SqlCommand(insertPhoneQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@CustId", newCustomerId);
+                                    cmd.Parameters.AddWithValue("@Phone", phone);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            LogActivity("Admin: User Added", $"New user {fname} {lname} added by admin.", "success");
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddUser: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool UpdateUser(int id, string fname, string lname, string email, string phone, string address)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string updateCustomerQuery = @"
+                                UPDATE CUSTOMER SET 
+                                FNAME = @Fname, 
+                                LNAME = @Lname, 
+                                CUSTOMER_EMAIL = @Email, 
+                                ADDRESS = @Address
+                                WHERE CUSTOMER_ID = @Id";
+
+                            using (SqlCommand cmd = new SqlCommand(updateCustomerQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.Parameters.AddWithValue("@Fname", fname);
+                                cmd.Parameters.AddWithValue("@Lname", lname);
+                                cmd.Parameters.AddWithValue("@Email", email);
+                                cmd.Parameters.AddWithValue("@Address", address ?? (object)DBNull.Value);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Update phone: Delete old ones and insert new one (simplified)
+                            string deletePhoneQuery = "DELETE FROM CUSTOMER_PHONE_NUMBERS WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deletePhoneQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            if (!string.IsNullOrEmpty(phone))
+                            {
+                                string insertPhoneQuery = "INSERT INTO CUSTOMER_PHONE_NUMBERS (CUSTOMER_ID, PHONE_NUMBERS) VALUES (@Id, @Phone)";
+                                using (SqlCommand cmd = new SqlCommand(insertPhoneQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@Id", id);
+                                    cmd.Parameters.AddWithValue("@Phone", phone);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            LogActivity("Admin: User Updated", $"User ID {id} updated by admin.", "info");
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateUser: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteUser(int id)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    // Note: Cascading delete should handle phone numbers if set up, 
+                    // otherwise we delete manually. Our schema has ON DELETE CASCADE for CUSTOMER_PHONE_NUMBERS.
+                    // But other tables like PAYMENT and RESERVATIONS might not.
+                    // Let's assume a simple delete for now, or we might need to handle dependencies.
+                    
+                    // Actually, looking at setup.sql, PAYMENT and RESERVATIONS references CUSTOMER without CASCADE.
+                    // So we might need to delete those first or set them to NULL.
+                    
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Delete from BUYING_RENTING
+                            string deleteBRQuery = "DELETE FROM BUYING_RENTING WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteBRQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from RESERVATIONS
+                            string deleteResQuery = "DELETE FROM RESERVATIONS WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteResQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from FINES
+                            string deleteFinesQuery = "DELETE FROM FINES WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteFinesQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from PAYMENT
+                            string deletePaymentQuery = "DELETE FROM PAYMENT WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deletePaymentQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Finally delete CUSTOMER
+                            string deleteCustomerQuery = "DELETE FROM CUSTOMER WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteCustomerQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                            LogActivity("Admin: User Deleted", $"User ID {id} deleted by admin.", "warning");
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteUser: {ex.Message}");
+                return false;
+            }
+        }
+
     }
+
+
 
 
 
@@ -2922,6 +3235,7 @@ namespace Car_Agency_Management.Data
         public string Method { get; set; }
         public string Amount { get; set; }
         public string Date { get; set; }
+        public string Status { get; set; }
     }
 
 
@@ -3060,13 +3374,29 @@ namespace Car_Agency_Management.Data
         public DateTime EndDate { get; set; }
     }
 
+    public class UserManagementModel
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string JoinDate { get; set; } = "";
+        public string Status { get; set; } = "Active";
+    }
+
+    public class UserActionResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = "";
+    }
+
     public class RentalAvailability
     {
         public bool IsAvailable { get; set; }
         public string Message { get; set; } = "";
     }
-
-
 }
 
 // ============================================

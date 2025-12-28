@@ -634,7 +634,11 @@
                     }
 
                     if (rangeBlocked) {
-                        alert('Selected date range contains booked dates. Please choose different dates.');
+                        Swal.fire({
+                            title: 'Dates Blocked',
+                            text: 'Selected date range contains booked dates. Please choose different dates.',
+                            icon: 'error'
+                        });
                         return;
                     }
 
@@ -646,7 +650,11 @@
                     document.getElementById('checkButton').disabled = false;
                     document.getElementById('checkButton').style.backgroundColor = '#0066cc';
                 } else {
-                    alert('End date must be after start date');
+                    Swal.fire({
+                        title: 'Invalid Date Range',
+                        text: 'End date must be after start date.',
+                        icon: 'info'
+                    });
                 }
             } else {
                 // Reset and start over
@@ -717,7 +725,11 @@
                     document.getElementById('checkButton').disabled = false;
                     document.getElementById('checkButton').style.backgroundColor = '#0066cc';
                 } else if (selectedStartDate) {
-                    alert('End date must be after start date');
+                    Swal.fire({
+                        title: 'Invalid Date Range',
+                        text: 'End date must be after start date.',
+                        icon: 'info'
+                    });
                     document.getElementById('endDateInput').value = '';
                     selectedEndDate = null;
                 }
@@ -783,7 +795,11 @@
 
         function checkAvailability() {
             if (!selectedStartDate || !selectedEndDate) {
-                alert('Please select both start and end dates');
+                Swal.fire({
+                    title: 'Dates Required',
+                    text: 'Please select both start and end dates to check availability.',
+                    icon: 'info'
+                });
                 return;
             }
 

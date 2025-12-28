@@ -10,54 +10,48 @@ namespace AutoLux.Drive.Pages
     public class ProfileModel : PageModel
     {
 
-        public string UserName { get; set; } = "Johnathan Doe";
-        public string Email { get; set; } = "johnathan.doe@autolux.drive";
-        public string UserId { get; set; } = "ALX980123";
-        public class PaymentRecord
-        {
-            public string InvoiceId { get; set; }
-            public string Service { get; set; }
-            public decimal Amount { get; set; }
-            public string Date { get; set; }
-            public string Status { get; set; }
-        }
-
-        public List<PaymentRecord> PaymentHistory { get; set; } = new List<PaymentRecord>
-        {
-            new PaymentRecord { InvoiceId = "INV-1004", Service = "Mercedes S-Class Rental (5 days)", Amount = 2500.00M, Date = "2024-05-20", Status = "Paid" },
-            new PaymentRecord { InvoiceId = "INV-1003", Service = "Airport Transfer Service", Amount = 180.00M, Date = "2024-04-12", Status = "Paid" },
-            new PaymentRecord { InvoiceId = "INV-1002", Service = "Porsche 911 Rental (1 day)", Amount = 950.00M, Date = "2024-03-01", Status = "Paid" },
-            new PaymentRecord { InvoiceId = "INV-1001", Service = "BMW 7-Series Rental (7 days)", Amount = 3200.00M, Date = "2024-01-15", Status = "Paid" },
-            new PaymentRecord { InvoiceId = "INV-1000", Service = "Deposit for Future Booking", Amount = 500.00M, Date = "2023-12-01", Status = "Pending Refund" }
-        };
-
         public CustomerModel Customer { get; set; }
         public List<TransactionSummary> Transactions { get; set; }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int? id)
         {
-            // CHECK SESSION: If not logged in, redirect to login
-            int? loggedInId = HttpContext.Session.GetInt32("UserId");
-            if (loggedInId == null)
+            return LoadProfile(id);
+        }
+
+        public IActionResult OnGetView(int id)
+        {
+            return LoadProfile(id);
+        }
+
+        private IActionResult LoadProfile(int? id)
+        {
+            int? userIdToView = id;
+
+            // If no ID provided, show the logged-in user's profile
+            if (userIdToView == null)
+            {
+                userIdToView = HttpContext.Session.GetInt32("UserId");
+            }
+
+            // If still no ID (not logged in and no ID param), redirect to login
+            if (userIdToView == null)
             {
                 return RedirectToPage("/Login");
             }
 
             var db = new DB();
-            Customer = db.GetCustomerProfile(loggedInId.Value);
-            Transactions = db.GetCustomerTransactions(loggedInId.Value);
+            Customer = db.GetCustomerProfile(userIdToView.Value);
+            Transactions = db.GetCustomerTransactions(userIdToView.Value);
 
              // Fallback if customer not found
             if (Customer == null)
             {
-               // Handle edge case where session exists but user deleted?
-               return RedirectToPage("/Login");
+               // If it was a deep link, maybe rediret back or show error
+                return RedirectToPage("/Index");
             }
             
             return Page();
         }
-
-
 
         public string InvoiceId { get; set; }
         public string Service { get; set; }
