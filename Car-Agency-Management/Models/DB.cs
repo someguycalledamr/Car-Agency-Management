@@ -2389,6 +2389,10 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
         /// <summary>
         /// Create reservation and payment (Transaction)
         /// </summary>
+        /// <summary>
+        /// Create reservation and payment (Transaction)
+        /// UPDATED: Now fetches and stores actual car name in transaction log
+        /// </summary>
         public PaymentResult CreateReservationAndPayment(
             int customerId,
             int carId,
@@ -2411,22 +2415,52 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 _connection.Open();
                 transaction = _connection.BeginTransaction();
 
+                // ============================================
+                // ADDED: Get car name and customer name for transaction log
+                // ============================================
+                string carName = "Unknown Car";
+                string customerName = "Unknown Customer";
+
+                // Fetch car name
+                string carQuery = "SELECT CAR_NAME FROM CAR WHERE CAR_ID = @CarId";
+                using (SqlCommand carCmd = new SqlCommand(carQuery, _connection, transaction))
+                {
+                    carCmd.Parameters.AddWithValue("@CarId", carId);
+                    object carResult = carCmd.ExecuteScalar();
+                    if (carResult != null)
+                    {
+                        carName = carResult.ToString();
+                    }
+                }
+
+                // Fetch customer name
+                string customerQuery = "SELECT FNAME + ' ' + LNAME FROM CUSTOMER WHERE CUSTOMER_ID = @CustomerId";
+                using (SqlCommand custCmd = new SqlCommand(customerQuery, _connection, transaction))
+                {
+                    custCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    object custResult = custCmd.ExecuteScalar();
+                    if (custResult != null)
+                    {
+                        customerName = custResult.ToString();
+                    }
+                }
+
                 // Step 1: Insert reservation
                 string reservationQuery = @"INSERT INTO RESERVATIONS (
-                                    CUSTOMER_ID,
-                                    CAR_ID,
-                                    RESERVATION_STATUS,
-                                    RESERVATION_START_DATE,
-                                    RESERVATION_END_DATE
-                                    )
-                                    VALUES (
-                                    @CustomerId,
-                                    @CarId,
-                                    'Confirmed',
-                                    @StartDate,
-                                    @EndDate
-                                    );
-                                    SELECT SCOPE_IDENTITY();";
+                            CUSTOMER_ID,
+                            CAR_ID,
+                            RESERVATION_STATUS,
+                            RESERVATION_START_DATE,
+                            RESERVATION_END_DATE
+                            )
+                            VALUES (
+                            @CustomerId,
+                            @CarId,
+                            'Confirmed',
+                            @StartDate,
+                            @EndDate
+                            );
+                            SELECT SCOPE_IDENTITY();";
 
                 SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
                 reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
@@ -2439,17 +2473,17 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
 
                 // Step 2: Link customer with car (BUYING_RENTING)
                 string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
-                                      CUSTOMER_ID,
-                                      CAR_ID,
-                                      TRANSACTION_TYPE,
-                                      TRANSACTION_DATE
-                                      )
-                                      VALUES (
-                                      @CustomerId,
-                                      @CarId,
-                                      @TransactionType,
-                                      GETDATE()
-                                      )";
+                              CUSTOMER_ID,
+                              CAR_ID,
+                              TRANSACTION_TYPE,
+                              TRANSACTION_DATE
+                              )
+                              VALUES (
+                              @CustomerId,
+                              @CarId,
+                              @TransactionType,
+                              GETDATE()
+                              )";
 
                 SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
                 buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
@@ -2459,20 +2493,20 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
 
                 // Step 3: Insert payment record
                 string paymentQuery = @"INSERT INTO PAYMENT (
-                               CUSTOMER_ID,
-                               PAYMENT_METHOD,
-                               PAYMENT_STATUS,
-                               PAYMENT_DATE,
-                               AMOUNT
-                               )
-                               VALUES (
-                               @CustomerId,
-                               @PaymentMethod,
-                               'Completed',
-                               GETDATE(),
-                               @AmountPaid
-                               );
-                               SELECT SCOPE_IDENTITY();";
+                       CUSTOMER_ID,
+                       PAYMENT_METHOD,
+                       PAYMENT_STATUS,
+                       PAYMENT_DATE,
+                       AMOUNT
+                       )
+                       VALUES (
+                       @CustomerId,
+                       @PaymentMethod,
+                       'Completed',
+                       GETDATE(),
+                       @AmountPaid
+                       );
+                       SELECT SCOPE_IDENTITY();";
 
                 SqlCommand paymentCmd = new SqlCommand(paymentQuery, _connection, transaction);
                 paymentCmd.Parameters.AddWithValue("@CustomerId", customerId);
@@ -2482,17 +2516,46 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 int paymentId = Convert.ToInt32(paymentCmd.ExecuteScalar());
                 result.PaymentId = paymentId;
 
+                // ============================================
+                // UPDATED: Log transaction with actual car name
+                // ============================================
+                string transactionLogQuery = @"INSERT INTO TRANSACTION_LOG (
+                                PAYMENT_ID,
+                                CUSTOMER_NAME,
+                                CAR_NAME,
+                                AMOUNT,
+                                DATE,
+                                STATUS
+                                )
+                                VALUES (
+                                @PaymentId,
+                                @CustomerName,
+                                @CarName,
+                                @Amount,
+                                GETDATE(),
+                                'Completed'
+                                )";
+
+                SqlCommand transLogCmd = new SqlCommand(transactionLogQuery, _connection, transaction);
+                transLogCmd.Parameters.AddWithValue("@PaymentId", paymentId);
+                transLogCmd.Parameters.AddWithValue("@CustomerName", customerName);
+                transLogCmd.Parameters.AddWithValue("@CarName", carName);
+                transLogCmd.Parameters.AddWithValue("@Amount", amountPaid);
+                transLogCmd.ExecuteNonQuery();
+
                 // Commit transaction
                 transaction.Commit();
                 result.Success = true;
 
-                // Log the transaction
-                LogTransaction(paymentId, $"Customer #{customerId}", $"Car #{carId}", amountPaid, "Completed");
-                LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for car #{carId}", "success");
-
                 Console.WriteLine($"✅ Reservation and payment created successfully!");
                 Console.WriteLine($"   Reservation ID: {reservationId}");
                 Console.WriteLine($"   Payment ID: {paymentId}");
+                Console.WriteLine($"   Car Name: {carName}");
+                Console.WriteLine($"   Customer Name: {customerName}");
+
+                // Log activity (outside transaction scope)
+                _connection.Close();
+                LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for {carName} by {customerName}", "success");
             }
             catch (Exception ex)
             {
@@ -2806,7 +2869,7 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
             decimal estimatedCost = 0;
             string query = @"SELECT 
                     DATEDIFF(DAY, @StartDate, @EndDate) 
-                    * ISNULL(DAILY_RENT_PRICE, CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS EstimatedRentalCost
+                    * (CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS EstimatedRentalCost
                     FROM CAR
                     WHERE CAR_ID = @CarId";
 

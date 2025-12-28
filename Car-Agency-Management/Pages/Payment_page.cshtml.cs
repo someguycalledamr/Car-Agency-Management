@@ -42,8 +42,6 @@ namespace Car_Agency_Management.Pages
         [BindProperty]
         public string SelectedInsurancePlan { get; set; } = "1-year";
 
-        [BindProperty]
-        public string DiscountCode { get; set; }
 
         [BindProperty]
         public string CardNumber { get; set; }
@@ -63,11 +61,13 @@ namespace Car_Agency_Management.Pages
         [BindProperty]
         public DateTime EndDate { get; set; } = DateTime.Now.AddMonths(1);
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
         public string TransactionType { get; set; } = "Rent"; // "Rent" or "Buy"
 
         [BindProperty]
         public decimal TotalAmount { get; set; }
+
+        public string TotalAmountJs => TotalAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
 
         // ============================================
         // PAGE LOAD
@@ -126,56 +126,36 @@ namespace Car_Agency_Management.Pages
             }
             if (TempData["EstimatedCost"] != null)
             {
-                TotalAmount = Convert.ToDecimal(TempData["EstimatedCost"]);
+                if (decimal.TryParse(TempData["EstimatedCost"].ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal cost))
+                {
+                    TotalAmount = cost;
+                }
                 TempData.Keep("EstimatedCost");
             }
-
-            // Check car availability
-            string availability = _db.CheckCarAvailability(CarId, StartDate, EndDate);
-            Console.WriteLine($"Car availability: {availability}");
-
-            if (availability == "Not Available")
+            else if (CarInfo != null)
             {
-                TempData["WarningMessage"] = "This car may not be available for the selected dates. Please check availability.";
+                // Fallback to MinDeposit if cost wasn't passed from rental page
+                if (decimal.TryParse(CarInfo.MinDeposit?.Replace(",", ""), out decimal deposit))
+                {
+                    TotalAmount = deposit;
+                }
+            }
+
+            // Check car availability only for rentals
+            if (TransactionType == "Rent")
+            {
+                string availability = _db.CheckCarAvailability(CarId, StartDate, EndDate);
+                Console.WriteLine($"Car availability: {availability}");
+
+                if (availability == "Not Available")
+                {
+                    TempData["WarningMessage"] = "This car may not be available for the selected dates. Please check availability.";
+                }
             }
 
             return Page();
         }
 
-        // ============================================
-        // AJAX HANDLERS
-        // ============================================
-
-        /// <summary>
-        /// Handler to validate discount code via AJAX
-        /// </summary>
-        public JsonResult OnGetValidateDiscount(string code)
-        {
-            Console.WriteLine($"Validating discount code: {code}");
-
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return new JsonResult(new { valid = false, message = "Please enter a discount code" });
-            }
-
-            var discount = _db.ValidateDiscountCode(code);
-
-            if (discount != null)
-            {
-                Console.WriteLine($"✅ Valid discount: {discount.DiscountPercent}%");
-                return new JsonResult(new
-                {
-                    valid = true,
-                    discountPercent = discount.DiscountPercent,
-                    message = $"Discount applied: {discount.DiscountPercent}% off!"
-                });
-            }
-            else
-            {
-                Console.WriteLine("❌ Invalid discount code");
-                return new JsonResult(new { valid = false, message = "Invalid or expired discount code" });
-            }
-        }
 
         /// <summary>
         /// Handler to check car availability via AJAX
@@ -245,19 +225,22 @@ namespace Car_Agency_Management.Pages
                 return Page();
             }
 
-            // Check car availability one more time before booking
-            string availability = _db.CheckCarAvailability(CarId, StartDate, EndDate);
-
-            if (availability != "Available")
+            // Check car availability one more time before booking (only for rentals)
+            if (TransactionType == "Rent")
             {
-                ModelState.AddModelError("", "Sorry, this car is no longer available for the selected dates.");
+                string availability = _db.CheckCarAvailability(CarId, StartDate, EndDate);
 
-                // Reload page data
-                CarInfo = _db.GetCarPaymentInfo(CarId);
-                InsurancePlans = _db.GetInsurancePlans(CarId);
-                CustomerInfo = _db.GetCustomerPaymentInfo(CustomerId);
+                if (availability != "Available")
+                {
+                    ModelState.AddModelError("", "Sorry, this car is no longer available for the selected dates.");
 
-                return Page();
+                    // Reload page data
+                    CarInfo = _db.GetCarPaymentInfo(CarId);
+                    InsurancePlans = _db.GetInsurancePlans(CarId);
+                    CustomerInfo = _db.GetCustomerPaymentInfo(CustomerId);
+
+                    return Page();
+                }
             }
 
             // Process payment and create reservation
@@ -282,10 +265,10 @@ namespace Car_Agency_Management.Pages
                 TempData["SuccessMessage"] = "Payment successful! Your booking has been confirmed.";
                 TempData["PaymentId"] = result.PaymentId;
                 TempData["TransactionId"] = $"TRX-{result.PaymentId:D6}";
-                TempData["Amount"] = TotalAmount;
+                TempData["Amount"] = TotalAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
 
-                // Redirect to confirmation/receipt page
-                return RedirectToPage("/PaymentConfirmation", new { paymentId = result.PaymentId });
+                // Redirect to profile page with success message
+                return RedirectToPage("/Profile");
             }
             else
             {

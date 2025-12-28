@@ -405,7 +405,7 @@
                                 <td>@record.CarTitle</td>
                                 <td>@record.Method</td>
                                 <td>
-                                    <span class="price-tag">$@record.Amount</span>
+                                    <span class="price-tag">@record.Amount EGP</span>
                                 </td>
                                 <td>@record.Date</td>
                                 <td>
@@ -431,6 +431,30 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Check for payment success message
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                const paymentId = '@TempData["PaymentId"]';
+                const transactionId = '@TempData["TransactionId"]';
+                const amount = '@TempData["Amount"]';
+                
+                Swal.fire({
+                    title: 'Payment Successful!',
+                    html: `
+                        <div style="text-align: left; padding: 10px;">
+                            <p style="margin-bottom: 10px;"><strong>Your booking has been confirmed.</strong></p>
+                            <p style="margin: 5px 0;"><strong>Transaction ID:</strong> ${transactionId}</p>
+                            <p style="margin: 5px 0;"><strong>Amount Paid:</strong> ${amount} EGP</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#28a745'
+                });
+                </text>
+            }
+
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
