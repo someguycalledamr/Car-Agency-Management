@@ -10,167 +10,430 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - AutoLux.Drive</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(14, 165, 233, 0.05) 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-        }
-
-        .contact-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
             overflow: hidden;
-            width: 100%;
-            max-width: 800px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
         }
 
-        .contact-info {
-            background: linear-gradient(135deg, #0066cc, #0099ff);
+        /* Animated Background Elements */
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 60%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .contact-container {
+            position: relative;
+            z-index: 1;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            overflow: visible;
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 45% 55%;
+            min-height: 600px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Left Panel - Contact Info */
+        .contact-info-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
+            padding: 60px 50px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
 
-        .info-item {
+        .contact-info-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+        }
+
+        .info-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .info-header p {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .contact-details {
+            position: relative;
+            z-index: 1;
+        }
+
+        .detail-item {
             display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            gap: 20px;
+            transition: transform 0.3s ease;
         }
 
-        .info-icon {
-            width: 40px;
-            height: 40px;
+        .detail-item:hover {
+            transform: translateX(5px);
+        }
+
+        .detail-icon {
+            width: 50px;
+            height: 50px;
             background: rgba(255,255,255,0.2);
-            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
-        .contact-form-container {
-            padding: 40px;
+        .detail-content h4 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .detail-content p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Right Panel - Form */
+        .contact-form-panel {
+            padding: 60px 50px;
+            background: white;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #666;
+            margin-bottom: 40px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .form-label {
+        .form-group label {
+            display: block;
             font-weight: 600;
             color: #333;
-            margin-bottom: 8px;
-            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .form-control {
-            border-radius: 10px;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
             background: #f8f9fa;
         }
 
         .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
-            border-color: #0066cc;
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 140px;
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #0066cc, #0099ff);
+            width: 100%;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
-            width: 100%;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,102,204,0.3);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
         }
 
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: none;
+        .btn-submit:active {
+            transform: translateY(0);
         }
-        
-        @@media (max-width: 768px) {
-            .contact-card {
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @@keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 968px) {
+            .contact-container {
                 grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .contact-info-panel {
+                padding: 40px 30px;
+            }
+
+            .contact-form-panel {
+                padding: 40px 30px;
+            }
+
+            .info-header h1 {
+                font-size: 28px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .contact-info-panel,
+            .contact-form-panel {
+                padding: 30px 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="contact-card">
-        <div class="contact-info">
-            <h2 style="margin-bottom: 30px;">Get in Touch</h2>
-            <div class="info-item">
-                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                <div>
-                    <div style="font-weight:600; font-size:14px; opacity:0.9;">ADDRESS</div>
-                    <div>123 Luxury Lane, Cairo, Egypt</div>
-                </div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="contact-container">
+        <!-- Left Panel: Contact Information -->
+        <div class="contact-info-panel">
+            <div class="info-header">
+                <h1>Let's Get In Touch</h1>
+                <p>Have questions or need assistance? We're here to help! Reach out to our team and we'll get back to you as soon as possible.</p>
             </div>
-            <div class="info-item">
-                <div class="info-icon"><i class="fas fa-phone"></i></div>
-                <div>
-                    <div style="font-weight:600; font-size:14px; opacity:0.9;">PHONE</div>
-                    <div>+20 123 456 7890</div>
+
+            <div class="contact-details">
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Visit Us</h4>
+                        <p>123 Luxury Lane<br>Cairo, Egypt</p>
+                    </div>
                 </div>
-            </div>
-            <div class="info-item">
-                <div class="info-icon"><i class="fas fa-envelope"></i></div>
-                <div>
-                    <div style="font-weight:600; font-size:14px; opacity:0.9;">EMAIL</div>
-                    <div>contact@autolux.drive</div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Call Us</h4>
+                        <p>+20 123 456 7890</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Email Us</h4>
+                        <p>contact@autolux.drive</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Working Hours</h4>
+                        <p>Mon - Sat: 9:00 AM - 8:00 PM<br>Sunday: Closed</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="contact-form-container">
-            <h3 style="margin-bottom: 25px; color:#333;">Send us a message</h3>
-            
+        <!-- Right Panel: Contact Form -->
+        <div class="contact-form-panel">
+            <div class="form-header">
+                <h2>Send Us a Message</h2>
+                <p>Fill out the form below and we'll get back to you within 24 hours</p>
+            </div>
+
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
-                <div class="alert alert-success">@Model.SuccessMessage</div>
+                <div class="alert-success">
+                    <i class="fas fa-check-circle" style="font-size: 20px;"></i>
+                    <span>@Model.SuccessMessage</span>
+                </div>
                 <script>
                     setTimeout(function() {
                         window.location.href = '/Car-gallery';
-                    }, 2000);
+                    }, 2500);
                 </script>
             }
 
             <form method="post">
                 <div class="form-group">
-                    <label class="form-label">Message</label>
-                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="How can we help you?" required></textarea>
+                    <label for="message">Your Message *</label>
+                    <textarea asp-for="Message" id="message" class="form-control" placeholder="Tell us how we can help you..." required></textarea>
                 </div>
-                
-                <div class="form-group">
-                    <button type="submit" class="btn-submit">Send Message</button>
-                    <a href="/Car-gallery" style="display:block; text-align:center; margin-top:15px; color:#666; text-decoration:none; font-size:14px;">Cancel</a>
-                </div>
+
+                <button type="submit" class="btn-submit">
+                    <span>Send Message</span>
+                </button>
+
+                <a href="/Car-gallery" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Gallery</span>
+                </a>
             </form>
         </div>
     </div>

@@ -179,7 +179,7 @@ namespace Car_Agency_Management.Pages
                 TempData["RentalStartDate"] = startDate.ToString("dd/MM/yyyy");
                 TempData["RentalEndDate"] = endDate.ToString("dd/MM/yyyy");
                 TempData["RentalDays"] = _db.CalculateRentalDays(startDate, endDate);
-                TempData["EstimatedCost"] = cost;
+                TempData["EstimatedCost"] = cost.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
 
                 return RedirectToPage("/Payment_page", new { CarId = CarId });
             }

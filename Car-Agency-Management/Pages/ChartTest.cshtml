@@ -1,0 +1,47 @@
+@page
+@{
+    ViewData["Title"] = "Chart Test";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+    <h1>Test Chart</h1>
+    <div style="width: 600px; height: 400px;">
+        <canvas id="testChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('testChart').getContext('2d');
+        
+        const revenueLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const revenueData = [15386, 18047, 25000, 35000, 42000, 38000];
+
+        console.log("Labels:", revenueLabels);
+        console.log("Data:", revenueData);
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenueData,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+    </script>
+</body>
+</html>

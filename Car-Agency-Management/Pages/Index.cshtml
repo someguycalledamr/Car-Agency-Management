@@ -2,7 +2,6 @@
 @model IndexModel
 @{
     ViewData["Title"] = "AutoLux.Drive - Premium Mobility";
-
 }
 
 <!DOCTYPE html>
@@ -13,9 +12,7 @@
     <title>AutoLux.Drive - Premium Mobility</title>
     <style>
         @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
         /* 1. COLOR PALETTE & GLOBAL STYLES */
-
         :root {
             --color-bg: #ffffff;
             --color-primary: #f8fafc;
@@ -40,7 +37,6 @@
             position: relative;
         }
 
-
         /* 2. DRIFTING CAR VIDEO OVERLAY */
 
         .car-video-overlay {
@@ -53,7 +49,6 @@
             z-index: 100;
             overflow: hidden;
         }
-
 
         .drifting-car {
             position: fixed;
@@ -91,13 +86,16 @@
         }
 
         @@keyframes wheelSpin {
-            from {
-                transform: translate(0, 0) rotate(0deg);
-            }
+            from
 
-            to {
-                transform: translate(0, 0) rotate(360deg);
-            }
+        {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        to {
+            transform: translate(0, 0) rotate(360deg);
+        }
+
         }
 
         /* Spoke Rotation */
@@ -107,13 +105,16 @@
         }
 
         @@keyframes spokeRotate {
-            from {
-                transform: rotate(0deg);
-            }
+            from
 
-            to {
-                transform: rotate(360deg);
-            }
+        {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+
         }
 
         /* Car Body Bounce Effect */
@@ -123,13 +124,16 @@
         }
 
         @@keyframes bodyBounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
+            0%, 100%
 
-            50% {
-                transform: translateY(-2px);
-            }
+        {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-2px);
+        }
+
         }
 
         /* Stop animations when parked */
@@ -146,118 +150,131 @@
         }
 
         @@keyframes carDriftIn {
-            0% {
-                top: -300px;
-                right: -700px;
-                opacity: 0;
-                transform: rotate(-25deg) scale(0.6);
-            }
+            0%
 
-            10% {
-                opacity: 1;
-            }
+        {
+            top: -300px;
+            right: -700px;
+            opacity: 0;
+            transform: rotate(-25deg) scale(0.6);
+        }
 
-            35% {
-                top: 180px;
-                right: 60%;
-                transform: rotate(12deg) scale(1.2);
-            }
+        10% {
+            opacity: 1;
+        }
 
-            55% {
-                top: 150px;
-                right: 50%;
-                transform: rotate(-8deg) scale(1.15);
-            }
+        35% {
+            top: 180px;
+            right: 60%;
+            transform: rotate(12deg) scale(1.2);
+        }
 
-            75% {
-                top: 130px;
-                right: 40%;
-                transform: rotate(4deg) scale(1.08);
-            }
+        55% {
+            top: 150px;
+            right: 50%;
+            transform: rotate(-8deg) scale(1.15);
+        }
 
-            90% {
-                top: 150px;
-                right: 70px;
-                transform: rotate(-2deg) scale(1.03);
-            }
+        75% {
+            top: 130px;
+            right: 40%;
+            transform: rotate(4deg) scale(1.08);
+        }
 
-            100% {
-                top: 200px;
-                right: 0px;
-                opacity: 1;
-                transform: rotate(0deg) scale(0.8);
-            }
+        90% {
+            top: 150px;
+            right: 70px;
+            transform: rotate(-2deg) scale(1.03);
+        }
+
+        100% {
+            top: 200px;
+            right: 0px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.8);
+        }
+
         }
 
         @@media (max-width: 1200px) {
-            .drifting-car {
-                width: 320px;
-            }
+            .drifting-car
 
-            @@keyframes carDriftIn {
-                0% {
-                    top: -250px;
-                    right: -600px;
-                    opacity: 0;
-                    transform: rotate(-25deg) scale(0.6);
-                }
+        {
+            width: 320px;
+        }
 
-                10% {
-                    opacity: 1;
-                }
+        @@keyframes carDriftIn {
+            0%
 
-                40% {
-                    top: 140px;
-                    right: 55%;
-                    transform: rotate(10deg) scale(1.1);
-                }
+        {
+            top: -250px;
+            right: -600px;
+            opacity: 0;
+            transform: rotate(-25deg) scale(0.6);
+        }
 
-                60% {
-                    top: 120px;
-                    right: 48%;
-                    transform: rotate(-6deg) scale(1.05);
-                }
+        10% {
+            opacity: 1;
+        }
 
-                100% {
-                    top: 150px;
-                    right: 0px;
-                    opacity: 1;
-                    transform: rotate(0deg) scale(0.75);
-                }
-            }
+        40% {
+            top: 140px;
+            right: 55%;
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        60% {
+            top: 120px;
+            right: 48%;
+            transform: rotate(-6deg) scale(1.05);
+        }
+
+        100% {
+            top: 150px;
+            right: 0px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.75);
+        }
+
+        }
         }
 
         @@media (max-width: 768px) {
-            .drifting-car {
-                width: 220px;
-                animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            }
+            .drifting-car
 
-            @@keyframes carDriftInMobile {
-                0% {
-                    top: -200px;
-                    right: -400px;
-                    opacity: 0;
-                    transform: rotate(-22deg) scale(0.5);
-                }
+        {
+            width: 220px;
+            animation: carDriftInMobile 4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
 
-                15% {
-                    opacity: 1;
-                }
+        @@keyframes carDriftInMobile {
+            0%
 
-                50% {
-                    top: 90px;
-                    right: 50%;
-                    transform: rotate(8deg) scale(0.85);
-                }
+        {
+            top: -200px;
+            right: -400px;
+            opacity: 0;
+            transform: rotate(-22deg) scale(0.5);
+        }
 
-                100% {
-                    top: 120px;
-                    right: 20px;
-                    opacity: 1;
-                    transform: rotate(0deg) scale(0.6);
-                }
-            }
+        15% {
+            opacity: 1;
+        }
+
+        50% {
+            top: 90px;
+            right: 50%;
+            transform: rotate(8deg) scale(0.85);
+        }
+
+        100% {
+            top: 120px;
+            right: 20px;
+            opacity: 1;
+            transform: rotate(0deg) scale(0.6);
+        }
+
+        }
         }
 
         /* Smoke/Drift Effect */
@@ -275,29 +292,32 @@
         }
 
         @@keyframes smokeEffect {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(0deg);
-            }
+            0%
 
-            20% {
-                opacity: 0.8;
-                transform: scale(0.6) rotate(5deg);
-            }
+        {
+            opacity: 0;
+            transform: scale(0.3) rotate(0deg);
+        }
 
-            50% {
-                opacity: 0.6;
-                transform: scale(1.2) rotate(-5deg);
-                right: 35%;
-                top: 24%;
-            }
+        20% {
+            opacity: 0.8;
+            transform: scale(0.6) rotate(5deg);
+        }
 
-            100% {
-                opacity: 0;
-                transform: scale(2.5) rotate(10deg);
-                right: 50%;
-                top: 20%;
-            }
+        50% {
+            opacity: 0.6;
+            transform: scale(1.2) rotate(-5deg);
+            right: 35%;
+            top: 24%;
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(2.5) rotate(10deg);
+            right: 50%;
+            top: 20%;
+        }
+
         }
 
         /* Tire Marks Effect */
@@ -315,22 +335,24 @@
         }
 
         @@keyframes tireMarks {
-            0% {
-                opacity: 0;
-                width: 100px;
-            }
+            0%
 
-            30% {
-                opacity: 0.4;
-            }
-
-            100% {
-                opacity: 0;
-                width: 600px;
-                right: 40%;
-            }
+        {
+            opacity: 0;
+            width: 100px;
         }
 
+        30% {
+            opacity: 0.4;
+        }
+
+        100% {
+            opacity: 0;
+            width: 600px;
+            right: 40%;
+        }
+
+        }
 
         /* 3. PARALLAX BACKGROUND LAYERS */
 
@@ -386,29 +408,35 @@
         }
 
         @@keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-            }
+            0%, 100%
 
-            33% {
-                transform: translateY(-30px) translateX(20px) rotate(120deg);
-            }
+        {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
 
-            66% {
-                transform: translateY(20px) translateX(-30px) rotate(240deg);
-            }
+        33% {
+            transform: translateY(-30px) translateX(20px) rotate(120deg);
+        }
+
+        66% {
+            transform: translateY(20px) translateX(-30px) rotate(240deg);
+        }
+
         }
 
         @@keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
+            from
 
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
         }
 
         .logo {
@@ -424,35 +452,38 @@
             }
 
         @@keyframes logoGlow {
-            0%, 100% {
-                text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
-            }
+            0%, 100%
 
-            50% {
-                text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-            }
+        {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
 
+        50% {
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+
+        }
 
         @@keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
+            0%, 100%
 
-            50% {
-                opacity: 0.6;
-            }
+        {
+            opacity: 1;
         }
 
-        /* ================================================= */
+        50% {
+            opacity: 0.6;
+        }
+
+        }
+
         /* 5. HERO SECTION (Enhanced) */
-        /* ================================================= */
         .content-container {
             max-width: 1300px;
             margin: 0 auto;
             padding: 0 4%;
             position: relative;
-            z-index: 200; /* EDITED: Set higher than the car (100) */
+            z-index: 200;
         }
 
         .hero {
@@ -472,15 +503,18 @@
         }
 
         @@keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-100px);
-            }
+            from
 
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
         }
 
         .hero-content h1 {
@@ -503,9 +537,12 @@
             }
 
         @@keyframes textShine {
-            to {
-                background-position: 200% center;
-            }
+            to
+
+        {
+            background-position: 200% center;
+        }
+
         }
 
         .hero-content p {
@@ -516,15 +553,18 @@
         }
 
         @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
+            from
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         }
 
         .hero-image-wrapper {
@@ -538,15 +578,18 @@
         }
 
         @@keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px) rotate(5deg);
-            }
+            from
 
-            to {
-                opacity: 1;
-                transform: translateX(0) rotate(0deg);
-            }
+        {
+            opacity: 0;
+            transform: translateX(100px) rotate(5deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0) rotate(0deg);
+        }
+
         }
 
         .hero-image-wrapper::before {
@@ -562,13 +605,16 @@
         }
 
         @@keyframes shimmer {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            }
+            0%
 
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-            }
+        {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+
+        100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+
         }
 
         .hero-image-wrapper img {
@@ -581,7 +627,6 @@
         .hero-image-wrapper:hover img {
             transform: scale(1.1) rotate(2deg);
         }
-
 
         /* 6. CTA BUTTON (Micro-interactions) */
 
@@ -631,7 +676,6 @@
                 transform: translateY(-2px) scale(1.02);
             }
 
-
         /* 7. SECTION HEADERS (3D Effect) */
 
         .section-header {
@@ -661,18 +705,19 @@
             }
 
         @@keyframes textFloat {
-            0%, 100% {
-                transform: translateY(0) rotateX(0deg);
-            }
+            0%, 100%
 
-            50% {
-                transform: translateY(-10px) rotateX(5deg);
-            }
+        {
+            transform: translateY(0) rotateX(0deg);
         }
 
-        /* ================================================= */
+        50% {
+            transform: translateY(-10px) rotateX(5deg);
+        }
+
+        }
+
         /* 8. CAR CARDS (Advanced Hover Effects) */
-        /* ================================================= */
         .car-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -690,6 +735,7 @@
             opacity: 0;
             transform: translateY(50px) scale(0.9);
             position: relative;
+            cursor: pointer;
         }
 
             .car-card.in-view {
@@ -785,18 +831,19 @@
         }
 
         @@keyframes priceGlow {
-            0%, 100% {
-                text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
-            }
+            0%, 100%
 
-            50% {
-                text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-            }
+        {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
 
-        /* ================================================= */
+        50% {
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+
+        }
+
         /* 9. PARTNERS SECTION (Enhanced Carousel) */
-        /* ================================================= */
 
         .partners-section {
             background: linear-gradient(135deg, var(--color-primary) 0%, #e0f2fe 100%);
@@ -857,81 +904,90 @@
             }
 
         @@keyframes scrollPartnersLeftToRight {
-            0% {
-                transform: translateX(-50%);
-            }
+            0%
 
-            100% {
-                transform: translateX(0%);
-            }
+        {
+            transform: translateX(-50%);
+        }
+
+        100% {
+            transform: translateX(0%);
+        }
+
         }
 
         @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+            from
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        /* ================================================= */
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
         /* 11. RESPONSIVE DESIGN */
-        /* ================================================= */
         @@media (max-width: 1000px) {
-            .hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 50px 0;
-            }
+            .hero
 
-            .hero-text {
-                max-width: 100%;
-            }
+        {
+            flex-direction: column;
+            text-align: center;
+            padding: 50px 0;
+        }
 
-            .hero-image-wrapper {
-                min-width: 100%;
-            }
+        .hero-text {
+            max-width: 100%;
+        }
 
-            .hero-content h1 {
-                font-size: 2.8rem;
-            }
+        .hero-image-wrapper {
+            min-width: 100%;
+        }
 
-            .hero-content p {
-                font-size: 1.1rem;
-            }
+        .hero-content h1 {
+            font-size: 2.8rem;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+        }
+
         }
 
         @@media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
+            .nav-links
 
-            .section-header {
-                font-size: 2rem;
-            }
-
-            .hero-content h1 {
-                font-size: 2.2rem;
-            }
-
-            .car-grid {
-                grid-template-columns: 1fr;
-            }
+        {
+            display: none;
         }
-        /* ================================================= */
+
+        .section-header {
+            font-size: 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 2.2rem;
+        }
+
+        .car-grid {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
         /* 12. SCROLL PROGRESS BAR */
-        /* ================================================= */
         .scroll-progress {
             position: fixed;
             top: 0;
             left: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--color-accent), #0ea5e9);
-            z-index: 10000; /* Keep this high so it's above the car */
+            z-index: 10000;
             transform-origin: left;
             transition: transform 0.1s ease-out;
         }
@@ -1121,7 +1177,6 @@
         <div class="tire-marks"></div>
     </div>
 
-
     <!-- Hero Section -->
     <div class="content-container">
         <section class="hero" id="home">
@@ -1135,38 +1190,31 @@
                             Buy Now !
                         </button>
                     </form>
-
                 </div>
             </div>
 
             <div class="hero-image-wrapper">
                 <!-- A transparent bg img should be put here -->
-
             </div>
         </section>
 
         <!-- ========================================== -->
-        <!-- NEW ARRIVALS SECTION - NOW DYNAMIC FROM DB -->
+        <!-- NEW ARRIVALS SECTION - DYNAMIC & CLICKABLE -->
         <!-- ========================================== -->
         <section id="new-arrivals">
             <h2 class="section-header"><span>New</span> Arrivals</h2>
             <div class="car-grid">
-                @* CHANGE: Now using Model.NewArrivals from database instead of hardcoded data *@
                 @if (Model.NewArrivals != null && Model.NewArrivals.Count > 0)
                 {
                     @foreach (var car in Model.NewArrivals)
                     {
-                        <div class="car-card">
+                        <div class="car-card" data-car-id="@car.CarId">
                             <div class="car-image-wrapper">
-                                @* CHANGE: Using database image URL *@
                                 <img src="@car.Image" alt="@car.Name">
                             </div>
                             <div class="card-info">
-                                @* CHANGE: Using database car name *@
                                 <h3>@car.Name</h3>
-                                @* CHANGE: Using database brand and year *@
                                 <p>@car.Brand @car.Year - Experience the latest model with cutting-edge technology.</p>
-                                @* CHANGE: Using database price with EGP formatting *@
                                 <div class="price-tag">@car.Price EGP/day</div>
                             </div>
                         </div>
@@ -1174,7 +1222,6 @@
                 }
                 else
                 {
-                    @* Fallback if no cars in database *@
                     <p style="text-align: center; color: var(--color-text-muted); grid-column: 1 / -1;">
                         No new arrivals available at the moment.
                     </p>
@@ -1183,27 +1230,22 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- TRENDING NOW SECTION - NOW DYNAMIC FROM DB -->
+        <!-- TRENDING NOW SECTION - DYNAMIC & CLICKABLE -->
         <!-- ========================================== -->
         <section id="trendy-cars">
             <h2 class="section-header"><span>Trending</span> Now</h2>
             <div class="car-grid">
-                @* CHANGE: Now using Model.TrendingCars from database based on last month's transactions *@
                 @if (Model.TrendingCars != null && Model.TrendingCars.Count > 0)
                 {
                     @foreach (var car in Model.TrendingCars)
                     {
-                        <div class="car-card">
+                        <div class="car-card" data-car-id="@car.CarId">
                             <div class="car-image-wrapper">
-                                @* CHANGE: Using database image URL *@
                                 <img src="@car.Image" alt="@car.Name">
                             </div>
                             <div class="card-info">
-                                @* CHANGE: Using database car name *@
                                 <h3>@car.Name</h3>
-                                @* CHANGE: Using database brand and year *@
                                 <p>@car.Brand @car.Year - Most popular choice this month!</p>
-                                @* CHANGE: Using database price with EGP formatting *@
                                 <div class="price-tag">@car.Price EGP/day</div>
                             </div>
                         </div>
@@ -1211,7 +1253,6 @@
                 }
                 else
                 {
-                    @* Fallback if no trending data *@
                     <p style="text-align: center; color: var(--color-text-muted); grid-column: 1 / -1;">
                         No trending cars available at the moment.
                     </p>
@@ -1223,14 +1264,12 @@
     <div id="booking" style="padding: 10px 0;"></div>
 
     <!-- ========================================== -->
-    <!-- PARTNERS SECTION - NOW DYNAMIC FROM DB -->
+    <!-- PARTNERS SECTION - DYNAMIC FROM DATABASE -->
     <!-- ========================================== -->
     <section class="partners-section" id="partners">
         <h2>Trusted Vehicle Partners</h2>
         <div class="partner-track-wrapper">
             <div class="partner-track">
-                @* CHANGE: Now using Model.Partners from database instead of hardcoded partner logos *@
-                @* The logos are duplicated 4 times to create seamless infinite scroll effect *@
                 @if (Model.Partners != null && Model.Partners.Count > 0)
                 {
                     @* First set of partners *@
@@ -1264,9 +1303,10 @@
         </div>
     </section>
 
-
     <script>
-        // Scroll Progress Bar
+        // ========================================
+        // SCROLL PROGRESS BAR
+        // ========================================
         window.addEventListener('scroll', () => {
             const scrollProgress = document.getElementById('scrollProgress');
             const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -1274,7 +1314,9 @@
             scrollProgress.style.transform = `scaleX(${scrolled / 100})`;
         });
 
-        // Intersection Observer for scroll animations
+        // ========================================
+        // INTERSECTION OBSERVER FOR ANIMATIONS
+        // ========================================
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -1295,7 +1337,9 @@
             observer.observe(el);
         });
 
-        // Parallax effect for background shapes
+        // ========================================
+        // PARALLAX EFFECT FOR BACKGROUND SHAPES
+        // ========================================
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const shapes = document.querySelectorAll('.floating-shape');
@@ -1305,7 +1349,9 @@
             });
         });
 
-        // Smooth scroll for navigation links
+        // ========================================
+        // SMOOTH SCROLL FOR NAVIGATION LINKS
+        // ========================================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1319,14 +1365,9 @@
             });
         });
 
-        // Add hover sound effect simulation (visual feedback)
-        document.querySelectorAll('.cta-button, .car-card').forEach(el => {
-            el.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-            });
-        });
-
-        // Stop wheels from spinning after car parks
+        // ========================================
+        // STOP CAR ANIMATIONS WHEN PARKED
+        // ========================================
         setTimeout(() => {
             const car = document.querySelector('.drifting-car');
             if (car) {
@@ -1334,9 +1375,9 @@
             }
         }, 5000);
 
-        // ============================================
+        // ========================================
         // CAR SCROLL DIRECTION ANIMATION
-        // ============================================
+        // ========================================
         let lastScrollTop = 0;
         let scrollTimeout;
         const car = document.querySelector('.drifting-car');
@@ -1346,7 +1387,7 @@
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
-            // Calculate car position based on scroll (keep it in viewport)
+            // Calculate car position based on scroll
             const scrollProgress = scrollTop / (documentHeight - windowHeight);
             const maxCarTravel = documentHeight - windowHeight - 400;
             const carTopPosition = 200 + (scrollProgress * maxCarTravel * 0.7);
@@ -1376,6 +1417,27 @@
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
             }
         }, false);
+
+        // ========================================
+        // CLICKABLE CAR CARDS - NAVIGATE TO DETAILS
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all car cards
+            document.querySelectorAll('.car-card[data-car-id]').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const carId = this.getAttribute('data-car-id');
+                    if (carId) {
+                        // Navigate to CarDetails page with car ID
+                        window.location.href = `/CarDetails/${carId}`;
+                    }
+                });
+
+                // Add visual feedback on hover
+                card.addEventListener('mouseenter', function() {
+                    this.style.cursor = 'pointer';
+                });
+            });
+        });
     </script>
 </body>
 </html>
