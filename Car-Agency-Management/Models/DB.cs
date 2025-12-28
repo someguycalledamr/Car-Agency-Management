@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=yarab;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
+        public readonly string _connectionString = "Data Source=AMR;Initial Catalog=Car_agency;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
         private SqlConnection _connection;
 
         public DB()
