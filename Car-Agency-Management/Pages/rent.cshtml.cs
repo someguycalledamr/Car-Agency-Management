@@ -75,8 +75,8 @@ namespace Car_Agency_Management.Pages
             try
             {
                 DateTime startDate, endDate;
-                if (!DateTime.TryParse(Request.Form["startDate"], out startDate) ||
-                    !DateTime.TryParse(Request.Form["endDate"], out endDate))
+                if (!DateTime.TryParseExact(Request.Form["startDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out startDate) ||
+                    !DateTime.TryParseExact(Request.Form["endDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out endDate))
                 {
                     ErrorMessage = "Please select valid start and end dates.";
                     AvailabilityMessage = ErrorMessage; // Added
@@ -145,8 +145,8 @@ namespace Car_Agency_Management.Pages
             try
             {
                 DateTime startDate, endDate;
-                if (!DateTime.TryParse(Request.Form["startDate"], out startDate) ||
-                    !DateTime.TryParse(Request.Form["endDate"], out endDate))
+                if (!DateTime.TryParseExact(Request.Form["startDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out startDate) ||
+                    !DateTime.TryParseExact(Request.Form["endDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out endDate))
                 {
                     TempData["ErrorMessage"] = "Please select valid start and end dates.";
                     return RedirectToPage("/rent", new { carId = CarId });
@@ -176,8 +176,8 @@ namespace Car_Agency_Management.Pages
                 
                 // Store dates in TempData for payment page
                 TempData["RentalCarId"] = CarId;
-                TempData["RentalStartDate"] = startDate.ToString("yyyy-MM-dd");
-                TempData["RentalEndDate"] = endDate.ToString("yyyy-MM-dd");
+                TempData["RentalStartDate"] = startDate.ToString("dd/MM/yyyy");
+                TempData["RentalEndDate"] = endDate.ToString("dd/MM/yyyy");
                 TempData["RentalDays"] = _db.CalculateRentalDays(startDate, endDate);
                 TempData["EstimatedCost"] = cost;
 

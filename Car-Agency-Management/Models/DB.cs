@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=web; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        public readonly string _connectionString = "Data Source=AMR; Initial Catalog=Car_agency; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         private SqlConnection _connection;
 
         public DB()
@@ -2632,7 +2632,7 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
             string query = @"SELECT 
                     CAR_ID,
                     CAR_NAME,
-                    ISNULL(DAILY_RENT_PRICE, CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS Price
+                    CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0 AS Price
                     FROM CAR
                     WHERE CAR_ID = @CarId";
 
@@ -2719,6 +2719,10 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
         /// </summary>
         public RentalAvailability CheckRentalAvailability(int carId, DateTime startDate, DateTime endDate)
         {
+            // Ensure we are comparing dates only
+            startDate = startDate.Date;
+            endDate = endDate.Date;
+
             RentalAvailability availability = new RentalAvailability
             {
                 IsAvailable = true,
@@ -2733,9 +2737,10 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                             WHERE CAR_ID = @CarId
                               AND RESERVATION_STATUS = 'Confirmed'
                               AND (
-                                  @StartDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
-                                  OR @EndDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
-                                  OR RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate
+                                  (@StartDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE)
+                                  OR (@EndDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE)
+                                  OR (RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate)
+                                  OR (@StartDate < RESERVATION_START_DATE AND @EndDate > RESERVATION_END_DATE)
                               )
                         )
                         THEN 'Not Available'
