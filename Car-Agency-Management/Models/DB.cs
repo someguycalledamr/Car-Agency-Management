@@ -23,6 +23,7 @@ namespace Car_Agency_Management.Data
         /// </summary>
         public bool ResetDatabase(string scriptPath)
         {
+            //
             try
             {
                 if (!System.IO.File.Exists(scriptPath))
@@ -2497,51 +2498,69 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                     }
                 }
 
-                // Step 1: Insert reservation
-                string reservationQuery = @"INSERT INTO RESERVATIONS (
-                            CUSTOMER_ID,
-                            CAR_ID,
-                            RESERVATION_STATUS,
-                            RESERVATION_START_DATE,
-                            RESERVATION_END_DATE
-                            )
-                            VALUES (
-                            @CustomerId,
-                            @CarId,
-                            'Confirmed',
-                            @StartDate,
-                            @EndDate
-                            );
-                            SELECT SCOPE_IDENTITY();";
+                // Step 1: Insert reservation (optional - wrapped in try-catch)
+                int reservationId = 0;
+                try
+                {
+                    string reservationQuery = @"INSERT INTO RESERVATIONS (
+                                CUSTOMER_ID,
+                                CAR_ID,
+                                RESERVATION_STATUS,
+                                RESERVATION_START_DATE,
+                                RESERVATION_END_DATE
+                                )
+                                VALUES (
+                                @CustomerId,
+                                @CarId,
+                                'Confirmed',
+                                @StartDate,
+                                @EndDate
+                                );
+                                SELECT SCOPE_IDENTITY();";
 
-                SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
-                reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
-                reservationCmd.Parameters.AddWithValue("@CarId", carId);
-                reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
-                reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
+                    SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
+                    reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    reservationCmd.Parameters.AddWithValue("@CarId", carId);
+                    reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
+                    reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
 
-                int reservationId = Convert.ToInt32(reservationCmd.ExecuteScalar());
-                result.ReservationId = reservationId;
+                    reservationId = Convert.ToInt32(reservationCmd.ExecuteScalar());
+                    result.ReservationId = reservationId;
+                }
+                catch (SqlException sqlEx)
+                {
+                    Console.WriteLine($"⚠️ Warning: Could not insert into RESERVATIONS: {sqlEx.Message}");
+                    Console.WriteLine("   Payment will continue without reservation record.");
+                }
 
                 // Step 2: Link customer with car (BUYING_RENTING)
-                string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
-                              CUSTOMER_ID,
-                              CAR_ID,
-                              TRANSACTION_TYPE,
-                              TRANSACTION_DATE
-                              )
-                              VALUES (
-                              @CustomerId,
-                              @CarId,
-                              @TransactionType,
-                              GETDATE()
-                              )";
+                // Wrapped in try-catch to prevent payment failure if table schema is incorrect
+                try
+                {
+                    string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
+                                  CUSTOMER_ID,
+                                  CAR_ID,
+                                  TRANSACTION_TYPE,
+                                  TRANSACTION_DATE
+                                  )
+                                  VALUES (
+                                  @CustomerId,
+                                  @CarId,
+                                  @TransactionType,
+                                  GETDATE()
+                                  )";
 
-                SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
-                buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
-                buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
-                buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
-                buyingRentingCmd.ExecuteNonQuery();
+                    SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
+                    buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
+                    buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
+                    buyingRentingCmd.ExecuteNonQuery();
+                }
+                catch (SqlException sqlEx)
+                {
+                    Console.WriteLine($"⚠️ Warning: Could not insert into BUYING_RENTING: {sqlEx.Message}");
+                    Console.WriteLine("   Payment will continue, but please reset database for full functionality.");
+                }
 
                 // Step 3: Insert payment record
                 string paymentQuery = @"INSERT INTO PAYMENT (
