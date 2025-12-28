@@ -257,6 +257,30 @@
         /* Adjust body for fixed navbar */
         body {
             padding-top: 80px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+        }
+
+        body.dark-mode .navbar-glass {
+            background: rgba(15, 23, 42, 0.85) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        body.dark-mode #darkModeIcon {
+            color: #fbbf24;
+        }
+
+        body.dark-mode #darkModeText {
+            color: #fbbf24;
         }
 
         /* Modern SweetAlert Customizations */
@@ -364,6 +388,13 @@
                                     </a>
                                 </li>
                             }
+                            
+                            
+                            <li class="nav-item">
+                                <a id="darkModeToggle" class="nav-link" href="javascript:void(0);" onclick="toggleDarkMode()" style="font-weight: 700;">
+                                    <i class="fas fa-moon" id="darkModeIcon"></i> <span id="darkModeText">Dark Mode</span>
+                                </a>
+                            </li>
                             
                             <li class="nav-item">
                                 <a id="logoutLink" class="nav-link text-danger" href="javascript:void(0);" onclick="confirmSignOut()" style="font-weight: 700;">
@@ -509,6 +540,43 @@
                 }
             });
         }
+
+        // Dark Mode Toggle Function
+        function toggleDarkMode() {
+            const body = document.body;
+            const icon = document.getElementById('darkModeIcon');
+            const text = document.getElementById('darkModeText');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                text.textContent = 'Light Mode';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                text.textContent = 'Dark Mode';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Check for saved dark mode preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode');
+            const icon = document.getElementById('darkModeIcon');
+            const text = document.getElementById('darkModeText');
+            
+            if (darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                if (icon && text) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                    text.textContent = 'Light Mode';
+                }
+            }
+        });
     </script>
 </body>
 </html>

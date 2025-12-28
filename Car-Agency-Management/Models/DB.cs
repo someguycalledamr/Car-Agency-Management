@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=DESKTOP-S1CICGU; Initial Catalog=master; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=web; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         private SqlConnection _connection;
 
         public DB()
