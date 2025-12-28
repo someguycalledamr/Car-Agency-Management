@@ -1483,37 +1483,89 @@ namespace Car_Agency_Management.Data
         }
 
         // NEW: Get customer history using TRANSACTION_LOG for accurate car mapping
+        // UPDATED: Added fallback to PAYMENT table if TRANSACTION_LOG doesn't exist
 public List<TransactionSummary> GetCustomerTransactions(int customerId)
 {
     List<TransactionSummary> list = new List<TransactionSummary>();
-    string query = @"SELECT T.CAR_NAME, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE, P.PAYMENT_STATUS
+    
+    // First, try to use TRANSACTION_LOG for accurate car names
+    string queryWithLog = @"SELECT T.CAR_NAME, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE, P.PAYMENT_STATUS
             FROM TRANSACTION_LOG T
             JOIN PAYMENT P ON T.PAYMENT_ID = P.PAYMENT_ID
             WHERE P.CUSTOMER_ID = @Id
             ORDER BY P.PAYMENT_DATE DESC";
+    
+    // Fallback query if TRANSACTION_LOG doesn't exist
+    string queryFallback = @"SELECT 
+        ISNULL(C.CAR_NAME, 'Unknown Car') AS CAR_NAME,
+        P.PAYMENT_METHOD, 
+        P.AMOUNT, 
+        P.PAYMENT_DATE, 
+        P.PAYMENT_STATUS
+    FROM PAYMENT P
+    LEFT JOIN BUYING_RENTING BR ON P.CUSTOMER_ID = BR.CUSTOMER_ID
+    LEFT JOIN CAR C ON BR.CAR_ID = C.CAR_ID
+    WHERE P.CUSTOMER_ID = @Id
+    ORDER BY P.PAYMENT_DATE DESC";
+    
     try
     {
         _connection.Open();
-        SqlCommand cmd = new SqlCommand(query, _connection);
+        SqlCommand cmd = new SqlCommand(queryWithLog, _connection);
         cmd.Parameters.AddWithValue("@Id", customerId);
-        SqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        
+        try
         {
-            list.Add(new TransactionSummary
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
-                Method = reader["PAYMENT_METHOD"].ToString(),
-                Amount = reader["AMOUNT"].ToString(),
-                Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
-                Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
-            });
+                list.Add(new TransactionSummary
+                {
+                    CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
+                    Method = reader["PAYMENT_METHOD"].ToString(),
+                    Amount = reader["AMOUNT"].ToString(),
+                    Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
+                    Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
+                });
+            }
+            reader.Close();
+        }
+        catch (SqlException sqlEx) when (sqlEx.Message.Contains("Invalid object name 'TRANSACTION_LOG'"))
+        {
+            // TRANSACTION_LOG doesn't exist, use fallback query
+            Console.WriteLine("TRANSACTION_LOG table not found, using fallback query");
+            _connection.Close();
+            _connection.Open();
+            
+            SqlCommand fallbackCmd = new SqlCommand(queryFallback, _connection);
+            fallbackCmd.Parameters.AddWithValue("@Id", customerId);
+            SqlDataReader reader = fallbackCmd.ExecuteReader();
+            
+            while (reader.Read())
+            {
+                list.Add(new TransactionSummary
+                {
+                    CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
+                    Method = reader["PAYMENT_METHOD"].ToString(),
+                    Amount = reader["AMOUNT"].ToString(),
+                    Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
+                    Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
+                });
+            }
+            reader.Close();
         }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error in GetCustomerTransactions: {ex.Message}");
     }
-    finally { _connection.Close(); }
+    finally 
+    { 
+        if (_connection.State == ConnectionState.Open)
+        {
+            _connection.Close(); 
+        }
+    }
     return list;
 }
         // ============================================
@@ -2525,33 +2577,6 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 int paymentId = Convert.ToInt32(paymentCmd.ExecuteScalar());
                 result.PaymentId = paymentId;
 
-                // ============================================
-                // UPDATED: Log transaction with actual car name
-                // ============================================
-                string transactionLogQuery = @"INSERT INTO TRANSACTION_LOG (
-                                PAYMENT_ID,
-                                CUSTOMER_NAME,
-                                CAR_NAME,
-                                AMOUNT,
-                                DATE,
-                                STATUS
-                                )
-                                VALUES (
-                                @PaymentId,
-                                @CustomerName,
-                                @CarName,
-                                @Amount,
-                                GETDATE(),
-                                'Completed'
-                                )";
-
-                SqlCommand transLogCmd = new SqlCommand(transactionLogQuery, _connection, transaction);
-                transLogCmd.Parameters.AddWithValue("@PaymentId", paymentId);
-                transLogCmd.Parameters.AddWithValue("@CustomerName", customerName);
-                transLogCmd.Parameters.AddWithValue("@CarName", carName);
-                transLogCmd.Parameters.AddWithValue("@Amount", amountPaid);
-                transLogCmd.ExecuteNonQuery();
-
                 // Commit transaction
                 transaction.Commit();
                 result.Success = true;
@@ -2562,8 +2587,13 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 Console.WriteLine($"   Car Name: {carName}");
                 Console.WriteLine($"   Customer Name: {customerName}");
 
-                // Log activity (outside transaction scope)
+                // Close connection before logging (LogTransaction opens its own connection)
                 _connection.Close();
+                
+                // Log transaction with actual car name using existing method
+                LogTransaction(paymentId, customerName, carName, amountPaid, "Completed");
+                
+                // Log activity
                 LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for {carName} by {customerName}", "success");
             }
             catch (Exception ex)
