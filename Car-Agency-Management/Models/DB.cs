@@ -2495,9 +2495,32 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 transaction.Commit();
                 result.Success = true;
 
+                // Fetch car name and customer name for logging
+                string carName = "Unknown Car";
+                string customerName = "Unknown Customer";
+                
+                try
+                {
+                    string carQuery = "SELECT CAR_NAME FROM CAR WHERE CAR_ID = @CarId";
+                    SqlCommand carCmd = new SqlCommand(carQuery, _connection);
+                    carCmd.Parameters.AddWithValue("@CarId", carId);
+                    object carResult = carCmd.ExecuteScalar();
+                    if (carResult != null) carName = carResult.ToString();
+
+                    string customerQuery = "SELECT FNAME + ' ' + LNAME FROM CUSTOMER WHERE CUSTOMER_ID = @CustomerId";
+                    SqlCommand customerCmd = new SqlCommand(customerQuery, _connection);
+                    customerCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    object customerResult = customerCmd.ExecuteScalar();
+                    if (customerResult != null) customerName = customerResult.ToString();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching names for logging: {ex.Message}");
+                }
+
                 // Log the transaction
-                LogTransaction(paymentId, $"Customer #{customerId}", $"Car #{carId}", amountPaid, "Completed");
-                LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for car #{carId}", "success");
+                LogTransaction(paymentId, customerName, carName, amountPaid, "Completed");
+                LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for {carName}", "success");
 
                 Console.WriteLine($"✅ Reservation and payment created successfully!");
                 Console.WriteLine($"   Reservation ID: {reservationId}");
@@ -2815,7 +2838,7 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
             decimal estimatedCost = 0;
             string query = @"SELECT 
                     DATEDIFF(DAY, @StartDate, @EndDate) 
-                    * ISNULL(DAILY_RENT_PRICE, CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS EstimatedRentalCost
+                    * (CAST(REPLACE(MONTHLY_INSTALLMENT, ',', '') AS DECIMAL(18,2))/30.0) AS EstimatedRentalCost
                     FROM CAR
                     WHERE CAR_ID = @CarId";
 

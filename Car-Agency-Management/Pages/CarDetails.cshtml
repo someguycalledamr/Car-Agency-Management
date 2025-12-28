@@ -525,7 +525,7 @@
                 <div class="payment-box"><div class="payment-label">Monthly Installment</div><div class="payment-value">@($"{Model.MonthlyInstallment:N0}") EGP</div></div>
             </div>
             <div class="action-buttons">
-                <a href="/Payment_page?CarId=@Model.CarId" class="btn-purchase">Purchase Now</a>
+                <a href="/Payment_page?CarId=@Model.CarId&TransactionType=Buy" class="btn-purchase">Purchase Now</a>
                 <a href="/rent?carId=@Model.CarId" class="btn-rent">Schedule Rental</a>
                 <a href="/ContactUs" class="btn-contact">Contact Us</a>
             </div>
