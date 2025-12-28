@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=web; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        public readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=yarab;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
         private SqlConnection _connection;
 
         public DB()
@@ -1642,25 +1642,18 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
 
 
         /// <summary>
-        /// Get count of active rentals with status 'Confirmed'
-        /// Query: SELECT COUNT(*) AS ActiveRentals FROM RESERVATIONS WHERE RESERVATION_STATUS = 'Confirmed'
+        /// Get count of active rentals with status 'Active'
+        /// Query: SELECT COUNT(*) AS ActiveRentals FROM RENTALS WHERE STATUS = 'Active'
         /// </summary>
         public int GetActiveRentals()
         {
             int activeRentals = 0;
-            string query = @"SELECT COUNT(*) AS ActiveRentals 
-                            FROM RESERVATIONS 
-                            WHERE RESERVATION_STATUS = 'Confirmed'";
-
+            string query = "SELECT COUNT(*) FROM RENTALS WHERE STATUS = 'Active'";
             try
             {
                 _connection.Open();
                 SqlCommand cmd = new SqlCommand(query, _connection);
-                object result = cmd.ExecuteScalar();
-                if (result != null && result != DBNull.Value)
-                {
-                    activeRentals = Convert.ToInt32(result);
-                }
+                activeRentals = Convert.ToInt32(cmd.ExecuteScalar());
             }
             catch (Exception ex)
             {
@@ -1670,7 +1663,6 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
             {
                 _connection.Close();
             }
-
             return activeRentals;
         }
 
@@ -1797,7 +1789,6 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                             SUM(AMOUNT) AS Revenue
                             FROM PAYMENT
                             WHERE PAYMENT_STATUS = 'Completed'
-                            AND YEAR(PAYMENT_DATE) = YEAR(GETDATE())
                             GROUP BY MONTH(PAYMENT_DATE), DATENAME(MONTH, PAYMENT_DATE)
                             ORDER BY MONTH(PAYMENT_DATE)";
 

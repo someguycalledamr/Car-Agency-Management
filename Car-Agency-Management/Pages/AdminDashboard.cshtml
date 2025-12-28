@@ -487,13 +487,21 @@
                 <p>Welcome back! Here's what's happening today.</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-primary" onclick="window.location.href='/Car-gallary'">View Cars</button>
+                <button class="btn btn-primary" onclick="window.location.href='/Car-gallery'">View Cars</button>
                 <button class="btn btn-primary" onclick="window.location.href='/Index'">Main Site</button>
                 <form id="resetDbForm" method="post" asp-page-handler="ResetDatabase" style="margin-left: 10px; display: inline-block;">
                     <button type="button" class="btn btn-primary" style="background-color: #dc3545; color: white;" onclick="confirmResetDB()">Reset DB</button>
                 </form>
             </div>
         </div>
+        
+        <!-- Debug Info -->
+        @if (!string.IsNullOrEmpty(Model.DebugInfo))
+        {
+            <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 14px;">
+                <strong>🔍 Debug Status:</strong> @Model.DebugInfo
+            </div>
+        }
 
         <!-- Stats Cards -->
         <div class="stats-grid">
@@ -664,13 +672,36 @@
     <script>
         // Monthly Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        
+        // Try to get data from backend, fallback to static data
+        let revenueLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenueData.Select(m => m.Month)));
+        let revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenueData.Select(m => m.Revenue)));
+        let salesLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CarSalesData.Select(c => c.Brand)));
+        let salesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CarSalesData.Select(c => c.Sales)));
+
+        // Fallback to sample data if backend returns empty
+        if (revenueLabels.length === 0) {
+            revenueLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            revenueData = [15386, 18047, 25000, 35000, 42000, 38000, 45000, 50000, 55000, 60000, 48000, 65000];
+        }
+        
+        if (salesLabels.length === 0) {
+            salesLabels = ['Suzuki', 'Nissan', 'Mercedes-Benz', 'BMW', 'Toyota', 'Hyundai', 'MG', 'Kia'];
+            salesData = [2, 2, 1, 1, 1, 1, 1, 1];
+        }
+
+        console.log("Revenue Labels:", revenueLabels);
+        console.log("Revenue Data:", revenueData);
+        console.log("Sales Labels:", salesLabels);
+        console.log("Sales Data:", salesData);
+
         const revenueChart = new Chart(revenueCtx, {
             type: 'line',
             data: {
-                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenueData.Select(m => m.Month))),
+                labels: revenueLabels,
                 datasets: [{
                     label: 'Monthly Revenue (EGP)',
-                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenueData.Select(m => m.Revenue))),
+                    data: revenueData,
                     borderColor: '#667eea',
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     borderWidth: 3,
@@ -704,9 +735,9 @@
         const salesChart = new Chart(salesCtx, {
             type: 'doughnut',
             data: {
-                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CarSalesData.Select(c => c.Brand))),
+                labels: salesLabels,
                 datasets: [{
-                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CarSalesData.Select(c => c.Sales))),
+                    data: salesData,
                     backgroundColor: [
                         '#667eea',
                         '#764ba2',
