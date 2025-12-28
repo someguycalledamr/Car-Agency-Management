@@ -20,6 +20,9 @@ IF OBJECT_ID('CAR_IMAGES', 'U') IS NOT NULL DROP TABLE CAR_IMAGES;
 IF OBJECT_ID('CAR_FEATURES', 'U') IS NOT NULL DROP TABLE CAR_FEATURES;
 IF OBJECT_ID('CAR', 'U') IS NOT NULL DROP TABLE CAR;
 IF OBJECT_ID('PARTNERS', 'U') IS NOT NULL DROP TABLE PARTNERS;
+IF OBJECT_ID('TRANSACTION_LOG', 'U') IS NOT NULL DROP TABLE TRANSACTION_LOG;
+IF OBJECT_ID('ACTIVITY_LOG', 'U') IS NOT NULL DROP TABLE ACTIVITY_LOG;
+IF OBJECT_ID('RENTALS', 'U') IS NOT NULL DROP TABLE RENTALS;
 
 -- ############################################
 -- 2. CREATE TABLES
@@ -214,12 +217,23 @@ CREATE TABLE ACTIVITY_LOG (
 CREATE TABLE TRANSACTION_LOG (
     TRANS_ID INT PRIMARY KEY IDENTITY(1,1),
     PAYMENT_ID INT,
-    CUSTOMER_NAME NVARCHAR(150),
+    CUSTOMER_NAME NVARCHAR(100),
     CAR_NAME NVARCHAR(200),
     AMOUNT DECIMAL(10,2),
-    DATE DATETIME DEFAULT GETDATE(),
+    DATE DATETIME,
     STATUS NVARCHAR(50),
     FOREIGN KEY (PAYMENT_ID) REFERENCES PAYMENT(PAYMENT_ID)
+);
+
+CREATE TABLE RENTALS (
+    RENTAL_ID INT PRIMARY KEY IDENTITY(1,1),
+    CAR_ID INT,
+    CUSTOMER_ID INT,
+    RENTAL_DATE DATE,
+    RETURN_DATE DATE,
+    STATUS NVARCHAR(50), -- 'Active', 'Returned', 'Overdue'
+    FOREIGN KEY (CAR_ID) REFERENCES CAR(CAR_ID),
+    FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMER(CUSTOMER_ID)
 );
 
 -- ############################################
@@ -228,18 +242,18 @@ CREATE TABLE TRANSACTION_LOG (
 
 SET IDENTITY_INSERT CAR ON;
 INSERT INTO CAR (CAR_ID, CAR_NAME, BRAND, YEAR, PRICE, MAIN_IMAGE, TRANSMISSION, FUEL_TYPE, ENGINE, SEATS, COLOR, MILEAGE, MIN_DEPOSIT, MONTHLY_INSTALLMENT, DESCRIPTION, DATE_ADDED) VALUES
-(1, 'Suzuki S Presso Automatic 2024', 'Suzuki', '2024', '549,900', 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Suzuki_S-Presso_%28Espresso%29_1.0_GL_2024_%281%29.jpg', 'Automatic', 'Petrol', '1.0L 3-Cylinder', '5', 'White, Yellow, Orange, Grey', '0', '82,485', '15,386', 'The Suzuki S-Presso is a compact urban car...', '2024-09-01'),
-(2, 'Nissan Sunny Manual / Baseline 2026', 'Nissan', '2026', '645,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/2021_Nissan_Sunny_VL_1.0_N18_%2820211226%29.jpg/1200px-2021_Nissan_Sunny_VL_1.0_N18_%2820211226%29.jpg', 'Manual', 'Petrol', '1.5L 4-Cylinder', '5', 'Silver', '0', '96,750', '18,047', 'The Nissan Sunny offers reliability and practicality...', '2024-09-15'),
-(3, 'Mercedes-Benz C-Class 2025', 'Mercedes-Benz', '2025', '1,250,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Mercedes-Benz_C_300_d_AMG_Line_%28W_206%29_%E2%80%93_f_10032024.jpg/1280px-Mercedes-Benz_C_300_d_AMG_Line_%28W_206%29_%E2%80%93_f_10032024.jpg', 'Automatic', 'Petrol', '2.0L Turbo 4-Cylinder', '5', 'Black', '0', '187,500', '35,000', 'Experience luxury and performance...', '2024-10-01'),
-(4, 'BMW X3 xDrive 2025', 'BMW', '2025', '1,450,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/2018_BMW_X3_xDrive30i_%28G01%29_wagon_%282018-09-17%29_01.jpg/1280px-2018_BMW_X3_xDrive30i_%28G01%29_wagon_%282018-09-17%29_01.jpg', 'Automatic', 'Diesel', '2.0L Turbo Diesel', '5', 'Blue', '0', '217,500', '40,600', 'The BMW X3 combines luxury and sport...', '2024-10-15'),
-(5, 'Proton-Saga A/T Premium 2026', 'Proton', '2026', '649,900', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/2022_Proton_Saga_Premium_AT_%28front_view%29.jpg/1280px-2022_Proton_Saga_Premium_AT_%28front_view%29.jpg', 'Automatic', 'Petrol', '1.3L 4-Cylinder', '5', 'Red, White, Black', '0', '97,485', '18,186', 'The Proton Saga offers exceptional value...', '2024-11-01'),
-(6, 'MG ZS Standard 2025', 'MG', '2025', '685,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/MG_ZS_EV_%282020%29_IMG_3962.jpg/1280px-MG_ZS_EV_%282020%29_IMG_3962.jpg', 'Automatic', 'Hybrid', '1.5L Hybrid', '5', 'Black, Silver, Red', '0', '102,750', '19,167', 'The MG ZS combines modern hybrid technology...', '2024-11-10'),
-(7, 'Toyota Corolla GLi 2025', 'Toyota', '2025', '785,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/2023_Toyota_Corolla_LE_%28USA%29_front_view.jpg/1280px-2023_Toyota_Corolla_LE_%28USA%29_front_view.jpg', 'Automatic', 'Petrol', '1.6L 4-Cylinder', '5', 'White, Silver, Blue', '0', '117,750', '21,972', 'Renowned for its legendary reliability...', '2025-01-20'),
-(8, 'Hyundai Tucson 2025', 'Hyundai', '2025', '895,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/2022_Hyundai_Tucson_Platinum_2WD_NX4_front.jpg/1280px-2022_Hyundai_Tucson_Platinum_2WD_NX4_front.jpg', 'Automatic', 'Diesel', '2.0L Turbo Diesel', '5', 'Grey, White, Black', '0', '134,250', '25,042', 'Premium SUV experience...', '2025-02-25'),
-(9, 'Kia Sportage LX 2025', 'Kia', '2025', '920,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Kia_Sportage_NQ5_GT-Line_IMG_6802.jpg/1280px-Kia_Sportage_NQ5_GT-Line_IMG_6802.jpg', 'Automatic', 'Hybrid', '1.6L Turbo Hybrid', '5', 'Red, Silver, Black', '0', '138,000', '25,744', 'Perfect blend of hybrid efficiency...', '2025-03-01'),
-(10, 'Chery Tiggo 7 Comfort 2025', 'Chery', '2025', '740,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Chery_Tiggo_7_Pro_China_2021-04-12.jpg/1280px-Chery_Tiggo_7_Pro_China_2021-04-12.jpg', 'Automatic', 'Petrol', '1.5L Turbo', '5', 'Blue, White, Grey', '0', '111,000', '20,711', 'Combines affordability and power...', '2025-04-08'),
-(11, 'Renault Duster 2025', 'Renault', '2025', '670,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/2024_Dacia_Duster_front.jpg/1280px-2024_Dacia_Duster_front.jpg', 'Automatic', 'Petrol', '1.6L 4-Cylinder', '5', 'Orange, White, Grey', '0', '100,500', '18,750', 'Built for adventure...', '2025-05-11'),
-(12, 'Citroen C3 2025', 'Citroen', '2025', '830,000', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Citroen_C3_%28CC21%29_1.jpg/1280px-Citroen_C3_%28CC21%29_1.jpg', 'Automatic', 'Hybrid', '1.2L PureTech Hybrid', '5', 'Yellow, White, Red', '0', '124,500', '23,233', 'French flair and efficiency...', '2025-06-13');
+(1, 'Suzuki S Presso Automatic 2024', 'Suzuki', '2024', '549,900', 'https://th.bing.com/th/id/R.25774d40b1c35cb48942f0539711919a?rik=M5aPe82bLpYx2g&pid=ImgRaw&r=0', 'Automatic', 'Petrol', '1.0L 3-Cylinder', '5', 'White, Yellow, Orange, Grey', '0', '82,485', '15,386', 'The Suzuki S-Presso is a compact urban car...', '2025-09-01'),
+(2, 'Nissan Sunny Manual / Baseline 2026', 'Nissan', '2026', '645,000', 'https://th.bing.com/th/id/R.b02f1a726bea6c3c8cf11b64ebf2b814?rik=7Om8yQcvA3XXLQ&pid=ImgRaw&r=0', 'Manual', 'Petrol', '1.5L 4-Cylinder', '5', 'Silver', '0', '96,750', '18,047', 'The Nissan Sunny offers reliability and practicality...', '2025-09-15'),
+(3, 'Mercedes-Benz C-Class 2025', 'Mercedes-Benz', '2025', '1,250,000', 'https://th.bing.com/th/id/R.ea2598311ae4fcfa4bc6f38f28339f59?rik=mYZ6%2f%2fZOVFKjAw%26pid=ImgRaw%26r=0', 'Automatic', 'Petrol', '2.0L Turbo 4-Cylinder', '5', 'Black', '0', '187,500', '35,000', 'Experience luxury and performance...', '2025-10-01'),
+(4, 'BMW X3 xDrive 2025', 'BMW', '2025', '1,450,000', 'https://th.bing.com/th/id/R.beac5fc8db7e5d99126a87faee56c1f8?rik=GHEnRCJ4EcjnbA%26pid=ImgRaw%26r=0', 'Automatic', 'Diesel', '2.0L Turbo Diesel', '5', 'Blue', '0', '217,500', '40,600', 'The BMW X3 combines luxury and sport...', '2025-10-15'),
+(5, 'Proton-Saga A/T Premium 2026', 'Proton', '2026', '649,900', 'https://th.bing.com/th/id/R.5b76cb5528ea10c993d03a20a70a0fdf?rik=DEhv1u8GzBNLJw%26pid=ImgRaw%26r=0', 'Automatic', 'Petrol', '1.3L 4-Cylinder', '5', 'Red, White, Black', '0', '97,485', '18,186', 'The Proton Saga offers exceptional value...', '2025-11-01'),
+(6, 'MG ZS Standard 2025', 'MG', '2025', '685,000', 'https://static.carsguide.com.au/static/images/car-logos/mg-logo.png', 'Automatic', 'Hybrid', '1.5L Hybrid', '5', 'Black, Silver, Red', '0', '102,750', '19,167', 'The MG ZS combines modern hybrid technology...', '2025-11-10'),
+(7, 'Toyota Corolla GLi 2025', 'Toyota', '2025', '785,000', 'https://www.toyota.com.eg/media/gamma/models/corolla/exterior/colors/white.png', 'Automatic', 'Petrol', '1.6L 4-Cylinder', '5', 'White, Silver, Blue', '0', '117,750', '21,972', 'Renowned for its legendary reliability...', '2025-11-20'),
+(8, 'Hyundai Tucson 2025', 'Hyundai', '2025', '895,000', 'https://www.hyundai.com/content/dam/hyundai/eg/en/data/vehicle-thumbnail/tucson-2024-thumbnail.png', 'Automatic', 'Diesel', '2.0L Turbo Diesel', '5', 'Grey, White, Black', '0', '134,250', '25,042', 'Premium SUV experience...', '2025-11-25'),
+(9, 'Kia Sportage LX 2025', 'Kia', '2025', '920,000', 'https://www.kia.com/content/dam/kwp/eg/en/data/vehicles/sportage-nq5/kia-sportage-nq5-front-view.png', 'Automatic', 'Hybrid', '1.6L Turbo Hybrid', '5', 'Red, Silver, Black', '0', '138,000', '25,744', 'Perfect blend of hybrid efficiency...', '2025-12-01'),
+(10, 'Chery Tiggo 7 Comfort 2025', 'Chery', '2025', '740,000', 'https://tse2.mm.bing.net/th/id/OIP.PtZLPetK2-EnEJ9HfF9IKgHaE7?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3', 'Automatic', 'Petrol', '1.5L Turbo', '5', 'Blue, White, Grey', '0', '111,000', '20,711', 'Combines affordability and power...', '2025-12-08'),
+(11, 'Renault Duster 2025', 'Renault', '2025', '670,000', 'https://th.bing.com/th/id/OIP.PieiSRtjHUFCHokPbrAfRgHaEo?w=228&h=180&c=7&r=0&o=7&cb=ucfimg2&dpr=1.4&pid=1.7&rm=3&ucfimg=1', 'Automatic', 'Petrol', '1.6L 4-Cylinder', '5', 'Orange, White, Grey', '0', '100,500', '18,750', 'Built for adventure...', '2025-12-11'),
+(12, 'Citroen C3 2025', 'Citroen', '2025', '830,000', 'https://tse3.mm.bing.net/th/id/OIP.DYQmziuKuuaHqe0P7lkgIgHaE8?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3', 'Automatic', 'Hybrid', '1.2L PureTech Hybrid', '5', 'Yellow, White, Red', '0', '124,500', '23,233', 'French flair and efficiency...', '2025-12-13');
 SET IDENTITY_INSERT CAR OFF;
 
 -- ============================================
@@ -269,15 +283,41 @@ INSERT INTO ADMINISTRATOR (ADMINISTRATOR_FNAME, ADMINISTRATOR_MNAME, ADMINISTRAT
 
 INSERT INTO CUSTOMER (FNAME, MNAME, LNAME, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, ADDRESS, ADMINISTRATOR_ID) VALUES
 ('Robert', 'Paul', 'Anderson', 'robert.anderson@email.com', 'pass_hash_1', '123 Main St, Cairo, Egypt', 1),
-('Jennifer', 'Marie', 'Taylor', 'jennifer.taylor@email.com', 'pass_hash_2', '456 Oak Ave, Cairo, Egypt', 1);
+('Jennifer', 'Marie', 'Taylor', 'jennifer.taylor@email.com', 'pass_hash_2', '456 Oak Ave, Cairo, Egypt', 1),
+('Ahmed', 'Mohammed', 'Ali', 'ahmed.ali@email.com', 'pass_hash_3', '789 Nile Corniche, Cairo, Egypt', 1);
 
 INSERT INTO PAYMENT (CUSTOMER_ID, PAYMENT_METHOD, PAYMENT_STATUS, PAYMENT_DATE, AMOUNT) VALUES
-(1, 'Credit Card', 'Completed', '2025-01-15', 15386.00), (2, 'Bank Transfer', 'Completed', '2025-02-20', 18047.00);
+(1, 'Credit Card', 'Completed', '2025-01-15', 15386.00),
+(2, 'Bank Transfer', 'Completed', '2025-02-20', 18047.00),
+(1, 'Cash', 'Completed', '2025-03-05', 12000.00),
+(3, 'Credit Card', 'Completed', '2025-04-10', 35000.00),
+(1, 'Credit Card', 'Completed', '2025-05-15', 15386.00),
+(2, 'Bank Transfer', 'Completed', '2025-06-20', 18047.00),
+(3, 'Cash', 'Completed', '2025-07-25', 25000.00),
+(1, 'Credit Card', 'Completed', '2025-08-30', 20000.00),
+(2, 'Credit Card', 'Completed', '2025-09-10', 50000.00),
+(3, 'Bank Transfer', 'Completed', '2025-10-05', 45000.00),
+(1, 'Cash', 'Completed', '2025-11-12', 15000.00),
+(2, 'Credit Card', 'Completed', '2025-12-01', 60000.00);
 
 -- Insert into BUYING_RENTING table to link cars to customers (for sales data)
 INSERT INTO BUYING_RENTING (CAR_ID, CUSTOMER_ID) VALUES 
-(1, 1), -- Robert bought Suzuki
-(2, 2); -- Jennifer bought Nissan
+(1, 1), -- Suzuki
+(2, 2), -- Nissan
+(3, 3), -- Mercedes
+(4, 1), -- BMW
+(6, 2), -- MG
+(7, 3), -- Toyota
+(1, 2), -- Suzuki
+(5, 1); -- Proton
+
+-- Insert sample data into RENTALS
+INSERT INTO RENTALS (CAR_ID, CUSTOMER_ID, RENTAL_DATE, RETURN_DATE, STATUS) VALUES
+(8, 1, DATEADD(day, -2, GETDATE()), DATEADD(day, 5, GETDATE()), 'Active'), -- Hyundai Tucson currently rented
+(9, 2, DATEADD(day, -10, GETDATE()), DATEADD(day, -3, GETDATE()), 'Returned'), -- Kia Sportage returned
+(10, 3, DATEADD(day, -1, GETDATE()), DATEADD(day, 6, GETDATE()), 'Active'), -- Chery Tiggo currently rented
+(11, 1, DATEADD(day, -5, GETDATE()), DATEADD(day, 2, GETDATE()), 'Active'), -- Renault Duster currently rented
+(12, 2, DATEADD(day, -20, GETDATE()), DATEADD(day, -15, GETDATE()), 'Returned'); -- Citroen C3 returned
 
 -- Insert sample data into ACTIVITY_LOG
 INSERT INTO ACTIVITY_LOG (ACTION, DESCRIPTION, TIMESTAMP, TYPE) VALUES

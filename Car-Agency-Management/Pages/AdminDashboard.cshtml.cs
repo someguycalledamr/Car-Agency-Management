@@ -30,6 +30,9 @@ namespace Car_Agency_Management.Pages
 
         // Recent Transactions - From database
         public List<Transaction> RecentTransactions { get; set; } = new List<Transaction>();
+        
+        // Debug Info
+        public string DebugInfo { get; set; } = "";
 
         public AdminDashboardModel()
         {
@@ -152,11 +155,16 @@ namespace Car_Agency_Management.Pages
                 Console.WriteLine($"- Total Users: {TotalUsers}");
                 Console.WriteLine($"- Total Revenue: EGP {TotalRevenue:N2}");
                 Console.WriteLine($"- Monthly Revenue: EGP {MonthlyRevenue:N2}");
+                
+                // Populate Debug Info
+                DebugInfo = $"Total Cars: {TotalCars}, Total Sales: {TotalSales}, " + 
+                            $"Revenue Rows: {MonthlyRevenueData.Count}, Sales Data Rows: {CarSalesData.Count}.";
             }
             catch (Exception ex)
             {
                 // Log error and use fallback data if database connection fails
                 Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+                DebugInfo = $"Error: {ex.Message}";
                 LoadFallbackData();
             }
         }
