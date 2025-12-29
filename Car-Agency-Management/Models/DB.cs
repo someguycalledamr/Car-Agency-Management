@@ -23,6 +23,7 @@ namespace Car_Agency_Management.Data
         /// </summary>
         public bool ResetDatabase(string scriptPath)
         {
+            //
             try
             {
                 if (!System.IO.File.Exists(scriptPath))
@@ -1483,37 +1484,89 @@ namespace Car_Agency_Management.Data
         }
 
         // NEW: Get customer history using TRANSACTION_LOG for accurate car mapping
+        // UPDATED: Added fallback to PAYMENT table if TRANSACTION_LOG doesn't exist
 public List<TransactionSummary> GetCustomerTransactions(int customerId)
 {
     List<TransactionSummary> list = new List<TransactionSummary>();
-    string query = @"SELECT T.CAR_NAME, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE, P.PAYMENT_STATUS
+    
+    // First, try to use TRANSACTION_LOG for accurate car names
+    string queryWithLog = @"SELECT T.CAR_NAME, P.PAYMENT_METHOD, P.AMOUNT, P.PAYMENT_DATE, P.PAYMENT_STATUS
             FROM TRANSACTION_LOG T
             JOIN PAYMENT P ON T.PAYMENT_ID = P.PAYMENT_ID
             WHERE P.CUSTOMER_ID = @Id
             ORDER BY P.PAYMENT_DATE DESC";
+    
+    // Fallback query if TRANSACTION_LOG doesn't exist
+    string queryFallback = @"SELECT 
+        ISNULL(C.CAR_NAME, 'Unknown Car') AS CAR_NAME,
+        P.PAYMENT_METHOD, 
+        P.AMOUNT, 
+        P.PAYMENT_DATE, 
+        P.PAYMENT_STATUS
+    FROM PAYMENT P
+    LEFT JOIN BUYING_RENTING BR ON P.CUSTOMER_ID = BR.CUSTOMER_ID
+    LEFT JOIN CAR C ON BR.CAR_ID = C.CAR_ID
+    WHERE P.CUSTOMER_ID = @Id
+    ORDER BY P.PAYMENT_DATE DESC";
+    
     try
     {
         _connection.Open();
-        SqlCommand cmd = new SqlCommand(query, _connection);
+        SqlCommand cmd = new SqlCommand(queryWithLog, _connection);
         cmd.Parameters.AddWithValue("@Id", customerId);
-        SqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        
+        try
         {
-            list.Add(new TransactionSummary
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
-                Method = reader["PAYMENT_METHOD"].ToString(),
-                Amount = reader["AMOUNT"].ToString(),
-                Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
-                Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
-            });
+                list.Add(new TransactionSummary
+                {
+                    CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
+                    Method = reader["PAYMENT_METHOD"].ToString(),
+                    Amount = reader["AMOUNT"].ToString(),
+                    Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
+                    Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
+                });
+            }
+            reader.Close();
+        }
+        catch (SqlException sqlEx) when (sqlEx.Message.Contains("Invalid object name 'TRANSACTION_LOG'"))
+        {
+            // TRANSACTION_LOG doesn't exist, use fallback query
+            Console.WriteLine("TRANSACTION_LOG table not found, using fallback query");
+            _connection.Close();
+            _connection.Open();
+            
+            SqlCommand fallbackCmd = new SqlCommand(queryFallback, _connection);
+            fallbackCmd.Parameters.AddWithValue("@Id", customerId);
+            SqlDataReader reader = fallbackCmd.ExecuteReader();
+            
+            while (reader.Read())
+            {
+                list.Add(new TransactionSummary
+                {
+                    CarTitle = reader["CAR_NAME"].ToString() ?? "Unknown Car",
+                    Method = reader["PAYMENT_METHOD"].ToString(),
+                    Amount = reader["AMOUNT"].ToString(),
+                    Date = Convert.ToDateTime(reader["PAYMENT_DATE"]).ToShortDateString(),
+                    Status = reader["PAYMENT_STATUS"].ToString() ?? "N/A"
+                });
+            }
+            reader.Close();
         }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error in GetCustomerTransactions: {ex.Message}");
     }
-    finally { _connection.Close(); }
+    finally 
+    { 
+        if (_connection.State == ConnectionState.Open)
+        {
+            _connection.Close(); 
+        }
+    }
     return list;
 }
         // ============================================
@@ -2445,51 +2498,69 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                     }
                 }
 
-                // Step 1: Insert reservation
-                string reservationQuery = @"INSERT INTO RESERVATIONS (
-                            CUSTOMER_ID,
-                            CAR_ID,
-                            RESERVATION_STATUS,
-                            RESERVATION_START_DATE,
-                            RESERVATION_END_DATE
-                            )
-                            VALUES (
-                            @CustomerId,
-                            @CarId,
-                            'Confirmed',
-                            @StartDate,
-                            @EndDate
-                            );
-                            SELECT SCOPE_IDENTITY();";
+                // Step 1: Insert reservation (optional - wrapped in try-catch)
+                int reservationId = 0;
+                try
+                {
+                    string reservationQuery = @"INSERT INTO RESERVATIONS (
+                                CUSTOMER_ID,
+                                CAR_ID,
+                                RESERVATION_STATUS,
+                                RESERVATION_START_DATE,
+                                RESERVATION_END_DATE
+                                )
+                                VALUES (
+                                @CustomerId,
+                                @CarId,
+                                'Confirmed',
+                                @StartDate,
+                                @EndDate
+                                );
+                                SELECT SCOPE_IDENTITY();";
 
-                SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
-                reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
-                reservationCmd.Parameters.AddWithValue("@CarId", carId);
-                reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
-                reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
+                    SqlCommand reservationCmd = new SqlCommand(reservationQuery, _connection, transaction);
+                    reservationCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    reservationCmd.Parameters.AddWithValue("@CarId", carId);
+                    reservationCmd.Parameters.AddWithValue("@StartDate", startDate);
+                    reservationCmd.Parameters.AddWithValue("@EndDate", endDate);
 
-                int reservationId = Convert.ToInt32(reservationCmd.ExecuteScalar());
-                result.ReservationId = reservationId;
+                    reservationId = Convert.ToInt32(reservationCmd.ExecuteScalar());
+                    result.ReservationId = reservationId;
+                }
+                catch (SqlException sqlEx)
+                {
+                    Console.WriteLine($"⚠️ Warning: Could not insert into RESERVATIONS: {sqlEx.Message}");
+                    Console.WriteLine("   Payment will continue without reservation record.");
+                }
 
                 // Step 2: Link customer with car (BUYING_RENTING)
-                string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
-                              CUSTOMER_ID,
-                              CAR_ID,
-                              TRANSACTION_TYPE,
-                              TRANSACTION_DATE
-                              )
-                              VALUES (
-                              @CustomerId,
-                              @CarId,
-                              @TransactionType,
-                              GETDATE()
-                              )";
+                // Wrapped in try-catch to prevent payment failure if table schema is incorrect
+                try
+                {
+                    string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
+                                  CUSTOMER_ID,
+                                  CAR_ID,
+                                  TRANSACTION_TYPE,
+                                  TRANSACTION_DATE
+                                  )
+                                  VALUES (
+                                  @CustomerId,
+                                  @CarId,
+                                  @TransactionType,
+                                  GETDATE()
+                                  )";
 
-                SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
-                buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
-                buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
-                buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
-                buyingRentingCmd.ExecuteNonQuery();
+                    SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
+                    buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                    buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
+                    buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
+                    buyingRentingCmd.ExecuteNonQuery();
+                }
+                catch (SqlException sqlEx)
+                {
+                    Console.WriteLine($"⚠️ Warning: Could not insert into BUYING_RENTING: {sqlEx.Message}");
+                    Console.WriteLine("   Payment will continue, but please reset database for full functionality.");
+                }
 
                 // Step 3: Insert payment record
                 string paymentQuery = @"INSERT INTO PAYMENT (
@@ -2516,33 +2587,6 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 int paymentId = Convert.ToInt32(paymentCmd.ExecuteScalar());
                 result.PaymentId = paymentId;
 
-                // ============================================
-                // UPDATED: Log transaction with actual car name
-                // ============================================
-                string transactionLogQuery = @"INSERT INTO TRANSACTION_LOG (
-                                PAYMENT_ID,
-                                CUSTOMER_NAME,
-                                CAR_NAME,
-                                AMOUNT,
-                                DATE,
-                                STATUS
-                                )
-                                VALUES (
-                                @PaymentId,
-                                @CustomerName,
-                                @CarName,
-                                @Amount,
-                                GETDATE(),
-                                'Completed'
-                                )";
-
-                SqlCommand transLogCmd = new SqlCommand(transactionLogQuery, _connection, transaction);
-                transLogCmd.Parameters.AddWithValue("@PaymentId", paymentId);
-                transLogCmd.Parameters.AddWithValue("@CustomerName", customerName);
-                transLogCmd.Parameters.AddWithValue("@CarName", carName);
-                transLogCmd.Parameters.AddWithValue("@Amount", amountPaid);
-                transLogCmd.ExecuteNonQuery();
-
                 // Commit transaction
                 transaction.Commit();
                 result.Success = true;
@@ -2553,8 +2597,13 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 Console.WriteLine($"   Car Name: {carName}");
                 Console.WriteLine($"   Customer Name: {customerName}");
 
-                // Log activity (outside transaction scope)
+                // Close connection before logging (LogTransaction opens its own connection)
                 _connection.Close();
+                
+                // Log transaction with actual car name using existing method
+                LogTransaction(paymentId, customerName, carName, amountPaid, "Completed");
+                
+                // Log activity
                 LogActivity("Payment Completed", $"Payment of {amountPaid} EGP completed for {carName} by {customerName}", "success");
             }
             catch (Exception ex)
