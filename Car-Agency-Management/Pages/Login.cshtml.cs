@@ -45,9 +45,20 @@ namespace Car_Agency_Management.Pages
             HttpContext.Session.SetInt32("UserId", customerId);
             HttpContext.Session.SetString("UserEmail", Email ?? "");
             
-            // Administrative logic: Email containing a hyphen is considered an admin
-            bool isAdmin = (Email ?? "").Contains("-");
-            HttpContext.Session.SetString("UserRole", isAdmin ? "Admin" : "User");
+            // Administrative logic: Email containing a hyphen determines role
+            string role = "User";
+            string email = Email ?? "";
+            
+            if (email.StartsWith("m-"))
+            {
+                role = "Maintenance";
+            }
+            else if (email.Contains("-"))
+            {
+                role = "Admin";
+            }
+            
+            HttpContext.Session.SetString("UserRole", role);
 
             return RedirectToPage("/Index");
         }

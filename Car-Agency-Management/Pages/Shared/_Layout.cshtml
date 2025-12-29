@@ -376,11 +376,19 @@
                                 </form>
                             </li>
 
-                            @if (Context.Session.GetString("UserRole") == "Admin")
+                            
+                                var userRole = Context.Session.GetString("UserRole");
+                            
+
+                            @if (userRole == "Admin" || userRole == "Maintenance")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-page="/user_manage">Users</a>
                                 </li>
+                            }
+                            
+                            @if (userRole == "Admin")
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link admin-dashboard" asp-area="" asp-page="/AdminDashboard">
                                         <i class="fas fa-user-shield admin-icon"></i>

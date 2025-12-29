@@ -20,9 +20,17 @@ namespace Car_Agency_Management.Pages
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // Security Check: Admin or Maintenance can access
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin" && role != "Maintenance")
+            {
+                return RedirectToPage("/Index");
+            }
+
             Users = _db.GetAllUsers();
+            return Page();
         }
 
         public IActionResult OnPostAddUser(string firstName, string lastName, string email, string password, string phone, string address)

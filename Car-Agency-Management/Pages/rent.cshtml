@@ -436,7 +436,7 @@
             }
         </p>
 
-        <form method="post">
+        <form id="rentForm" method="post">
             <input type="hidden" name="carId" value="@Model.CarId" />
             <input type="hidden" id="startDateHidden" name="startDate" />
             <input type="hidden" id="endDateHidden" name="endDate" />
@@ -467,11 +467,11 @@
                         <div class="date-inputs">
                             <div class="date-input-group">
                                 <label>Start Date</label>
-                                <input type="date" id="startDateInput" onchange="updateFromInput()">
+                                <input type="text" id="startDateInput" placeholder="DD/MM/YYYY" onchange="updateFromInput()">
                             </div>
                             <div class="date-input-group">
                                 <label>End Date</label>
-                                <input type="date" id="endDateInput" onchange="updateFromInput()">
+                                <input type="text" id="endDateInput" placeholder="DD/MM/YYYY" onchange="updateFromInput()">
                             </div>
                         </div>
                     </div>
@@ -543,6 +543,30 @@
         let currentYear = new Date().getFullYear();
         let selectedStartDate = null;
         let selectedEndDate = null;
+
+        // HELPER: Format date as DD/MM/YYYY
+        function formatDateEgyptian(date) {
+            if (!date) return '';
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // HELPER: Parse DD/MM/YYYY to Date object
+        function parseDateEgyptian(dateString) {
+            if (!dateString) return null;
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return null;
+            
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // 0-indexed month
+            const year = parseInt(parts[2], 10);
+            
+            if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+            
+            return new Date(year, month, day);
+        }
 
         // Check if a date is booked
         function isDateBooked(date) {
@@ -617,7 +641,10 @@
                 document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected', 'in-range'));
                 element.classList.add('selected');
                 selectedStartDate = selectedDate;
-                document.getElementById('startDateInput').valueAsDate = selectedDate;
+                
+                // UPDATE INPUT WITH EGYPTIAN FORMAT
+                document.getElementById('startDateInput').value = formatDateEgyptian(selectedDate);
+                
                 updateAvailability();
                 document.getElementById('checkButton').disabled = true;
                 document.getElementById('nextButton').disabled = true;
@@ -644,7 +671,10 @@
 
                     selectedEndDate = selectedDate;
                     element.classList.add('selected');
-                    document.getElementById('endDateInput').valueAsDate = selectedDate;
+                    
+                    // UPDATE INPUT WITH EGYPTIAN FORMAT
+                    document.getElementById('endDateInput').value = formatDateEgyptian(selectedDate);
+                    
                     highlightRange();
                     updateServiceDetails();
                     document.getElementById('checkButton').disabled = false;
@@ -662,8 +692,11 @@
                 element.classList.add('selected');
                 selectedStartDate = selectedDate;
                 selectedEndDate = null;
-                document.getElementById('startDateInput').valueAsDate = selectedDate;
+                
+                // UPDATE INPUT WITH EGYPTIAN FORMAT
+                document.getElementById('startDateInput').value = formatDateEgyptian(selectedDate);
                 document.getElementById('endDateInput').value = '';
+                
                 updateAvailability();
                 document.getElementById('serviceDetails').innerHTML = '@Model.CarInfo?.CarName';
                 document.getElementById('checkButton').disabled = true;
@@ -689,10 +722,8 @@
 
         function updateAvailability() {
             if (selectedStartDate) {
-                const year = selectedStartDate.getFullYear();
-                const month = String(selectedStartDate.getMonth() + 1).padStart(2, '0');
-                const day = String(selectedStartDate.getDate()).padStart(2, '0');
-                document.getElementById('availabilityDate').textContent = `${year}/${month}/${day}`;
+                // EGYPTIAN FORMAT: Day/Month/Year
+                document.getElementById('availabilityDate').textContent = formatDateEgyptian(selectedStartDate);
             }
         }
 
@@ -709,29 +740,38 @@
             const endInput = document.getElementById('endDateInput').value;
 
             if (startInput) {
-                selectedStartDate = new Date(startInput);
-                selectedStartDate.setHours(0, 0, 0, 0);
-                updateAvailability();
+                // PARSE EGYPTIAN FORMAT
+                const parsedDate = parseDateEgyptian(startInput);
+                if (parsedDate) {
+                    selectedStartDate = parsedDate;
+                    selectedStartDate.setHours(0, 0, 0, 0);
+                    updateAvailability();
+                }
             }
 
             if (endInput) {
-                selectedEndDate = new Date(endInput);
-                selectedEndDate.setHours(0, 0, 0, 0);
+                // PARSE EGYPTIAN FORMAT
+                const parsedDate = parseDateEgyptian(endInput);
+                
+                if (parsedDate) {
+                    selectedEndDate = parsedDate;
+                    selectedEndDate.setHours(0, 0, 0, 0);
 
-                if (selectedStartDate && selectedEndDate > selectedStartDate) {
-                    generateCalendar();
-                    highlightCalendarFromInputs();
-                    updateServiceDetails();
-                    document.getElementById('checkButton').disabled = false;
-                    document.getElementById('checkButton').style.backgroundColor = '#0066cc';
-                } else if (selectedStartDate) {
-                    Swal.fire({
-                        title: 'Invalid Date Range',
-                        text: 'End date must be after start date.',
-                        icon: 'info'
-                    });
-                    document.getElementById('endDateInput').value = '';
-                    selectedEndDate = null;
+                    if (selectedStartDate && selectedEndDate > selectedStartDate) {
+                        generateCalendar();
+                        highlightCalendarFromInputs();
+                        updateServiceDetails();
+                        document.getElementById('checkButton').disabled = false;
+                        document.getElementById('checkButton').style.backgroundColor = '#0066cc';
+                    } else if (selectedStartDate) {
+                        Swal.fire({
+                            title: 'Invalid Date Range',
+                            text: 'End date must be after start date.',
+                            icon: 'info'
+                        });
+                        document.getElementById('endDateInput').value = '';
+                        selectedEndDate = null;
+                    }
                 }
             }
         }
@@ -803,12 +843,20 @@
                 return;
             }
 
-            // Update hidden form fields
-            document.getElementById('startDateHidden').value = selectedStartDate.toISOString().split('T')[0];
-            document.getElementById('endDateHidden').value = selectedEndDate.toISOString().split('T')[0];
+            // Helper to format date as YYYY-MM-DD using local time
+            const formatDateLocal = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            // Update hidden form fields with CORRECT local date
+            document.getElementById('startDateHidden').value = formatDateLocal(selectedStartDate);
+            document.getElementById('endDateHidden').value = formatDateLocal(selectedEndDate);
 
             // Submit form to check availability
-            document.querySelector('form').submit();
+            document.getElementById('rentForm').submit();
         }
 
         // Initialize calendar on page load

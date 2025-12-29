@@ -40,10 +40,17 @@ namespace Car_Agency_Management.Pages
             _database = new DB();
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // Security Check: Only Admin can access
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             // Load all dashboard data from database
             LoadDashboardDataFromDatabase();
+            return Page();
         }
 
         public IActionResult OnPostResetDatabase()

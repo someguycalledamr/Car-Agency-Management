@@ -11,6 +11,72 @@ namespace Car_Agency_Management.Data
         public DB()
         {
             _connection = new SqlConnection(_connectionString);
+            EnsureDatabaseSchema();
+        }
+
+        private void EnsureDatabaseSchema()
+        {
+            try
+            {
+                if (_connection.State == ConnectionState.Closed) _connection.Open();
+
+                // 1. Check if CAR_ID exists in RESERVATIONS (Previous Fix)
+                string checkQuery = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'RESERVATIONS' AND COLUMN_NAME = 'CAR_ID'";
+                SqlCommand checkCmd = new SqlCommand(checkQuery, _connection);
+                int count = (int)checkCmd.ExecuteScalar();
+
+                if (count == 0)
+                {
+                    string alterQuery = "ALTER TABLE RESERVATIONS ADD CAR_ID INT FOREIGN KEY REFERENCES CAR(CAR_ID)";
+                    SqlCommand alterCmd = new SqlCommand(alterQuery, _connection);
+                    alterCmd.ExecuteNonQuery();
+                    Console.WriteLine("AUTO-REPAIR: Added CAR_ID to RESERVATIONS table.");
+                }
+
+                // 2. Fix BUYING_RENTING Primary Key Constraint (Allow duplicates for multiple transactions)
+                // The original schema had PRIMARY KEY (CAR_ID, CUSTOMER_ID) which prevents repeat business
+                string pkQuery = @"
+                    DECLARE @pkName NVARCHAR(MAX);
+                    SELECT @pkName = name FROM sys.key_constraints 
+                    WHERE type = 'PK' AND parent_object_id = OBJECT_ID('BUYING_RENTING');
+                    
+                    IF @pkName IS NOT NULL
+                    BEGIN
+                        EXEC('ALTER TABLE BUYING_RENTING DROP CONSTRAINT ' + @pkName);
+                        PRINT 'AUTO-REPAIR: Dropped restrictive PK on BUYING_RENTING';
+                    END";
+                
+                SqlCommand pkCmd = new SqlCommand(pkQuery, _connection);
+                pkCmd.ExecuteNonQuery();
+
+                // 3. Fix BUYING_RENTING Missing Columns (TRANSACTION_TYPE, TRANSACTION_DATE)
+                // Newer code relies on these, but old schemas might miss them
+                string colCheckQuery = @"
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'BUYING_RENTING' AND COLUMN_NAME = 'TRANSACTION_TYPE')
+                    BEGIN
+                        ALTER TABLE BUYING_RENTING ADD TRANSACTION_TYPE NVARCHAR(50);
+                        PRINT 'AUTO-REPAIR: Added TRANSACTION_TYPE to BUYING_RENTING';
+                    END
+
+                    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'BUYING_RENTING' AND COLUMN_NAME = 'TRANSACTION_DATE')
+                    BEGIN
+                        ALTER TABLE BUYING_RENTING ADD TRANSACTION_DATE DATETIME DEFAULT GETDATE();
+                        PRINT 'AUTO-REPAIR: Added TRANSACTION_DATE to BUYING_RENTING';
+                    END";
+                
+                SqlCommand colCmd = new SqlCommand(colCheckQuery, _connection);
+                colCmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Schema check failed: {ex.Message}");
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
         }
 
         // ============================================
@@ -2534,10 +2600,9 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 }
 
                 // Step 2: Link customer with car (BUYING_RENTING)
-                // Wrapped in try-catch to prevent payment failure if table schema is incorrect
-                try
-                {
-                    string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
+                // CRITICAL: REMOVED TRY-CATCH TO EXPOSE ERRORS
+                // If this fails, the transaction MUST fail, otherwise charts will be inconsistent
+                string buyingRentingQuery = @"INSERT INTO BUYING_RENTING (
                                   CUSTOMER_ID,
                                   CAR_ID,
                                   TRANSACTION_TYPE,
@@ -2550,17 +2615,11 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                                   GETDATE()
                                   )";
 
-                    SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
-                    buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
-                    buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
-                    buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
-                    buyingRentingCmd.ExecuteNonQuery();
-                }
-                catch (SqlException sqlEx)
-                {
-                    Console.WriteLine($"⚠️ Warning: Could not insert into BUYING_RENTING: {sqlEx.Message}");
-                    Console.WriteLine("   Payment will continue, but please reset database for full functionality.");
-                }
+                SqlCommand buyingRentingCmd = new SqlCommand(buyingRentingQuery, _connection, transaction);
+                buyingRentingCmd.Parameters.AddWithValue("@CustomerId", customerId);
+                buyingRentingCmd.Parameters.AddWithValue("@CarId", carId);
+                buyingRentingCmd.Parameters.AddWithValue("@TransactionType", transactionType);
+                buyingRentingCmd.ExecuteNonQuery();
 
                 // Step 3: Insert payment record
                 string paymentQuery = @"INSERT INTO PAYMENT (
@@ -2778,13 +2837,17 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
         public List<DateRange> GetBookedDatesForCar(int carId)
         {
             List<DateRange> bookedDates = new List<DateRange>();
-            string query = @"SELECT 
-                    RESERVATION_START_DATE,
-                    RESERVATION_END_DATE
+            
+            // UNION BOTH TABLES
+            string query = @"
+                    SELECT RESERVATION_START_DATE AS StartDate, RESERVATION_END_DATE AS EndDate
                     FROM RESERVATIONS
-                    WHERE CAR_ID = @CarId
-                      AND RESERVATION_STATUS = 'Confirmed'
-                    ORDER BY RESERVATION_START_DATE";
+                    WHERE CAR_ID = @CarId AND RESERVATION_STATUS = 'Confirmed'
+                    UNION ALL
+                    SELECT RENTAL_DATE AS StartDate, RETURN_DATE AS EndDate
+                    FROM RENTALS
+                    WHERE CAR_ID = @CarId AND STATUS = 'Active'
+                    ORDER BY StartDate";
 
             try
             {
@@ -2797,8 +2860,8 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 {
                     bookedDates.Add(new DateRange
                     {
-                        StartDate = Convert.ToDateTime(reader["RESERVATION_START_DATE"]),
-                        EndDate = Convert.ToDateTime(reader["RESERVATION_END_DATE"])
+                        StartDate = Convert.ToDateTime(reader["StartDate"]),
+                        EndDate = Convert.ToDateTime(reader["EndDate"])
                     });
                 }
                 reader.Close();
@@ -2828,6 +2891,7 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                 Message = "Car is available for selected dates"
             };
 
+            // CHECK BOTH RESERVATIONS AND RENTALS TABLES
             string query = @"SELECT 
                     CASE 
                         WHEN EXISTS (
@@ -2839,6 +2903,16 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                                   @StartDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
                                   OR @EndDate BETWEEN RESERVATION_START_DATE AND RESERVATION_END_DATE
                                   OR RESERVATION_START_DATE BETWEEN @StartDate AND @EndDate
+                              )
+                        ) OR EXISTS (
+                            SELECT 1
+                            FROM RENTALS
+                            WHERE CAR_ID = @CarId
+                              AND STATUS = 'Active'
+                              AND (
+                                  @StartDate BETWEEN RENTAL_DATE AND RETURN_DATE
+                                  OR @EndDate BETWEEN RENTAL_DATE AND RETURN_DATE
+                                  OR RENTAL_DATE BETWEEN @StartDate AND @EndDate
                               )
                         )
                         THEN 'Not Available'
@@ -2865,7 +2939,7 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
             {
                 Console.WriteLine($"Error in CheckRentalAvailability: {ex.Message}");
                 availability.IsAvailable = false;
-                availability.Message = "Error checking availability. Please try again.";
+                availability.Message = $"Error: {ex.Message}";
             }
             finally
             {

@@ -367,6 +367,20 @@
                 return false;
             }
 
+            // New Validation: Reject 2025 or earlier
+            const parts = expDate.split('/');
+            const year = parseInt(parts[1], 10); // get YY
+            
+            if (year <= 25) {
+                 Swal.fire({
+                    title: 'Card Expired',
+                    text: 'Expiry year must be after 2025.',
+                    icon: 'error'
+                });
+                e.preventDefault();
+                return false;
+            }
+
             if (cvv.length < 3) {
                 Swal.fire({
                     title: 'Invalid CVV',
