@@ -126,11 +126,7 @@ namespace Car_Agency_Management.Pages
         {
             if (!string.IsNullOrEmpty(carId))
             {
-                // Delete car features
-                _db.DeleteCarFeatures(carId);
-                // Delete car images
-                _db.DeleteCarImages(carId);
-                // Delete car record
+                // Delete car and all related data (Images, Features, History, etc.)
                 _db.DeleteCar(carId);
             }
             return RedirectToPage("/Car-gallery");

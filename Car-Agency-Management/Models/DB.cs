@@ -5,7 +5,7 @@ namespace Car_Agency_Management.Data
 {
     public class DB
     {
-        public readonly string _connectionString = "Data Source=AMR;Initial Catalog=Car_agency;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
+        public readonly string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=yarab;Integrated Security=True;Encrypt=False;Trust Server Certificate=True";
         private SqlConnection _connection;
 
         public DB()
@@ -1280,25 +1280,120 @@ namespace Car_Agency_Management.Data
         /// </summary>
         public bool DeleteCar(string carId)
         {
-            string query = "DELETE FROM CAR WHERE CAR_ID = @CarId";
-
             try
             {
-                _connection.Open();
-                SqlCommand cmd = new SqlCommand(query, _connection);
-                cmd.Parameters.AddWithValue("@CarId", carId);
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 1. Unassign Maintenance Staff
+                            string updateStaffQuery = "UPDATE MAINTENANCE_STAFF SET CAR_ID = NULL WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(updateStaffQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
 
-                int rowsAffected = cmd.ExecuteNonQuery();
-                return rowsAffected > 0;
+                            // 2. Delete Maintenance Reports
+                            string deleteReportsQuery = "DELETE FROM MAINTENANCE_REPORT WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteReportsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 3. Delete Car Repairings
+                            string deleteRepairingsQuery = "DELETE FROM CAR_REPAIRINGS WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteRepairingsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 4. Delete Insurance
+                            string deleteInsuranceQuery = "DELETE FROM INSURANCE WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteInsuranceQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 5. Delete Reservations
+                            string deleteReservationsQuery = "DELETE FROM RESERVATIONS WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteReservationsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 6. Delete Rentals
+                            string deleteRentalsQuery = "DELETE FROM RENTALS WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteRentalsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 7. Delete Buying/Renting History
+                            string deleteBuyingRentingQuery = "DELETE FROM BUYING_RENTING WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteBuyingRentingQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 8. Delete Car Images (Redundant if CASCADE exists, but safe)
+                            string deleteImagesQuery = "DELETE FROM CAR_IMAGES WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteImagesQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 9. Delete Car Features (Redundant if CASCADE exists, but safe)
+                            string deleteFeaturesQuery = "DELETE FROM CAR_FEATURES WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteFeaturesQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 10. Delete Car
+                            string deleteCarQuery = "DELETE FROM CAR WHERE CAR_ID = @CarId";
+                            using (SqlCommand cmd = new SqlCommand(deleteCarQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CarId", carId);
+                                int rowsAffected = cmd.ExecuteNonQuery();
+
+                                if (rowsAffected > 0)
+                                {
+                                    transaction.Commit();
+                                    LogActivity("Car Deleted", $"Car ID {carId} and all related data deleted.", "warning");
+                                    return true;
+                                }
+                                else
+                                {
+                                    transaction.Rollback();
+                                    return false;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            Console.WriteLine($"Error in DeleteCar transaction: {ex.Message}");
+                            return false;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in DeleteCar: {ex.Message}");
+                Console.WriteLine($"Error in DeleteCar connection: {ex.Message}");
                 return false;
-            }
-            finally
-            {
-                _connection.Close();
             }
         }
 
@@ -3283,6 +3378,14 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                     {
                         try
                         {
+                            // Delete from CUSTOMER_PHONE_NUMBERS
+                            string deletePhoneQuery = "DELETE FROM CUSTOMER_PHONE_NUMBERS WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deletePhoneQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
                             // Delete from BUYING_RENTING
                             string deleteBRQuery = "DELETE FROM BUYING_RENTING WHERE CUSTOMER_ID = @Id";
                             using (SqlCommand cmd = new SqlCommand(deleteBRQuery, conn, transaction))
@@ -3294,6 +3397,30 @@ public List<TransactionSummary> GetCustomerTransactions(int customerId)
                             // Delete from RESERVATIONS
                             string deleteResQuery = "DELETE FROM RESERVATIONS WHERE CUSTOMER_ID = @Id";
                             using (SqlCommand cmd = new SqlCommand(deleteResQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from RENTALS (Added)
+                            string deleteRentalsQuery = "DELETE FROM RENTALS WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteRentalsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from COMPLAINTS (Added)
+                            string deleteComplaintsQuery = "DELETE FROM COMPLAINTS WHERE CUSTOMER_ID = @Id";
+                            using (SqlCommand cmd = new SqlCommand(deleteComplaintsQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@Id", id);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Delete from TRANSACTION_LOG (referencing Payment)
+                            string deleteTransLogQuery = "DELETE FROM TRANSACTION_LOG WHERE PAYMENT_ID IN (SELECT PAYMENT_ID FROM PAYMENT WHERE CUSTOMER_ID = @Id)";
+                            using (SqlCommand cmd = new SqlCommand(deleteTransLogQuery, conn, transaction))
                             {
                                 cmd.Parameters.AddWithValue("@Id", id);
                                 cmd.ExecuteNonQuery();

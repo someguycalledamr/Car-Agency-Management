@@ -116,12 +116,12 @@ namespace Car_Agency_Management.Pages
             // Restore dates from TempData (passed from /rent page)
             if (TempData["RentalStartDate"] != null)
             {
-                StartDate = DateTime.Parse(TempData["RentalStartDate"].ToString());
+                StartDate = DateTime.ParseExact(TempData["RentalStartDate"].ToString(), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 TempData.Keep("RentalStartDate"); // Keep for postback if needed
             }
             if (TempData["RentalEndDate"] != null)
             {
-                EndDate = DateTime.Parse(TempData["RentalEndDate"].ToString());
+                EndDate = DateTime.ParseExact(TempData["RentalEndDate"].ToString(), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 TempData.Keep("RentalEndDate");
             }
             if (TempData["EstimatedCost"] != null)

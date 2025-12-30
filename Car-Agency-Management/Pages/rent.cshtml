@@ -644,6 +644,7 @@
                 
                 // UPDATE INPUT WITH EGYPTIAN FORMAT
                 document.getElementById('startDateInput').value = formatDateEgyptian(selectedDate);
+                document.getElementById('startDateHidden').value = formatDateEgyptian(selectedDate);
                 
                 updateAvailability();
                 document.getElementById('checkButton').disabled = true;
@@ -674,6 +675,7 @@
                     
                     // UPDATE INPUT WITH EGYPTIAN FORMAT
                     document.getElementById('endDateInput').value = formatDateEgyptian(selectedDate);
+                    document.getElementById('endDateHidden').value = formatDateEgyptian(selectedDate);
                     
                     highlightRange();
                     updateServiceDetails();
@@ -695,7 +697,9 @@
                 
                 // UPDATE INPUT WITH EGYPTIAN FORMAT
                 document.getElementById('startDateInput').value = formatDateEgyptian(selectedDate);
+                document.getElementById('startDateHidden').value = formatDateEgyptian(selectedDate);
                 document.getElementById('endDateInput').value = '';
+                document.getElementById('endDateHidden').value = '';
                 
                 updateAvailability();
                 document.getElementById('serviceDetails').innerHTML = '@Model.CarInfo?.CarName';
@@ -745,6 +749,7 @@
                 if (parsedDate) {
                     selectedStartDate = parsedDate;
                     selectedStartDate.setHours(0, 0, 0, 0);
+                    document.getElementById('startDateHidden').value = formatDateEgyptian(selectedStartDate);
                     updateAvailability();
                 }
             }
@@ -756,6 +761,7 @@
                 if (parsedDate) {
                     selectedEndDate = parsedDate;
                     selectedEndDate.setHours(0, 0, 0, 0);
+                    document.getElementById('endDateHidden').value = formatDateEgyptian(selectedEndDate);
 
                     if (selectedStartDate && selectedEndDate > selectedStartDate) {
                         generateCalendar();
@@ -843,9 +849,9 @@
                 return;
             }
 
-            // Update hidden form fields
-            document.getElementById('startDateHidden').value = selectedStartDate.toISOString().split('T')[0];
-            document.getElementById('endDateHidden').value = selectedEndDate.toISOString().split('T')[0];
+            // Update hidden form fields - USE EGYPTIAN FORMAT (DDD/MM/YYYY)
+            document.getElementById('startDateHidden').value = formatDateEgyptian(selectedStartDate);
+            document.getElementById('endDateHidden').value = formatDateEgyptian(selectedEndDate);
 
             // Submit form to check availability
             document.getElementById('rentForm').submit();
@@ -864,8 +870,9 @@
                 const savedEndDate = '@Request.Form["endDate"]';
 
                 if (savedStartDate && savedEndDate) {
-                    selectedStartDate = new Date(savedStartDate);
-                    selectedEndDate = new Date(savedEndDate);
+                    // USE HELPER TO PARSE DD/MM/YYYY
+                    selectedStartDate = parseDateEgyptian(savedStartDate);
+                    selectedEndDate = parseDateEgyptian(savedEndDate);
 
                     document.getElementById('startDateInput').value = savedStartDate;
                     document.getElementById('endDateInput').value = savedEndDate;
